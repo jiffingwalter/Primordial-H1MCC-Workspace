@@ -1,5 +1,8 @@
 # Ignore all files
 *
 
+# Allow directories
+!*/
+
 # Except files with .hsc extension
 !*.hsc
