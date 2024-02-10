@@ -2172,7 +2172,8 @@
 )
 
 ;= MUSIC SCRIPTS ===============================================================
-(script static void music_c40_01
+(script dormant music_c40_01
+	(sleep_until play_music_c40_01 1)
 	(sound_looping_start "levels\c40\music\c40_01" none 1)
 
 	(sleep_until (or play_music_c40_01_alt
@@ -2186,7 +2187,8 @@
 	(sound_looping_stop "levels\c40\music\c40_01")
 )
 
-(script static void music_c40_02
+(script dormant music_c40_02
+	(sleep_until play_music_c40_02 1)
 	(sound_looping_start "levels\c40\music\c40_02" none 1)
 
 	(sleep_until (or play_music_c40_02_alt
@@ -2199,7 +2201,8 @@
 	(sound_looping_stop "levels\c40\music\c40_03")
 	)
 
-(script static void music_c40_03
+(script dormant music_c40_03
+	(sleep_until play_music_c40_03 1)
 	(sound_looping_start "levels\c40\music\c40_03" none 1)
 
 	(sleep_until (or play_music_c40_03_alt
@@ -2212,7 +2215,8 @@
 	(sound_looping_stop "levels\c40\music\c40_03")
 	)
 
-(script static void music_c40_04
+(script dormant music_c40_04
+	(sleep_until play_music_c40_04 1)
 	(sound_looping_start "levels\c40\music\c40_04" none 1)
 
 	(sleep_until (or play_music_c40_04_alt
@@ -2225,7 +2229,8 @@
 	(sound_looping_stop "levels\c40\music\c40_04")
 	)
 
-(script static void music_c40_05
+(script dormant music_c40_05
+	(sleep_until play_music_c40_05 1)
 	(sound_looping_start "levels\c40\music\c40_05" none 1)
 
 	(sleep_until (or play_music_c40_05_alt
@@ -2238,7 +2243,8 @@
 	(sound_looping_stop "levels\c40\music\c40_05")
 	)
 
-(script static void music_c40_051
+(script dormant music_c40_051
+	(sleep_until play_music_c40_051 1)
 	(sound_looping_start "gk88\levels\singleplayer\C40\music\c40_051_tension" none 1)
 
 	(sleep_until (or play_music_c40_051_alt
@@ -2252,7 +2258,8 @@
 	)
 
 
-(script static void music_c40_06
+(script dormant music_c40_06
+	(sleep_until play_music_c40_06 1)
 	(sound_looping_start "levels\c40\music\c40_06" none 1)
 
 	(sleep_until (or play_music_c40_06_alt
@@ -2265,7 +2272,8 @@
 	(sound_looping_stop "levels\c40\music\c40_06")
 	)
 
-(script static void music_c40_07
+(script dormant music_c40_07
+	(sleep_until play_music_c40_07 1)
 	(sleep_until (> (device_get_position door_b2) 0))
 	(sound_looping_start "levels\c40\music\c40_07" none 1)
 
@@ -2279,7 +2287,8 @@
 	(sound_looping_stop "levels\c40\music\c40_07")
 	)
 
-(script static void music_c40_08
+(script dormant music_c40_08
+	(sleep_until play_music_c40_08 1)
 	(sound_looping_start "levels\c40\music\c40_08" none 1)
 
 	(sleep_until (or play_music_c40_08_alt
@@ -2292,7 +2301,8 @@
 	(sound_looping_stop "levels\c40\music\c40_08")
 	)
 
-(script static void music_c40_09
+(script dormant music_c40_09
+	(sleep_until play_music_c40_09 1)
 	(sound_looping_start "levels\c40\music\c40_09" none 1)
 
 	(sleep_until (or play_music_c40_09_alt
@@ -2305,7 +2315,8 @@
 	(sound_looping_stop "levels\c40\music\c40_09")
 	)
 
-(script static void music_c40_10
+(script dormant music_c40_10
+	(sleep_until play_music_c40_10 1)
 	(sound_looping_start "levels\c40\music\c40_10" none 1)
 
 	(sleep_until (or play_music_c40_10_alt
@@ -2318,7 +2329,8 @@
 	(sound_looping_stop "levels\c40\music\c40_10")
 	)
 
-(script static void music_c40_101
+(script dormant music_c40_101
+	(sleep_until play_music_c40_101 1)
 	(sound_looping_start "levels\c40\music\c40_101" none 1)
 
 ;	(sleep_until (or play_music_c40_101_alt
@@ -2335,7 +2347,8 @@
 	)
 
 
-(script static void music_c40_11
+(script dormant music_c40_11
+	(sleep_until play_music_c40_11 1)
 	(sound_looping_start "levels\c40\music\c40_11" none 1)
 
 	(sleep_until (or play_music_c40_11_alt
@@ -2349,45 +2362,19 @@
 )
 
 (script dormant music_c40
-
-	(sleep_until play_music_c40_01 1)
-	(music_c40_01)
-	
-	(sleep_until play_music_c40_02 1)
-	(music_c40_02)
-	
-	(sleep_until play_music_c40_03 1)
-	(music_c40_03)
-	
-	(sleep_until play_music_c40_04 1)
-	(music_c40_04)
-	
-	(sleep_until play_music_c40_05 1)
-	(music_c40_05)
-
-	(sleep_until play_music_c40_051 1)
-	(music_c40_051)
-
-	(sleep_until play_music_c40_06 1)
-	(music_c40_06)
-
-	(sleep_until play_music_c40_07 1)
-	(music_c40_07)
-
-	(sleep_until play_music_c40_08 1)
-	(music_c40_08)
-
-	(sleep_until play_music_c40_09 1)
-	(music_c40_09)
-
-	(sleep_until play_music_c40_10 1)
-	(music_c40_10)
-
-	(sleep_until play_music_c40_101 1)
-	(music_c40_101)
-
-	(sleep_until play_music_c40_11 1)
-	(music_c40_11)
+	(wake music_c40_01)
+	(wake music_c40_02)
+	(wake music_c40_03)
+	(wake music_c40_04)
+	(wake music_c40_05)
+	(wake music_c40_051)
+	(wake music_c40_06)
+	(wake music_c40_07)
+	(wake music_c40_08)
+	(wake music_c40_09)
+	(wake music_c40_10)
+	(wake music_c40_101)
+	(wake music_c40_11)
 )
 
 ;= MAIN SCRIPT =================================================================
