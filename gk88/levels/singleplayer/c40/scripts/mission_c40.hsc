@@ -2179,7 +2179,6 @@
 
 	(sleep_until (or play_music_c40_01_alt
 				  (not play_music_c40_01)) 1 global_delay_music)
-	(if debug (print "MUSIC HAS BEEN CALLED"))
 	(if play_music_c40_01_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_01" 1)
 								(if debug (print "music 1 alternate in..."))
 							   (sleep_until (not play_music_c40_01) 1 global_delay_music)
