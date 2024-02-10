@@ -2175,163 +2175,198 @@
 (script dormant music_c40_01
 	(sleep_until play_music_c40_01 1)
 	(sound_looping_start "levels\c40\music\c40_01" none 1)
+	(if debug (print "music 1 in..."))
 
 	(sleep_until (or play_music_c40_01_alt
 				  (not play_music_c40_01)) 1 global_delay_music)
 	(if debug (print "MUSIC HAS BEEN CALLED"))
 	(if play_music_c40_01_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_01" 1)
+								(if debug (print "music 1 alternate in..."))
 							   (sleep_until (not play_music_c40_01) 1 global_delay_music)
 							   (set play_music_c40_01_alt false)
 							   ))
 	(set play_music_c40_01 false)
 	(sound_looping_stop "levels\c40\music\c40_01")
+	(if debug (print "music 1 out..."))
 )
 
 (script dormant music_c40_02
 	(sleep_until play_music_c40_02 1)
 	(sound_looping_start "levels\c40\music\c40_02" none 1)
+	(if debug (print "music 2 in..."))
 
 	(sleep_until (or play_music_c40_02_alt
 				  (not play_music_c40_02)) 1 global_delay_music)
 	(if play_music_c40_02_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_02" 1)
+								(if debug (print "music 2 alternate in..."))
 							   (sleep_until (not play_music_c40_02) 1 global_delay_music)
 							   (set play_music_c40_02_alt false)
 							   ))
-	(set play_music_c40_03 false)
-	(sound_looping_stop "levels\c40\music\c40_03")
+	(set play_music_c40_02 false)
+	(sound_looping_stop "levels\c40\music\c40_02")
+	(if debug (print "music 2 out..."))
 	)
 
 (script dormant music_c40_03
 	(sleep_until play_music_c40_03 1)
 	(sound_looping_start "levels\c40\music\c40_03" none 1)
+	(if debug (print "music 3 in..."))
 
 	(sleep_until (or play_music_c40_03_alt
 				  (not play_music_c40_03)) 1 global_delay_music)
 	(if play_music_c40_03_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_03" 1)
+								(if debug (print "music 3 alternate in..."))
 							   (sleep_until (not play_music_c40_03) 1 global_delay_music)
 							   (set play_music_c40_03_alt false)
 							   ))
 	(set play_music_c40_03 false)
 	(sound_looping_stop "levels\c40\music\c40_03")
+	(if debug (print "music 3 out..."))
 	)
 
 (script dormant music_c40_04
 	(sleep_until play_music_c40_04 1)
 	(sound_looping_start "levels\c40\music\c40_04" none 1)
+	(if debug (print "music 4 in..."))
 
 	(sleep_until (or play_music_c40_04_alt
 				  (not play_music_c40_04)) 1 global_delay_music)
 	(if play_music_c40_04_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_04" 1)
+								(if debug (print "music 4 alternate in..."))
 							   (sleep_until (not play_music_c40_04) 1 global_delay_music)
 							   (set play_music_c40_04_alt false)
 							   ))
 	(set play_music_c40_04 false)
 	(sound_looping_stop "levels\c40\music\c40_04")
+	(if debug (print "music 4 out..."))
 	)
 
 (script dormant music_c40_05
 	(sleep_until play_music_c40_05 1)
 	(sound_looping_start "levels\c40\music\c40_05" none 1)
+	(if debug (print "music 5 in..."))
 
 	(sleep_until (or play_music_c40_05_alt
 				  (not play_music_c40_05)) 1 global_delay_music)
 	(if play_music_c40_05_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_05" 1)
+								(if debug (print "music 5 alternate in..."))
 							   (sleep_until (not play_music_c40_05) 1 global_delay_music)
 							   (set play_music_c40_05_alt false)
 							   ))
 	(set play_music_c40_05 false)
 	(sound_looping_stop "levels\c40\music\c40_05")
+	(if debug (print "music 5 out..."))
 	)
 
 (script dormant music_c40_051
 	(sleep_until play_music_c40_051 1)
 	(sound_looping_start "gk88\levels\singleplayer\C40\music\c40_051_tension" none 1)
+	(if debug (print "music 5-1 in..."))
 
 	(sleep_until (or play_music_c40_051_alt
 				  (not play_music_c40_051)) 1 global_delay_music)
 	(if play_music_c40_051_alt (begin (sound_looping_set_alternate "gk88\levels\singleplayer\C40\music\c40_051_tension" 1)
+								(if debug (print "music 5-1 alternate in..."))
 							   (sleep_until (not play_music_c40_051) 1 global_delay_music)
 							   (set play_music_c40_051_alt false)
 							   ))
 	(set play_music_c40_051 false)
 	(sound_looping_stop "gk88\levels\singleplayer\C40\music\c40_051_tension")
+	(if debug (print "music 5-1 out..."))
 	)
 
 
 (script dormant music_c40_06
 	(sleep_until play_music_c40_06 1)
 	(sound_looping_start "levels\c40\music\c40_06" none 1)
+	(if debug (print "music 6 in..."))
 
 	(sleep_until (or play_music_c40_06_alt
 				  (not play_music_c40_06)) 1 global_delay_music)
 	(if play_music_c40_06_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_06" 1)
+								(if debug (print "music 6 alternate in..."))
 							   (sleep_until (not play_music_c40_06) 1 global_delay_music)
 							   (set play_music_c40_06_alt false)
 							   ))
 	(set play_music_c40_06 false)
 	(sound_looping_stop "levels\c40\music\c40_06")
+	(if debug (print "music 6 out..."))
 	)
 
 (script dormant music_c40_07
 	(sleep_until play_music_c40_07 1)
 	(sleep_until (> (device_get_position door_b2) 0))
 	(sound_looping_start "levels\c40\music\c40_07" none 1)
+	(if debug (print "music 7 in..."))
 
 	(sleep_until (or play_music_c40_07_alt
 				  (not play_music_c40_07)) 1 global_delay_music)
 	(if play_music_c40_07_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_07" 1)
+								(if debug (print "music 7 alternate in..."))
 							   (sleep_until (not play_music_c40_07) 1 global_delay_music)
 							   (set play_music_c40_07_alt false)
 							   ))
 	(set play_music_c40_07 false)
 	(sound_looping_stop "levels\c40\music\c40_07")
+	(if debug (print "music 7 out..."))
 	)
 
 (script dormant music_c40_08
 	(sleep_until play_music_c40_08 1)
 	(sound_looping_start "levels\c40\music\c40_08" none 1)
+	(if debug (print "music 8 in..."))
 
 	(sleep_until (or play_music_c40_08_alt
 				  (not play_music_c40_08)) 1 global_delay_music)
 	(if play_music_c40_08_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_08" 1)
+								(if debug (print "music 8 alternate in..."))
 							   (sleep_until (not play_music_c40_08) 1 global_delay_music)
 							   (set play_music_c40_08_alt false)
 							   ))
 	(set play_music_c40_08 false)
 	(sound_looping_stop "levels\c40\music\c40_08")
+	(if debug (print "music 8 out..."))
 	)
 
 (script dormant music_c40_09
 	(sleep_until play_music_c40_09 1)
 	(sound_looping_start "levels\c40\music\c40_09" none 1)
+	(if debug (print "music 9 in..."))
 
 	(sleep_until (or play_music_c40_09_alt
 				  (not play_music_c40_09)) 1 global_delay_music)
 	(if play_music_c40_09_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_09" 1)
+								(if debug (print "music 9 alternate in..."))
 							   (sleep_until (not play_music_c40_09) 1 global_delay_music)
 							   (set play_music_c40_09_alt false)
 							   ))
 	(set play_music_c40_09 false)
 	(sound_looping_stop "levels\c40\music\c40_09")
+	(if debug (print "music 9 out..."))
 	)
 
 (script dormant music_c40_10
 	(sleep_until play_music_c40_10 1)
 	(sound_looping_start "levels\c40\music\c40_10" none 1)
+	(if debug (print "music 11 in..."))
 
 	(sleep_until (or play_music_c40_10_alt
 				  (not play_music_c40_10)) 1 global_delay_music)
-	(if play_music_c40_10_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_10" 1)
-							   (sleep_until (not play_music_c40_10) 1 global_delay_music)
-							   (set play_music_c40_10_alt false)
+	(if play_music_c40_10_alt (begin 
+									(sound_looping_set_alternate "levels\c40\music\c40_10" 1)
+									(if debug (print "music 10 alternate in..."))
+									(sleep_until (not play_music_c40_10) 1 global_delay_music)
+									(set play_music_c40_10_alt false)
 							   ))
 	(set play_music_c40_10 false)
 	(sound_looping_stop "levels\c40\music\c40_10")
+	(if debug (print "music 10 out..."))
 	)
 
 (script dormant music_c40_101
 	(sleep_until play_music_c40_101 1)
 	(sound_looping_start "levels\c40\music\c40_101" none 1)
+	(if debug (print "music 101 in..."))
 
 ;	(sleep_until (or play_music_c40_101_alt
 ;				  (not play_music_c40_101)) 1 global_delay_music)
@@ -2344,21 +2379,26 @@
 
 	(sleep (* 30 108))
 	(sound_looping_start "levels\c40\music\c40_102" none 1)
-	)
+	(if debug (print "music 101 out..."))
+)
 
 
 (script dormant music_c40_11
 	(sleep_until play_music_c40_11 1)
 	(sound_looping_start "levels\c40\music\c40_11" none 1)
+	(if debug (print "music 11 in..."))
 
 	(sleep_until (or play_music_c40_11_alt
 				  (not play_music_c40_11)) 1 global_delay_music)
-	(if play_music_c40_11_alt (begin (sound_looping_set_alternate "levels\c40\music\c40_11" 1)
-							   (sleep_until (not play_music_c40_11) 1 global_delay_music)
-							   (set play_music_c40_11_alt false)
-							   ))
+	(if play_music_c40_11_alt (begin 
+								(sound_looping_set_alternate "levels\c40\music\c40_11" 1)
+								(if debug (print "music 11 alternate in..."))
+							   	(sleep_until (not play_music_c40_11) 1 global_delay_music)
+							   	(set play_music_c40_11_alt false)
+							))
 	(set play_music_c40_11 false)
 	(sound_looping_stop "levels\c40\music\c40_11")
+	(if debug (print "music 11 out..."))
 )
 
 (script dormant music_c40

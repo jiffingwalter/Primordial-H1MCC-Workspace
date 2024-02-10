@@ -8,7 +8,7 @@
 	(print "d40 = Maw")
 )
 (script static void c10
-	(print "starting gk88 c20...")
+	(print "starting gk88 c10...")
 	(map_name gk88\levels\singleplayer\c10\gkc10)
 )
 (script static void c20
@@ -16,15 +16,15 @@
 	(map_name gk88\levels\singleplayer\c20\gkc20)
 )
 (script static void c40
-	(print "starting gk88 c20...")
+	(print "starting gk88 c40...")
 	(map_name gk88\levels\singleplayer\c40\gkc40)
 )
 (script static void d20
-	(print "starting gk88 c20...")
+	(print "starting gk88 d20...")
 	(map_name gk88\levels\singleplayer\d20\gkd20)
 )
 (script static void d40
-	(print "starting gk88 c20...")
+	(print "starting gk88 d40...")
 	(map_name gk88\levels\singleplayer\d40\gkd40)
 )
 
