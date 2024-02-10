@@ -1,0 +1,5 @@
+# Ignore all files
+*
+
+# Except files with .hsc extension
+!*.hsc
