@@ -1895,7 +1895,7 @@
 ; Encounter 4_2, triggered by Encounter 4_1
 (script dormant enc4_2
 	; Sleep until the trigger
-	(sleep_until (volume_test_objects enc4_2 (players)))
+	(sleep_until (volume_test_objects enc4_2 (players)) testing_fast)
 	
 	; Wake next encounters
 	(wake enc4_3)
@@ -1910,10 +1910,10 @@
 	(ai_magically_see_players enc4_2)
 	
 	; Wait for the next trigger
-	(sleep_until (volume_test_objects enc4_2b (players)))
+	(sleep_until (volume_test_objects enc4_2b (players)) testing_fast)
 
 	; Let the body hit the floorrrrr
-	(object_create_anew 2_5)
+	(object_create_anew 2_6jumpscare)
 	(sound_looping_start gk88\sounds\music\cinematic\d20_spook none 1)
 
 	; Trigger the spawn wave
@@ -1981,7 +1981,7 @@
 	(object_create_containing "2_")		; Places bipeds placed on BSP 2
 	
 	; Remove spooky body until player approaches later
-	(object_destroy 2_5)
+	(object_destroy 2_6jumpscare)
 
 	; De-immunize players
 	(object_can_take_damage (players))
@@ -2862,6 +2862,7 @@
 (script static void s4
 	(switch_bsp 2)
 	(volume_teleport_players_not_inside null_volume tp_sec4)
+	(wake section4)
 )
 
 (script static void s5
