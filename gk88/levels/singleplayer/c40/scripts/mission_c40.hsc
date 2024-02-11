@@ -1613,14 +1613,15 @@
 	(ai_erase e6_a)		
 )
 
-;Encounter 23_b; Here Flood, Flood, Flood...
+;Encounter 23_b; Here Flood, Flood, Flood... ;prim
 (script dormant e23_b
-	(sleep_until (<= (ai_living_count e23_a) 2))
+	; Wait until player is mopping up covenant or is pushing toward the door
+	(sleep_until (or 
+			(<= (ai_living_count e23_a) 2)
+			(volume_test_objects e23_b_trigger (players))
+	))
 	(ai_place e23_b)
 	(if debug (print "Flood Attacking"))
-	(sleep 90)
-	(sleep_until (= (ai_living_count e23_b) 0))
-	;(set play_music_c40_051 false)
 )
 
 (script dormant force_save_2
