@@ -2159,7 +2159,7 @@
 	)
 
 ;========== Cheats ===========
-(script static void int_a
+(script static void skipto_int_a
 	(print "skipping to int_a...")
 	(fade_out 0 0 0 0)
 	(sleep 1)
@@ -2169,7 +2169,7 @@
 	(ai_allegiance_remove flood player)
 	
 	(player_enable_input false)
-	(print "switching bsp...")
+	(print "switching to bsp 1...")
 	(sleep 30)
 	(switch_bsp 1)
 	(print "teleporting players...")
@@ -2185,9 +2185,39 @@
 	(wake mission_int_b)
 
 	(sleep_until (volume_test_objects swamp_b_trigger (players)))
-	(wake mission_swamp_b))
+	(wake mission_swamp_b)
+)
 
-(script static void int_b
+(script static void skipto_control
+	(print "skipping to control room...")
+	(fade_out 0 0 0 0)
+	(sleep 1)
+	
+	(deactivate_team_nav_point_object player crashed_dropship)
+	(ai_allegiance_remove player flood)
+	(ai_allegiance_remove flood player)
+	
+	(player_enable_input false)
+	(print "switching to bsp 2...")
+	(sleep 30)
+	(switch_bsp 2)
+	(print "teleporting players...")
+	(volume_teleport_players_not_inside null player0_playon_c10)
+	(fade_in 0 0 0 (* 30 5))
+	(print "initializing area scripts...")
+	(sleep 15)
+	(wake mission_control)
+	(sleep 15)
+	(player_enable_input true)
+	
+	(sleep_until (volume_test_objects int_b_trigger (players)))
+	(wake mission_int_b)
+
+	(sleep_until (volume_test_objects swamp_b_trigger (players)))
+	(wake mission_swamp_b)
+)
+
+(script static void skipto_int_b
 	(print "skipping to int_b...")
 	(fade_out 0 0 0 0)
 	(sleep 1)
@@ -2198,7 +2228,7 @@
 	(ai_allegiance_remove flood player)
 
 	(player_enable_input false)
-	(print "switching bsp...")
+	(print "switching to bsp 3...")
 	(sleep 30)
 	(switch_bsp 3)
 	(print "teleporting players...")
@@ -2214,7 +2244,7 @@
 	(wake mission_swamp_b)
 )
 
-(script static void swamp_b
+(script static void skipto_swamp_b
 	(print "skipping to swamp_b...")
 	(fade_out 0 0 0 0)
 	(sleep 1)
@@ -2225,7 +2255,7 @@
 	(ai_allegiance_remove flood player)
 	
 	(player_enable_input false)
-	(print "switching bsp...")
+	(print "switching to bsp 5...")
 	(sleep 30)
 	(switch_bsp 5)
 	(print "teleporting players...")
@@ -2235,7 +2265,8 @@
 	(sleep 15)
 	(wake mission_swamp_b)
 	(sleep 15)
-	(player_enable_input true))
+	(player_enable_input true)
+	)
 
 ;========== Main Script ==========
 
