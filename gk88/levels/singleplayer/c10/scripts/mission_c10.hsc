@@ -2101,7 +2101,7 @@
 	(sleep_until (volume_test_objects swamp_b_trigger_c (players)))
 	(wake enc_swamp_b_flood_tower)
 
-	; prim edit swampb waves
+; prim edit swampb waves
 	; once player reaches tower, flood waves get progressively denser till sentinels show up and aid player
 	(sleep_until (volume_test_objects monitor_trigger (players)))
 	
@@ -2145,7 +2145,7 @@
 	(cinematic_skip_stop)
 	(game_won)
 	)
-	
+
 ;========== Kill All Continuous Scripts ==========
 
 (script dormant kill_all_continuous
@@ -2158,8 +2158,9 @@
 ;	(sleep -1 ini_interior_d_cleanup)
 	)
 
-;*
+;========== Cheats ===========
 (script static void int_a
+	(print "skipping to int_a...")
 	(fade_out 0 0 0 0)
 	(sleep 1)
 	
@@ -2187,6 +2188,7 @@
 	(wake mission_swamp_b))
 
 (script static void int_b
+	(print "skipping to int_b...")
 	(fade_out 0 0 0 0)
 	(sleep 1)
 	
@@ -2209,9 +2211,11 @@
 	(player_enable_input true)
 
 	(sleep_until (volume_test_objects swamp_b_trigger (players)))
-	(wake mission_swamp_b))
+	(wake mission_swamp_b)
+)
 
 (script static void swamp_b
+	(print "skipping to swamp_b...")
 	(fade_out 0 0 0 0)
 	(sleep 1)
 
@@ -2232,7 +2236,6 @@
 	(wake mission_swamp_b)
 	(sleep 15)
 	(player_enable_input true))
-*;
 
 ;========== Main Script ==========
 
