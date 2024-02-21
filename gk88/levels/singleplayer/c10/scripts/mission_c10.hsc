@@ -1890,8 +1890,48 @@
 
 	(sleep_until (< (ai_living_count int_b_infection) 20) 1)
 	(sleep_until (< (ai_living_count int_b_infection) 10) 1 (* 15 30))
+
+; begin primordial edit!
+	; let player breath/finish off infection waves, then place spooky topside flood
+	(sleep 200)
+	(if debug (print "placing flood up top..."))
+	(ai_place int_b_flood/control_stare)
+	
+	; wait until player notices combat form to trigger oh shit music for 1000 yard stare
+	(sleep_until (objects_can_see_object (players) (list_get (ai_actors int_b_flood/control_stare) 0) 10))
+	(if debug (print "flood noticed..."))
+	(sleep 100)
+	
+	(if debug (print "c10_03_alt started"))
 	(set play_music_c10_03_alt true)
 	(sleep 150)
+	
+	; tell staring flood to move away, open top doors and introduce combat forms
+	(ai_command_list_advance int_b_flood/control_stare)
+	(if debug (print "flood moving"))
+	(sleep 100)
+	(device_set_power bsp2_device_24 1.0)
+	(device_set_power bsp2_device_25 1.0)
+	
+	; place top door combat forms and give them sight
+	(ai_magically_see_players int_b_flood/control_g)
+	(ai_magically_see_players int_b_flood/control_h)
+	(ai_place int_b_flood/control_g)
+	(ai_place int_b_flood/control_h)
+	(if debug (print "placing flood control g and h"))
+	
+	; wait until top flood are dead...
+	(sleep_until
+		(and
+			(< (ai_living_count int_b_flood/control_g) 1)
+			(< (ai_living_count int_b_flood/control_h) 1)
+		)
+	)
+	(if debug (print "control_g and h are dead, trigger door bash"))
+
+	; ...then continue as usual with exit door bashingness
+; end prim edit
+
 	(ai_place int_b_infection/control_a)
 	(ai_place int_b_infection/control_a)
 	(ai_place int_b_flood/control_a)
@@ -2060,8 +2100,24 @@
 	
 	(sleep_until (volume_test_objects swamp_b_trigger_c (players)))
 	(wake enc_swamp_b_flood_tower)
-	
+
+	; prim edit swampb waves
+	; once player reaches tower, flood waves get progressively denser till sentinels show up and aid player
 	(sleep_until (volume_test_objects monitor_trigger (players)))
+	
+	(ai_place swamp_b_flood/last_wave)
+	(ai_magically_see_players swamp_b_flood)
+	(sleep_until (< (ai_living_count swamp_b_flood/last_wave) 1))
+	
+	(ai_place swamp_b_flood/last_wave)
+	(ai_magically_see_players swamp_b_flood)
+	(sleep_until (< (ai_living_count swamp_b_flood/last_wave) 2))
+	
+	(ai_place swamp_b_flood/last_wave)
+	(ai_magically_see_players swamp_b_flood)
+	(sleep_until (< (ai_living_count swamp_b_flood/last_wave) 3))
+; prim edit over
+	
 	(wake enc_swamp_b_sentinels)
 ;	(set play_music_c10_07 false)
 	(sleep (* 30 2))
