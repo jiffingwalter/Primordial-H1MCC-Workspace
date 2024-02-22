@@ -2202,7 +2202,7 @@
 	(sleep 30)
 	(switch_bsp 2)
 	(print "teleporting players...")
-	(volume_teleport_players_not_inside null player0_playon_c10)
+	(volume_teleport_players_not_inside null control_teleport_flag)
 	(fade_in 0 0 0 (* 30 5))
 	(print "initializing area scripts...")
 	(sleep 15)
