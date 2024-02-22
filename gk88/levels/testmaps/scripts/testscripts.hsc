@@ -7,6 +7,10 @@
 	(print "d20 = Keyes")
 	(print "d40 = Maw")
 )
+(script static void swfce
+	(print "starting swfce test map...")
+	(map_name swfce\levels\test)
+)
 (script static void c10
 	(print "starting gk88 c10...")
 	(map_name gk88\levels\singleplayer\c10\gkc10)
