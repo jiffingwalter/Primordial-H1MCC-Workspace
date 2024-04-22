@@ -64,6 +64,7 @@
 	(print "toggling collison testing")
 	(if debug_objects (set debug_objects 0) (set debug_objects 1))
 	(if debug_objects_collision_models (set debug_objects_collision_models 0) (set debug_objects_collision_models 1))
+	(if collision_debug (set collision_debug 0) (set collision_debug 1))
 )
 
 ; test stuff
