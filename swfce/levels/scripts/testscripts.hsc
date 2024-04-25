@@ -60,16 +60,20 @@
 	(sleep 200)
 	(if cheat_deathless_player (set cheat_deathless_player 0) (set cheat_deathless_player 1))
 )
-(script static void test_collision
-	(print "toggling collison testing")
+(script static void db_collision
+	(print "toggling collison debug")
 	(if debug_objects (set debug_objects 0) (set debug_objects 1))
 	(if debug_objects_collision_models (set debug_objects_collision_models 0) (set debug_objects_collision_models 1))
 	(if collision_debug (set collision_debug 0) (set collision_debug 1))
 )
 
-; test stuff
-(script static void indextest
-	(scenery_animation_start index swfce\scenery\index_holder\index_holder C20GrabIndex)
+(script static void test_dropship
+	(print "spawning test dropship")
+	(object_destroy osprey)
+	(object_create osprey)
+	(vehicle_hover osprey 1)
+	(ai_place test_dropship/passengers)
+	(vehicle_load_magic osprey "passenger" (ai_actors test_dropship/passengers))
 )
 
 (script continuous cheat_allweapons_control

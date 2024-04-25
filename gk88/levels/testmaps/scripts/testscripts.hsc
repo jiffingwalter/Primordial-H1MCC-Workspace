@@ -49,7 +49,7 @@
 	(sleep 200)
 	(if cheat_deathless_player (set cheat_deathless_player 0) (set cheat_deathless_player 1))
 )
-(script static void test_collision
+(script static void db_collision
 	(print "toggling collison testing")
 	(if debug_objects (set debug_objects 0) (set debug_objects 1))
 	(if debug_objects_collision_models (set debug_objects_collision_models 0) (set debug_objects_collision_models 1))
