@@ -417,7 +417,7 @@
 		 ((volume_test_objects lz_landing (players)) (ai_conversation lz_cship_danger))
 		 (true (ai_conversation lz_cship_safe))
 		 )
-	(set play_music_a30_01_alt true)
+	;(set play_music_a30_01_alt true)
 
 	(vehicle_hover lz_cship 0)
 	(recording_play_and_hover lz_cship lz_cship_landing_drop)
@@ -444,7 +444,7 @@
 	(sleep 30)
 	(unit_close lz_cship)
 	(object_set_collideable lz_cship 0)
-	(set play_music_a30_01 false)
+	;(set play_music_a30_01 false)
 
 	(sleep_until (= (ai_living_count lz_search) 0) 1)
 	(set mark_lz_dropship true)
