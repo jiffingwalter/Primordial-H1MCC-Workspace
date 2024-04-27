@@ -372,94 +372,94 @@
 (global boolean play_music_a30_07_alt false)
 
 (script static void music_a30_01
-	(sound_looping_start "levels\a30\music\a30_01" none 1)
+	(sound_looping_start "swfce\levels\a30\music\a30_01" none 1)
 
 	(sleep_until (or play_music_a30_01_alt
 				  (not play_music_a30_01)) 1 global_delay_music)
-	(if play_music_a30_01_alt (begin (sound_looping_set_alternate "levels\a30\music\a30_01" 1)
+	(if play_music_a30_01_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_01" 1)
 							   (sleep_until (not play_music_a30_01) 1 global_delay_music)
 							   (set play_music_a30_01_alt false)
 							   ))
 	(set play_music_a30_01 false)
-	(sound_looping_stop "levels\a30\music\a30_01")
+	(sound_looping_stop "swfce\levels\a30\music\a30_01")
 	)
 
 (script static void music_a30_02
-	(sound_looping_start "levels\a30\music\a30_02" none 1)
+	(sound_looping_start "swfce\levels\a30\music\a30_02" none 1)
 
 	(sleep_until (or play_music_a30_02_alt
 				  (not play_music_a30_02)) 1 global_delay_music)
-	(if play_music_a30_02_alt (begin (sound_looping_set_alternate "levels\a30\music\a30_02" 1)
+	(if play_music_a30_02_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_02" 1)
 							   (sleep_until (not play_music_a30_02) 1 global_delay_music)
 							   (set play_music_a30_02_alt false)
 							   ))
 	(set play_music_a30_02 false)
-	(sound_looping_stop "levels\a30\music\a30_02")
+	(sound_looping_stop "swfce\levels\a30\music\a30_02")
 	)
 
 (script static void music_a30_03
-	(sound_looping_start "levels\a30\music\a30_03" none 1)
+	(sound_looping_start "swfce\levels\a30\music\a30_03" none 1)
 
 	(sleep_until (or play_music_a30_03_alt
 				  (not play_music_a30_03)) 1 global_delay_music)
-	(if play_music_a30_03_alt (begin (sound_looping_set_alternate "levels\a30\music\a30_03" 1)
+	(if play_music_a30_03_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_03" 1)
 							   (sleep_until (not play_music_a30_03) 1 global_delay_music)
 							   (set play_music_a30_03_alt false)
 							   ))
 	(set play_music_a30_03 false)
-	(sound_looping_stop "levels\a30\music\a30_03")
+	(sound_looping_stop "swfce\levels\a30\music\a30_03")
 	)
 
 (script static void music_a30_04
-	(sound_looping_start "levels\a30\music\a30_04" none 1)
+	(sound_looping_start "swfce\levels\a30\music\a30_04" none 1)
 
 	(sleep_until (or play_music_a30_04_alt
 				  (not play_music_a30_04)) 1 global_delay_music)
-	(if play_music_a30_04_alt (begin (sound_looping_set_alternate "levels\a30\music\a30_04" 1)
+	(if play_music_a30_04_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_04" 1)
 							   (sleep_until (not play_music_a30_04) 1 global_delay_music)
 							   (set play_music_a30_04_alt false)
 							   ))
 	(set play_music_a30_04 false)
-	(sound_looping_stop "levels\a30\music\a30_04")
+	(sound_looping_stop "swfce\levels\a30\music\a30_04")
 	)
 
 (script static void music_a30_05
-	(sound_looping_start "levels\a30\music\a30_05" none 1)
+	(sound_looping_start "swfce\levels\a30\music\a30_05" none 1)
 
 	(sleep_until (or play_music_a30_05_alt
 				  (not play_music_a30_05)) 1 global_delay_music)
-	(if play_music_a30_05_alt (begin (sound_looping_set_alternate "levels\a30\music\a30_05" 1)
+	(if play_music_a30_05_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_05" 1)
 							   (sleep_until (not play_music_a30_05) 1 global_delay_music)
 							   (set play_music_a30_05_alt false)
 							   ))
 	(set play_music_a30_05 false)
-	(sound_looping_stop "levels\a30\music\a30_05")
+	(sound_looping_stop "swfce\levels\a30\music\a30_05")
 	)
 
 (script static void music_a30_06
-	(sound_looping_start "levels\a30\music\a30_06" none 1)
+	(sound_looping_start "swfce\levels\a30\music\a30_06" none 1)
 
 	(sleep_until (or play_music_a30_06_alt
 				  (not play_music_a30_06)) 1 global_delay_music)
-	(if play_music_a30_06_alt (begin (sound_looping_set_alternate "levels\a30\music\a30_06" 1)
+	(if play_music_a30_06_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_06" 1)
 							   (sleep_until (not play_music_a30_06) 1 global_delay_music)
 							   (set play_music_a30_06_alt false)
 							   ))
 	(set play_music_a30_06 false)
-	(sound_looping_stop "levels\a30\music\a30_06")
+	(sound_looping_stop "swfce\levels\a30\music\a30_06")
 	)
 
 (script static void music_a30_07
-	(sound_looping_start "levels\a30\music\a30_07" none 1)
+	(sound_looping_start "swfce\levels\a30\music\a30_07" none 1)
 
 	(sleep_until (or play_music_a30_07_alt
 				  (not play_music_a30_07)) 1 global_delay_music)
-	(if play_music_a30_07_alt (begin (sound_looping_set_alternate "levels\a30\music\a30_07" 1)
+	(if play_music_a30_07_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_07" 1)
 							   (sleep_until (not play_music_a30_07) 1 global_delay_music)
 							   (set play_music_a30_07_alt false)
 							   ))
 	(set play_music_a30_07 false)
-	(sound_looping_stop "levels\a30\music\a30_07")
+	(sound_looping_stop "swfce\levels\a30\music\a30_07")
 	)
 
 (script dormant music_a30
