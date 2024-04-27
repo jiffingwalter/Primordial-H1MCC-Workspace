@@ -451,6 +451,7 @@
 	)
 
 (script dormant mission_lz
+	(print "begin sequence mission_lz...")
 	(sleep_until (or (volume_test_objects plant_trigger (players))
 				  (volume_test_objects lz_bridge (players))) 1 delay_dawdle)
 	(sleep_until (or (< 4 (ai_conversation_status intro_1))
@@ -979,7 +980,7 @@
 
 	(ai_kill first_wave)
 	(wake save_first_wave_1)
-	(set play_music_a30_02 true)
+	;(set play_music_a30_02 true)
 	(ai_migrate first_marine/base_toon first_marine/base_search)
 	(ai_migrate first_marine/left_toon first_marine/left_welcome)
 	(ai_migrate first_marine/right_toon first_marine/right_search)
@@ -996,7 +997,7 @@
 	(ai_migrate first_marine/left_toon first_marine/left_search)
 
 	(sleep_until global_first_wave_2 5)
-	(set play_music_a30_02 false)
+	;(set play_music_a30_02 false)
 
 	(sleep_until (> 3 (ai_living_count first_wave)) 15)
 	(wake mission_first_wave_3)
@@ -1025,7 +1026,7 @@
 	(wake mission_first_wave_5)
 
 	(sleep_until global_first_wave_5 5)
-	(set play_music_a30_03 true)
+	;(set play_music_a30_03 true)
 	(wake mission_first_wave_6)
 	
 	(sleep_until global_first_wave_6 5)
@@ -1034,14 +1035,15 @@
 	(ai_maneuver_enable first_wave 0)
 	(ai_follow_target_players first_wave)
 	(ai_magically_see_players first_wave)
-	(set play_music_a30_03_alt true)
+	;(set play_music_a30_03_alt true)
 
 	(sleep_until (= 0 (ai_living_count first_wave)) 15 delay_fail)
 	(if (< 0 (ai_living_count first_wave)) (sleep_until (game_all_quiet) 1 delay_dawdle))
 ;ADD Combat state check
 	(sleep delay_calm)
-	(set play_music_a30_03_alt false)
-	(set play_music_a30_03 false)
+	;(set play_music_a30_03_alt false)
+	;(set play_music_a30_03 false)
+	(set play_music_a30_01 false)
 	(set global_first_end true)
 	(set test_first_kill true)
 	(wake save_first_wave_6)
