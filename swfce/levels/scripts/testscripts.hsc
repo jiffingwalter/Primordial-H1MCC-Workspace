@@ -40,7 +40,7 @@
 )
 (script static void deathisland
 	(print "starting swft death island in multiplayer...")
-	(map_name swfce\levels\mp\swft_deathisland)
+	(multiplayer_map_name swfce\levels\mp\swft_deathisland)
 )
 
 ; debug shortcuts
