@@ -213,6 +213,7 @@
 	)
 
 (script static void mission_extraction_river_skip
+	(print "script: mission_extraction_river...")
 	(ai off)
 	(object_beautify foehammer_river on)
 	(camera_control on)
@@ -253,6 +254,7 @@
 	)
 
 (script dormant mission_extraction_river
+	(print "script: mission_extraction_river...")
 	(object_create foehammer_river)
 	(unit_set_enterable_by_player foehammer_river 0)
 	(object_teleport foehammer_river foehammer_river_flag)
@@ -371,6 +373,7 @@
 ;========== Landing Zone Scripts ==========
 
 (script dormant mission_lz_banshee
+	(print "script: mission_lz_banshee...")
 	(object_create pass_banshee_1)
 	(unit_set_enterable_by_player pass_banshee_1 0)
 	(ai_place lz_banshee/pilot_1)
@@ -399,6 +402,7 @@
 	)
 
 (script dormant mission_lz_dropship
+	(print "script: mission_lz_dropship...")
 	(object_create lz_cship)
 	(unit_close lz_cship)
 	(ai_place lz_search/cship_toon)
@@ -451,7 +455,8 @@
 	)
 
 (script dormant mission_lz
-	(print "begin sequence mission_lz...")
+	(print "script: mission_lz...")
+	(set play_music_a30_01 true)
 	(sleep_until (or (volume_test_objects plant_trigger (players))
 				  (volume_test_objects lz_bridge (players))) 1 delay_dawdle)
 	(sleep_until (or (< 4 (ai_conversation_status intro_1))
@@ -461,7 +466,6 @@
 	(sleep_until (or (< 4 (ai_conversation_status lz_prompt_1))
 				  (volume_test_objects lz_bridge (players))) 1)
 	(set mark_evade true)
-	(set play_music_a30_01 true)
 
 	(sleep_until (or (volume_test_objects plant_trigger (players))
 				  (volume_test_objects lz_bridge (players))) 1)

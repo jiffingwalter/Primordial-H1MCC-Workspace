@@ -371,7 +371,8 @@
 (global boolean play_music_a30_07 false)
 (global boolean play_music_a30_07_alt false)
 
-(script static void music_a30_01
+(script dormant music_a30_01
+	(sleep_until play_music_a30_01 1)
 	(print "music: a30_01 in...")
 	(sound_looping_start "swfce\levels\a30\music\a30_01" none 1)
 
@@ -387,7 +388,8 @@
 	(sound_looping_stop "swfce\levels\a30\music\a30_01")
 	)
 
-(script static void music_a30_02
+(script dormant music_a30_02
+	(sleep_until play_music_a30_02 1)
 	(print "music: a30_02 in...")
 	(sound_looping_start "swfce\levels\a30\music\a30_02" none 1)
 
@@ -403,7 +405,8 @@
 	(sound_looping_stop "swfce\levels\a30\music\a30_02")
 	)
 
-(script static void music_a30_03
+(script dormant music_a30_03
+	(sleep_until play_music_a30_03 1)
 	(print "music: a30_03 in...")
 	(sound_looping_start "swfce\levels\a30\music\a30_03" none 1)
 
@@ -419,7 +422,8 @@
 	(sound_looping_stop "swfce\levels\a30\music\a30_03")
 	)
 
-(script static void music_a30_04
+(script dormant music_a30_04
+	(sleep_until play_music_a30_04 1)
 	(print "music: a30_04 in...")
 	(sound_looping_start "swfce\levels\a30\music\a30_04" none 1)
 
@@ -435,7 +439,8 @@
 	(sound_looping_stop "swfce\levels\a30\music\a30_04")
 	)
 
-(script static void music_a30_05
+(script dormant music_a30_05
+	(sleep_until play_music_a30_05 1)
 	(print "music: a30_05 in...")
 	(sound_looping_start "swfce\levels\a30\music\a30_05" none 1)
 
@@ -451,7 +456,8 @@
 	(sound_looping_stop "swfce\levels\a30\music\a30_05")
 	)
 
-(script static void music_a30_06
+(script dormant music_a30_06
+	(sleep_until play_music_a30_06 1)
 	(print "music: a30_06 in...")
 	(sound_looping_start "swfce\levels\a30\music\a30_06" none 1)
 
@@ -467,7 +473,8 @@
 	(sound_looping_stop "swfce\levels\a30\music\a30_06")
 	)
 
-(script static void music_a30_07
+(script dormant music_a30_07
+	(sleep_until play_music_a30_07 1)
 	(print "music: a30_07 in...")
 	(sound_looping_start "swfce\levels\a30\music\a30_07" none 1)
 
@@ -484,27 +491,31 @@
 	)
 
 (script dormant music_a30
-	(sleep_until play_music_a30_01 1)
-	(music_a30_01)
-	
-	(sleep_until play_music_a30_02 1)
-	(music_a30_02)
-	
-	(sleep_until play_music_a30_03 1)
-	(music_a30_03)
-	
-	(sleep_until play_music_a30_04 1)
-	(music_a30_04)
-	
-	(sleep_until play_music_a30_05 1)
-	(music_a30_05)
-	
-	(sleep_until play_music_a30_06 1)
-	(music_a30_06)
-	
-	(sleep_until play_music_a30_07 1)
-	(music_a30_07)
-	)
+	(wake music_a30_01)
+	(wake music_a30_02)
+	(wake music_a30_03)
+	(wake music_a30_04)
+	(wake music_a30_05)
+	(wake music_a30_06)
+	(wake music_a30_07)
+)
+
+(script dormant kill_music
+	(set play_music_a30_01 false)
+	(set play_music_a30_01_alt false)
+	(set play_music_a30_02 false)
+	(set play_music_a30_02_alt false)
+	(set play_music_a30_03 false)
+	(set play_music_a30_03_alt false)
+	(set play_music_a30_04 false)
+	(set play_music_a30_04_alt false)
+	(set play_music_a30_05 false)
+	(set play_music_a30_05_alt false)
+	(set play_music_a30_06 false)
+	(set play_music_a30_06_alt false)
+	(set play_music_a30_07 false)
+	(set play_music_a30_07_alt false)
+)
 
 (script dormant objectives_a30
 	(sleep_until mark_evade 1)
