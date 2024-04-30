@@ -2381,8 +2381,8 @@
 	(camera_set intro_2 210)
 	(fade_in 0 0 0 30)
 	
-	(sound_looping_start sound\sinomatixx\a30_insertion_foley none 1)
-	(sound_looping_start sound\sinomatixx\a30_insertion_music none 1)
+	(sound_looping_start sound\sinomatixx\a30_insertion_foley none 0.25)
+	;(sound_looping_start sound\sinomatixx\a30_insertion_music none 1)
 	
 	(sleep 90) 
 	(cinematic_set_title arrival)
