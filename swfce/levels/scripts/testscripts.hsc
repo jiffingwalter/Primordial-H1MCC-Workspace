@@ -1,9 +1,11 @@
 ; mission quick starts
-(script static void list
+(script static void maplist
 	(print "current level cheat sheet:")
 	(print "a30 = Halo")
 	(print "b30 = Silent Cartographer")
+	(print "c10 = 343 Guilty Spark")
 	(print "c20 = Library")
+	(print "c40 = Two Betrayals")
 )
 (script static void a30
 	(print "starting swft a30...")
@@ -13,9 +15,17 @@
 	(print "starting swft b30...")
 	(map_name swfce\levels\b30\swftb30)
 )
+(script static void c10
+	(print "starting swft c10...")
+	(map_name swfce\levels\c10\swftc10)
+)
 (script static void c20
 	(print "starting swft c20...")
 	(map_name swfce\levels\c20\swftc20)
+)
+(script static void c40
+	(print "starting swft c40...")
+	(map_name swfce\levels\c40\swftc40)
 )
 ;mp
 (script static void bloodgulch

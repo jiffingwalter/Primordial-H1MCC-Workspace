@@ -106,6 +106,7 @@
 
 (script static void cutscene_extraction_easy ;final cutscene if on easy ----------------------------------------------------------------------------------
 	(print "cutscene extraction EASY begin")
+	(kill_all_music)
 
 	(object_destroy index) ; make sure these are dead (for sapien testing)
 	(object_destroy index_fx)
@@ -298,6 +299,7 @@
 
 (script static void cutscene_extraction_normal ;final cutscene if on normal;  ----------------------------------------------------------------------------------
 	(print "cutscene extraction NORMAL begin")
+	(kill_all_music)
 
 	(object_destroy index) ; make sure these are dead (for sapien testing)
 	(object_destroy index_fx)
@@ -494,6 +496,7 @@
 
 (script static void cutscene_extraction_HARD ;final cutscene if on heroic or legendary  ----------------------------------------------------------------------------------
 	(print "cutscene extraction HARD/IMPOSSIBLE begin")
+	(kill_all_music)
 
 	(object_destroy index) ; make sure these are dead (for sapien testing)
 	(object_destroy index_fx)
