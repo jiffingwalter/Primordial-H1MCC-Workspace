@@ -2478,27 +2478,26 @@
 	
 	(objects_detach intro_pod pilot_intro)
 	
-	(object_destroy intro_pod)
+	;(object_destroy intro_pod)
 	(object_destroy pilot_intro)
 	
-	(object_create_anew intro_pod_2)
 	(object_create_anew chief)
 	(object_create_anew pilot_intro)
 	
-	(objects_attach intro_pod_2 "driver" pilot_intro "") 	
+	(objects_attach intro_pod "driver" pilot_intro "") 	
 	(custom_animation pilot_intro cinematics\animations\pilot\x30\x30 heads_up false)
 	
 	(game_skip_ticks 5)
 	
-	(unit_enter_vehicle chief intro_pod_2 "stand")
+	(unit_enter_vehicle chief intro_pod "stand")
 	
-	(object_teleport intro_pod_2 intro_pod_2_base) 
+	(object_teleport intro_pod intro_pod_2_base) 
 	
 	(cinematic_set_near_clip_distance .01)
 	
 	(camera_set_first_person chief)
 	(recording_play chief chief_intro_cam)
-	(recording_play intro_pod_2 intro_pod_fly_2)
+	(recording_play intro_pod intro_pod_fly_2)
 	
 	(player_effect_set_max_rotation 0 .5 .5)
 	(player_effect_set_max_vibrate .5 .5)
@@ -2522,7 +2521,7 @@
 	(object_destroy intro_tree)
 	(object_destroy chief)
 	(object_destroy pilot_intro)
-	(object_destroy intro_pod_2)
+	(object_destroy intro_pod)
 
 	(sleep 90)
 	
@@ -2533,7 +2532,7 @@
 ; Jaime, do not delete this script! I love it! I need it!
 (script static void intro_build
 
-	(object_teleport intro_pod_2 intro_pod_2_base)
+	(object_teleport intro_pod intro_pod_2_base)
 ;	(recording_play intro_pod_2 intro_pod_fly_2)
 )
 
