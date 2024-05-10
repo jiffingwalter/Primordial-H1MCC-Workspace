@@ -5,10 +5,8 @@
 
 (script continuous gotohell_beatch
 	(sleep_until (volume_test_objects gotohell (players)) delay_dawdle)
-	(if (volume_test_objects gotohell (players)) (player_enable_input 0))
-
-	(sleep_until (not (volume_test_objects gotohell (players))) delay_dawdle)
-	(if (not (volume_test_objects gotohell (players))) (player_enable_input 1))
+	(if (volume_test_objects gotohell (list_get (players) 0)) (damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0)))
+	(if (volume_test_objects gotohell (list_get (players) 1)) (damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 1)))
 	)
 
 (script continuous tutorial_sniper
