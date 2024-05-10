@@ -461,6 +461,7 @@
 (script dormant mission_lz
 	(print "script: mission_lz")
 	(set play_music_a30_01 true)
+	(ai_place bobombs/landing)
 	(sleep_until (or (volume_test_objects plant_trigger (players))
 				  (volume_test_objects lz_bridge (players))) 1 delay_dawdle)
 	(sleep_until (or (< 4 (ai_conversation_status intro_1))
@@ -981,11 +982,18 @@
 	(set play_music_a30_04 false)
 	)
 
+(script dormant mission_field1
+	(print "script: mission_field1")
+	(sleep_until (volume_test_objects field1_trigger (players)) 5)
+	(ai_place bobombs/field1)
+)
+
 (script dormant mission_first
 	(print "script: mission_first")
 	(sleep_until (volume_test_objects first_arrival (players)) 5)
 	(if (game_safe_to_speak) (ai_conversation first_arrival))
 	(wake save_first_arrival)
+	(wake mission_field1)
 	(ai_place first_marine)
 	(objects_predict (ai_actors first_marine))
 	(wake mission_first_wave_1)
@@ -2569,6 +2577,9 @@
 	(fade_out 0 0 0 0)
 	(print "mission script is running")
 	(ai_allegiance player human)
+	(ai_allegiance player unused6)
+	(ai_allegiance human unused6)
+	(ai_allegiance covenant unused6)
 	(if (cinematic_skip_start) (cutscene_intro))
 	(cinematic_skip_stop)
 	(wake setup_dead)
@@ -2602,6 +2613,8 @@
 	(wake mission_cave)
 	
 	(sleep_until (volume_test_objects cave_exit (players)) 1)
+	(ai_place bobombs/field2)
+	(ai_place bobombs/field2_carriers)
 	(wake mission_cliff)
 	(wake mission_rubble)
 	(wake mission_river)
