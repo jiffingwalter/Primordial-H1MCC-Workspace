@@ -2,8 +2,10 @@
 ; ============================
 
 (global boolean global_extraction false)
+(global boolean debug false)
 
 (script continuous gotohell_beatch
+	(if debug (print "a player has entered the kill zone..."))
 	(sleep_until (volume_test_objects gotohell (players)) delay_dawdle)
 	(if (volume_test_objects gotohell (list_get (players) 0)) (damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0)))
 	(if (volume_test_objects gotohell (list_get (players) 1)) (damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 1)))
@@ -27,6 +29,7 @@
 	)
 
 (script static void mission_extraction_cliff_skip
+	(print "script: mission_extraction_cliff_skip")
 	(ai off)
 	(object_beautify foehammer_cliff on)
 	(camera_control on)
@@ -67,6 +70,7 @@
 	)
 
 (script dormant mission_extraction_cliff
+	(print "script: mission_extraction_cliff")
 	(object_create foehammer_cliff)
 	(unit_set_enterable_by_player foehammer_cliff 0)
 	(object_teleport foehammer_cliff foehammer_cliff_flag)
@@ -119,6 +123,7 @@
 	)
 
 (script static void mission_extraction_rubble_skip
+	(print "script: mission_extraction_rubble_skip")
 	(ai off)
 	(object_beautify foehammer_rubble on)
 	(camera_control on)
@@ -159,6 +164,7 @@
 	)
 
 (script dormant mission_extraction_rubble
+	(print "script: mission_extraction_rubble")
 	(object_create foehammer_rubble)
 	(unit_set_enterable_by_player foehammer_rubble 0)
 	(object_teleport foehammer_rubble foehammer_rubble_flag)
@@ -211,7 +217,7 @@
 	)
 
 (script static void mission_extraction_river_skip
-	(print "script: mission_extraction_river...")
+	(print "script: mission_extraction_river_skip")
 	(ai off)
 	(object_beautify foehammer_river on)
 	(camera_control on)
@@ -252,7 +258,7 @@
 	)
 
 (script dormant mission_extraction_river
-	(print "script: mission_extraction_river...")
+	(print "script: mission_extraction_river")
 	(object_create foehammer_river)
 	(unit_set_enterable_by_player foehammer_river 0)
 	(object_teleport foehammer_river foehammer_river_flag)
@@ -371,7 +377,7 @@
 ;========== Landing Zone Scripts ==========
 
 (script dormant mission_lz_banshee
-	(print "script: mission_lz_banshee...")
+	(print "script: mission_lz_banshee")
 	(object_create pass_banshee_1)
 	(unit_set_enterable_by_player pass_banshee_1 0)
 	(ai_place lz_banshee/pilot_1)
@@ -400,7 +406,7 @@
 	)
 
 (script dormant mission_lz_dropship
-	(print "script: mission_lz_dropship...")
+	(print "script: mission_lz_dropship")
 	(object_create lz_cship)
 	(unit_close lz_cship)
 	(ai_place lz_search/cship_toon)
@@ -453,7 +459,7 @@
 	)
 
 (script dormant mission_lz
-	(print "script: mission_lz...")
+	(print "script: mission_lz")
 	(set play_music_a30_01 true)
 	(sleep_until (or (volume_test_objects plant_trigger (players))
 				  (volume_test_objects lz_bridge (players))) 1 delay_dawdle)
@@ -490,6 +496,7 @@
 ;========== First Scripts ==========
 
 (script dormant obj_first_abandon
+	(print "script: obj_first_abandon")
 	(set mark_protect true)
 	(sleep_until (or global_first_end
 				  (and (< 0 (player_count))
@@ -509,6 +516,7 @@
 	)
 
 (script dormant mission_first_defend
+	(print "script: mission_first_defend")
 	(sleep_until global_first_wave_1 5)
 	(sleep_until (volume_test_objects_all first_defend (players)) 15)
 	(ai_retreat first_wave/wave_1_attack_toon)
@@ -541,6 +549,7 @@
 	)
 
 (script dormant mission_first_retreat
+	(print "script: mission_first_retreat")
 	(sleep_until global_first_wave_1_defend 5)
 	(sleep_until (volume_test_objects_all first_retreat (players)) 15)
 	(ai_retreat first_wave/wave_1_defend_toon)
@@ -567,6 +576,7 @@
 	)
 
 (script dormant mission_first_marine
+	(print "script: mission_first_marine")
 	(sleep_until (or global_first_wave_5
 				  (and (!= (game_difficulty_get) normal) global_first_wave_2)
 				  (and (> .7 (ai_living_fraction first_marine/right_toon))
@@ -599,6 +609,7 @@
 	)
 
 (script dormant mission_first_wave_1
+	(print "script: mission_first_wave_1")
 	(object_create pass_cship)
 	(ai_place first_wave/wave_1_lz_toon)
 	(objects_predict (ai_actors first_wave))
@@ -643,6 +654,7 @@
  	)
 
 (script dormant mission_first_wave_2
+	(print "script: mission_first_wave_2")
 	(object_create fort_cship)
 	(unit_close fort_cship)
 	(ai_place first_wave/wave_2_lz_toon)
@@ -703,6 +715,7 @@
 	)
 
 (script dormant mission_first_wave_3
+	(print "script: mission_first_wave_3")
 	(object_create pipe_cship)
 	(unit_close pipe_cship)
 	(ai_place first_wave/wave_3_lz_toon)
@@ -761,6 +774,7 @@
 	)
 
 (script dormant mission_first_wave_4
+	(print "script: mission_first_wave_4")
 	(object_create back_cship)
 	(unit_close back_cship)
 	(ai_place first_wave/wave_4_lz_toon)
@@ -818,6 +832,7 @@
 	)
 
 (script dormant mission_first_wave_5
+	(print "script: mission_first_wave_5")
 	(object_create pipe_cship)
 	(unit_close pipe_cship)
 	(ai_place first_wave/wave_5_lz_toon)
@@ -870,6 +885,7 @@
 	)
 
 (script dormant mission_first_wave_6
+	(print "script: mission_first_wave_6")
 	(object_create fort_cship)
 	(unit_close fort_cship)
 	(ai_place first_wave/wave_6_lz_toon)
@@ -966,6 +982,7 @@
 	)
 
 (script dormant mission_first
+	(print "script: mission_first")
 	(sleep_until (volume_test_objects first_arrival (players)) 5)
 	(if (game_safe_to_speak) (ai_conversation first_arrival))
 	(wake save_first_arrival)
@@ -1190,6 +1207,7 @@
 	)
 
 (script dormant mission_cave
+	(print "script: mission_cave")
 	(sleep_until (volume_test_objects cave_floor_entrance (players)) 15)
 	(if (and (game_is_cooperative) (not (or (vehicle_test_seat_list jeep W-gunner (players)) (vehicle_test_seat_list jeep W-passenger (players))))) (volume_teleport_players_not_inside cave_floor_entrance cave_flag))
 	(wake save_cave_floor_enter)
@@ -1257,6 +1275,7 @@
 	)
 
 (script dormant mission_cliff_marine
+	(print "script: mission_cliff_marine")
 	(sleep_until (or (< (ai_living_fraction cliff_wave) .5)
 				  (volume_test_objects cliff_right_fort_first_floor (players))
 				  (volume_test_objects cliff_left_fort_first_floor (players))) 5)
@@ -1290,6 +1309,7 @@
 	)
 
 (script dormant mission_cliff
+	(print "script: mission_cliff")
 	(wake obj_cliff_arrival)
 	
 	(sleep_until (or (volume_test_objects cliff_1 (players))
@@ -1415,6 +1435,7 @@
 	)
 
 (script dormant mission_rubble_defend
+	(print "script: mission_rubble_defend")
 	(sleep_until global_rubble_wave_2 5)
 	(sleep_until (volume_test_objects_all rubble_defend (players)) 15)
 	(ai_retreat rubble_wave/wave_2_attack_toon)
@@ -1437,6 +1458,7 @@
 	)
 
 (script dormant mission_rubble_retreat
+	(print "script: mission_rubble_retreat")
 	(sleep_until global_rubble_wave_2_defend 5)
 	(sleep_until (volume_test_objects_all rubble_retreat (players)) 15)
 	(ai_retreat rubble_wave/wave_2_defend_toon)
@@ -1455,6 +1477,7 @@
 	)
 
 (script dormant mission_rubble_marine
+	(print "script: mission_rubble_marine")
 	(ai_place rubble_marine)
 	(objects_predict (ai_actors rubble_marine))
 
@@ -1487,6 +1510,7 @@
 	)
 
 (script dormant mission_rubble_wave_2
+	(print "script: mission_rubble_wave_2")
 	(object_create rubble_rock_cship)
 	(unit_close rubble_rock_cship)
 	(ai_place rubble_wave/wave_2_lz_toon)
@@ -1549,6 +1573,7 @@
 	)
 
 (script dormant mission_rubble_wave_3
+	(print "script: mission_rubble_wave_3")
 	(object_create rubble_middle_cship)
 	(unit_close rubble_middle_cship)
 	(ai_place rubble_wave/wave_3_lz_toon)
@@ -1609,6 +1634,7 @@
 	)
 
 (script dormant mission_rubble_wave_4
+	(print "script: mission_rubble_wave_4")
 	(object_create rubble_rock_cship)
 	(unit_close rubble_rock_cship)
 	(ai_place rubble_wave/wave_4_lz_toon)
@@ -1671,6 +1697,7 @@
 	)
 
 (script dormant mission_rubble_wave_5
+	(print "script: mission_rubble_wave_5")
 	(object_create rubble_boat_cship)
 	(unit_close rubble_boat_cship)
 	(ai_place rubble_wave/wave_5_lz_toon)
@@ -1737,6 +1764,7 @@
 	)
 
 (script dormant mission_rubble
+	(print "script: mission_rubble")
 	(sleep_until (or (volume_test_objects rubble_1 (players))
 				  (volume_test_objects rubble_2 (players))) 15)
 	(set global_rubble_start true)
@@ -1874,6 +1902,7 @@
 ;========== River Scripts ==========
 
 (script dormant mission_river_defend
+	(print "script: mission_river_defend")
 	(sleep_until global_river_wave_2 5)
 	(sleep_until (volume_test_objects_all river_attack (players)) 15)
 	(ai_retreat river_wave/wave_2_attack_toon)
@@ -1886,6 +1915,7 @@
 	)
 
 (script dormant mission_river_retreat
+	(print "script: mission_river_retreat")
 	(sleep_until global_river_wave_2_defend 5)
 	(sleep_until (volume_test_objects_all river_retreat (players)) 15)
 	(ai_retreat river_wave/wave_2_defend_toon)
@@ -1896,6 +1926,7 @@
 	)
 
 (script dormant mission_river_marine
+	(print "script: mission_river_marine")
 	(ai_place river_marine)
 	(objects_predict (ai_actors river_marine))
 	(ai_disregard (ai_actors river_wave) 1)
@@ -1945,12 +1976,14 @@
 	)
 
 (script dormant mission_river_wave_1
+	(print "script: mission_river_wave_1")
 	(ai_place river_wave/wave_1_toon)
 	(objects_predict (ai_actors river_wave))
 	(ai_disregard (ai_actors river_marine) 1)
 	)
 
 (script dormant mission_river_wave_2
+	(print "script: mission_river_wave_2")
 ;	(object_create river_pipe_cship)
 ;	(unit_close river_pipe_cship)
 	(ai_place river_wave/wave_3_lz_toon)
@@ -1974,6 +2007,7 @@
 	)
 
 (script dormant mission_river_wave_3
+	(print "script: mission_river_wave_3")
 	(object_create river_boat_cship)
 	(unit_close river_boat_cship)
 	(ai_place river_wave/wave_2_lz_toon)
@@ -2048,6 +2082,7 @@
 *;
 
 (script dormant mission_river
+	(print "script: mission_river")
 	(sleep_until (or (volume_test_objects river_1 (players))
 				  (volume_test_objects river_2 (players))) 15)
 	(set global_river_start true)
@@ -2175,6 +2210,7 @@
 	)
 
 (script dormant mission_mid_banshee
+	(print "script: mission_mid_banshee")
 	(object_create mid_banshee_1)
 	(unit_set_enterable_by_player mid_banshee_1 0)
 	(object_create mid_banshee_2)
@@ -2189,6 +2225,7 @@
 	)
 
 (script dormant mission_mid_cliff_1
+	(print "script: mission_mid_cliff_1")
 	(ai_place mid_cliff_1)
 	(object_create midcliff_cship_1)
 	(object_teleport midcliff_cship_1 midcliff_1_flag)
@@ -2204,6 +2241,7 @@
 	)
 
 (script dormant mission_mid_cliff_2
+	(print "script: mission_mid_cliff_2")
 	(ai_place mid_cliff_2)
 	(object_create midcliff_cship_2)
 	(object_teleport midcliff_cship_2 midcliff_2_flag)
@@ -2219,6 +2257,7 @@
 	)
 
 (script dormant mission_mid_rubble_1
+	(print "script: mission_mid_rubble_1")
 	(ai_place mid_rubble_1)
 	(object_create midrubble_cship_1)
 	(object_teleport midrubble_cship_1 midrubble_1_flag)
@@ -2234,6 +2273,7 @@
 	)
 
 (script dormant mission_mid_river_1
+	(print "script: mission_mid_river_1")
 	(ai_place mid_river_1)
 	(object_create midriver_cship_1)
 	(object_teleport midriver_cship_1 midriver_1_flag)
@@ -2249,6 +2289,7 @@
 	)
 
 (script dormant mission_obj
+	(print "script: mission_obj")
 	(sleep_until (or global_cliff_end
 				  global_rubble_end
 				  global_river_end) 15)
@@ -2365,7 +2406,7 @@
 ;========== Main Mission Script ==========
 
 (script static void cutscene_intro
-
+	(print "script: cutscene intro")
 	(objects_predict intro_pod)
 	(object_beautify intro_pod true)
 
