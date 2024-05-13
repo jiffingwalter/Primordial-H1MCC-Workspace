@@ -461,7 +461,7 @@
 (script dormant mission_lz
 	(print "script: mission_lz")
 	(set play_music_a30_01 true)
-	(ai_place bobombs/landing)
+	(ai_place bobombs_1/landing)
 	(sleep_until (or (volume_test_objects plant_trigger (players))
 				  (volume_test_objects lz_bridge (players))) 1 delay_dawdle)
 	(sleep_until (or (< 4 (ai_conversation_status intro_1))
@@ -985,7 +985,7 @@
 (script dormant mission_field1
 	(print "script: mission_field1")
 	(sleep_until (volume_test_objects field1_trigger (players)) 5)
-	(ai_place bobombs/field1)
+	(ai_place bobombs_1/field1)
 )
 
 (script dormant mission_first
@@ -2411,6 +2411,13 @@
 ;		 )
 	)
 
+(script dormant mission_field2
+	(print "script: mission_field2")
+	(sleep_until (volume_test_objects field2_trigger (players)))
+	(ai_place bobombs_2/field2)
+	(ai_place bobombs_2/field2_carriers)
+)
+
 ;========== Main Mission Script ==========
 
 (script static void cutscene_intro
@@ -2613,8 +2620,7 @@
 	(wake mission_cave)
 	
 	(sleep_until (volume_test_objects cave_exit (players)) 1)
-	(ai_place bobombs/field2)
-	(ai_place bobombs/field2_carriers)
+	(wake mission_field2)
 	(wake mission_cliff)
 	(wake mission_rubble)
 	(wake mission_river)
