@@ -1184,32 +1184,39 @@
 	
 	(sleep 120)
 	
-	(sound_looping_start sound\sinomatixx\a30_bridge_music none 1)
+	;(sound_looping_start sound\sinomatixx\a30_bridge_music none 1)
 	
+	(print "bridge_glory_1a")
 	(camera_set bridge_glory_1a 0)
+	
+	(print "bridge_glory_1b")
+	(camera_set bridge_glory_1b 300)
+	(sleep 150)
 
 	(device_set_position bridge 0)
-	
-	(camera_set bridge_glory_1b 300) (print "bridge_glory_1b")
-	(sleep 150)
-	(camera_set bridge_glory_1c 300) (print "bridge_glory_1c")
+
+	(print "bridge_glory_1c")
+	(camera_set bridge_glory_1c 300)
 	(sleep 150)
 
 	(scenery_animation_start stereo "swfce\scenery\stereo_giant\stereo_giant" falling)
 
-	(camera_set bridge_glory_1d 180) (print "bridge_glory_1d")
+	(print "bridge_glory_1d")
+	(camera_set bridge_glory_1d 180)
 	(sleep 90)
 
-	(effect_new_on_object_marker "vehicles\scorpion\shell explosion" stereo "speakers")
+	(device_set_position bridge 1)
+	(effect_new_on_object_marker "swfce\effects\explosions\shell explosion big" stereo "speakers")
+	(effect_new_on_object_marker "swfce\effects\explosions\shell explosion big" stereo "speakers")
 	(object_destroy stereo)
+	(object_destroy dance_bgm)
 
-	(camera_set bridge_glory_1e 200) (print "bridge_glory_1e")
+	(print "bridge_glory_1e")
+	(camera_set bridge_glory_1e 200)
 	(sleep (- (camera_time) 15))
 	
 	(fade_out 1 1 1 15)
 	(sleep 15)
-	
-	(device_set_position bridge 1)
 
 	(object_destroy chief)
 	(object_destroy rifle)
@@ -1228,7 +1235,12 @@
 (script static void test_stereo
 	(object_create stereo)
 	(scenery_animation_start stereo "swfce\scenery\stereo_giant\stereo_giant" falling)
-	(scenery_get_animation_time stereo)
+	(sleep 75)
+	(effect_new_on_object_marker "swfce\effects\explosions\shell explosion big" stereo "speakers")
+	(effect_new_on_object_marker "swfce\effects\explosions\shell explosion big" stereo "speakers")
+	(object_destroy stereo)
+	(sleep 30)
+	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 )
 
 (script dormant mission_cave
@@ -1243,25 +1255,23 @@
 
 	(objects_predict (ai_actors cave_floor))
 	(wake obj_cave_prompt)
-	(set play_music_a30_05 true)	
+	(objects_attach stereo "speakers" dance_bgm "root")
 
 	(sleep_until (or (volume_test_objects cave_gap (players))
 				  (< 0 (device_group_get bridge_control_position))) 1)
 	(ai_timer_expire cave_floor/plank_elite)
-	;(set play_music_a30_05_alt true)	
 
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1 delay_late)
-	;(set play_music_a30_05_alt false)
 
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1)
-	;(set play_music_a30_05 false)
 	(if (game_all_quiet) (cutscene_bridge))
+
+	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 	(ai_erase cave_floor)
 	(ai_place cave_floor)
 	(ai_allegiance_remove covenant human)
 	(ai_allegiance_remove covenant player)
-	(set play_music_a30_05 false)
-	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
+	(ai_magically_see_players cave_floor)
 
 	(sleep_until (volume_test_objects cave_floor_exit (players)) 15)
 	(wake save_cave_floor_exit)
