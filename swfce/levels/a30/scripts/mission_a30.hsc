@@ -1250,8 +1250,7 @@
 
 	(wake save_cave_floor_enter)
 	(ai_place cave_floor)
-	(ai_allegiance covenant human)
-	(ai_allegiance covenant player)
+	(ai_set_team cave_floor unused6)
 
 	(objects_predict (ai_actors cave_floor))
 	(wake obj_cave_prompt)
@@ -1269,8 +1268,7 @@
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 	(ai_erase cave_floor)
 	(ai_place cave_floor)
-	(ai_allegiance_remove covenant human)
-	(ai_allegiance_remove covenant player)
+	(ai_set_team cave_floor covenant)
 	(ai_magically_see_players cave_floor)
 
 	(sleep_until (volume_test_objects cave_floor_exit (players)) 15)
