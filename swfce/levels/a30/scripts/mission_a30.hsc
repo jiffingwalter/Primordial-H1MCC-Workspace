@@ -1149,7 +1149,7 @@
 
 (global boolean cutscene_bridge_finished false)
 (script static void cutscene_bridge
-	(ai off)
+	;(ai off)
 	(player_enable_input 0)
 
    (if (mcc_mission_segment "cine2_activating_lightbridge") (sleep 1))              
@@ -1212,7 +1212,7 @@
 	(effect_new_on_object_marker "swfce\effects\explosions\shell explosion big" stereo "speakers")
 	(object_destroy stereo)
 	(object_destroy dance_bgm)
-	; make dancers stop dancing
+	; ...todo: make dancers stop dancing
 
 	(print "bridge_glory_1e")
 	(camera_set bridge_glory_1e 200)
@@ -1232,8 +1232,9 @@
 	(fade_in 1 1 1 15)
 	(wake save_cave_bridge)
 	(player_enable_input 1)
-	(ai on)
-	)
+	(set cutscene_bridge_finished true)
+	;(ai on)
+)
 
 (script static void test_stereo
 	(object_create stereo)
@@ -1249,25 +1250,27 @@
 (script dormant mission_cave
 	(print "script: mission_cave")
 	(sleep_until (volume_test_objects cave_floor_entrance (players)) 15)
+	(print "debug: mission cave triggered...")
+
 	(if (and (game_is_cooperative) (not (or (vehicle_test_seat_list jeep W-gunner (players)) (vehicle_test_seat_list jeep W-passenger (players))))) (volume_teleport_players_not_inside cave_floor_entrance cave_flag))
 
 	(wake save_cave_floor_enter)
 	(ai_place cave_floor)
-	(ai_set_team cave_floor unused6)
-
 	(objects_predict (ai_actors cave_floor))
 	(wake obj_cave_prompt)
 
 	(sleep_until (or (volume_test_objects cave_gap (players))
 				  (< 0 (device_group_get bridge_control_position))) 1)
+	(print "debug: cave_gap triggered")
 	(ai_timer_expire cave_floor/plank_elite)
 
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1 delay_late)
-
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1)
 	(cutscene_bridge)
 
+	
 	(sleep_until cutscene_bridge_finished)
+	(print "debug: begin post bridge cutscene")
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 	(ai_erase cave_floor)
 	(ai_place cave_floor)
@@ -2626,6 +2629,7 @@
 
 ;; dev cheats and skips
 (script static void skipto_shared
+	(sound_looping_set_scale "swfce\levels\a30\music\a30_01" 0)
 	(kill_music)
 )
 

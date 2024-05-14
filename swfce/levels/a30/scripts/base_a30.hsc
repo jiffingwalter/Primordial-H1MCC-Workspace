@@ -501,6 +501,7 @@
 )
 
 (script static void kill_music
+	(print "music: killing all level music...")
 	(set play_music_a30_01 false)
 	(set play_music_a30_01_alt false)
 	(set play_music_a30_02 false)
