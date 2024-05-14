@@ -1147,6 +1147,7 @@
  	(if (and (= (structure_bsp_index) 0) (= 0 (device_group_get bridge_control_position))) (ai_conversation cave_bridge_prompt))
 	)
 
+(global boolean cutscene_bridge_finished false)
 (script static void cutscene_bridge
 	(ai off)
 	(player_enable_input 0)
@@ -1166,6 +1167,7 @@
 	(object_create rifle)
 
 	(object_create_anew stereo)
+	(objects_attach stereo "speakers" dance_bgm "root")
 
 	(object_teleport chief chief_push_base)
 	(objects_attach chief "right hand" rifle "")
@@ -1210,6 +1212,7 @@
 	(effect_new_on_object_marker "swfce\effects\explosions\shell explosion big" stereo "speakers")
 	(object_destroy stereo)
 	(object_destroy dance_bgm)
+	; make dancers stop dancing
 
 	(print "bridge_glory_1e")
 	(camera_set bridge_glory_1e 200)
@@ -1254,7 +1257,6 @@
 
 	(objects_predict (ai_actors cave_floor))
 	(wake obj_cave_prompt)
-	(objects_attach stereo "speakers" dance_bgm "root")
 
 	(sleep_until (or (volume_test_objects cave_gap (players))
 				  (< 0 (device_group_get bridge_control_position))) 1)
@@ -1263,8 +1265,9 @@
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1 delay_late)
 
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1)
-	(if (game_all_quiet) (cutscene_bridge))
+	(cutscene_bridge)
 
+	(sleep_until cutscene_bridge_finished)
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 	(ai_erase cave_floor)
 	(ai_place cave_floor)
@@ -1383,7 +1386,7 @@
 	(ai_maneuver_enable cliff_marine 0)
 	(ai_follow_target_players cliff_marine)
 	(if (and global_river_end global_rubble_end)
-		(set play_music_a30_07 false)
+		(set play_music_a30_06 false)
 		(set play_music_a30_07 true)
 	)
 
@@ -1867,7 +1870,7 @@
 
 	(sleep_until global_rubble_wave_4 5)
 	(if (and global_river_end global_cliff_end)
-		(set play_music_a30_07 false)
+		(set play_music_a30_06 false)
 		(set play_music_a30_07 true)
 	)
 	(set global_rubble_count (ai_living_count rubble_wave))
@@ -2621,6 +2624,41 @@
 	(object_destroy dead_marine_3)
 	)
 
+;; dev cheats and skips
+(script static void skipto_shared
+	(kill_music)
+)
+
+(global boolean skippedto_first false)
+(script static void skipto_first
+	(print "not implemented")
+	(skipto_shared)
+)
+
+(global boolean skippedto_field1 false)
+(script static void skipto_field1
+	(print "not implemented")
+	(skipto_shared)
+)
+
+(global boolean skippedto_bridge false)
+(script static void skipto_bridge
+	(print "debug: skipping to bridge section")
+	(skipto_shared)
+	(set skippedto_bridge true)
+	(volume_teleport_players_not_inside cave_floor_entrance skip_bridge)
+)
+
+(global boolean skippedto_field2 false)
+(script static void skipto_field2
+	(print "debug: skipping to field 2 section")
+	(skipto_shared)
+	(set skippedto_field2 true)
+	(switch_bsp 1)
+	(volume_teleport_players_not_inside cave_exit skip_field2)
+	(object_create skip_jeep_field2)
+)
+
 (script startup mission_a30
    (if (mcc_mission_segment "cine1_intro") (sleep 1))              
    
@@ -2682,7 +2720,7 @@
 	(game_save_no_timeout)
 
 	(sleep_until (or global_cliff_start global_rubble_start global_river_start) 1)
-	(set play_music_a30_06 false)
+	;(set play_music_a30_06 false)
 	)
 
 (script startup mission_killer

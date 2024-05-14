@@ -500,7 +500,7 @@
 	(wake music_a30_07)
 )
 
-(script dormant kill_music
+(script static void kill_music
 	(set play_music_a30_01 false)
 	(set play_music_a30_01_alt false)
 	(set play_music_a30_02 false)
