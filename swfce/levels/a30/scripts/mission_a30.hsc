@@ -1164,7 +1164,9 @@
 	
 	(object_create chief)
 	(object_create rifle)
-	
+
+	(object_create_anew stereo)
+
 	(object_teleport chief chief_push_base)
 	(objects_attach chief "right hand" rifle "")
 	
@@ -1186,20 +1188,29 @@
 	
 	(camera_set bridge_glory_1a 0)
 
-	(device_set_position bridge 1)
+	(device_set_position bridge 0)
 	
-	(camera_set bridge_glory_1b 300)
+	(camera_set bridge_glory_1b 300) (print "bridge_glory_1b")
 	(sleep 150)
-	(camera_set bridge_glory_1c 300)
+	(camera_set bridge_glory_1c 300) (print "bridge_glory_1c")
 	(sleep 150)
-	(camera_set bridge_glory_1d 180)
+
+	(scenery_animation_start stereo "swfce\scenery\stereo_giant\stereo_giant" falling)
+
+	(camera_set bridge_glory_1d 180) (print "bridge_glory_1d")
 	(sleep 90)
-	(camera_set bridge_glory_1e 200)
+
+	(effect_new_on_object_marker "vehicles\scorpion\shell explosion" stereo "speakers")
+	(object_destroy stereo)
+
+	(camera_set bridge_glory_1e 200) (print "bridge_glory_1e")
 	(sleep (- (camera_time) 15))
 	
 	(fade_out 1 1 1 15)
 	(sleep 15)
 	
+	(device_set_position bridge 1)
+
 	(object_destroy chief)
 	(object_destroy rifle)
 	
@@ -1214,12 +1225,22 @@
 	(ai on)
 	)
 
+(script static void test_stereo
+	(object_create stereo)
+	(scenery_animation_start stereo "swfce\scenery\stereo_giant\stereo_giant" falling)
+	(scenery_get_animation_time stereo)
+)
+
 (script dormant mission_cave
 	(print "script: mission_cave")
 	(sleep_until (volume_test_objects cave_floor_entrance (players)) 15)
 	(if (and (game_is_cooperative) (not (or (vehicle_test_seat_list jeep W-gunner (players)) (vehicle_test_seat_list jeep W-passenger (players))))) (volume_teleport_players_not_inside cave_floor_entrance cave_flag))
+
 	(wake save_cave_floor_enter)
 	(ai_place cave_floor)
+	(ai_allegiance covenant human)
+	(ai_allegiance covenant player)
+
 	(objects_predict (ai_actors cave_floor))
 	(wake obj_cave_prompt)
 	(set play_music_a30_05 true)	
@@ -1227,14 +1248,20 @@
 	(sleep_until (or (volume_test_objects cave_gap (players))
 				  (< 0 (device_group_get bridge_control_position))) 1)
 	(ai_timer_expire cave_floor/plank_elite)
-	(set play_music_a30_05_alt true)	
+	;(set play_music_a30_05_alt true)	
 
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1 delay_late)
-	(set play_music_a30_05_alt false)
+	;(set play_music_a30_05_alt false)
 
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1)
-	(set play_music_a30_05 false)
+	;(set play_music_a30_05 false)
 	(if (game_all_quiet) (cutscene_bridge))
+	(ai_erase cave_floor)
+	(ai_place cave_floor)
+	(ai_allegiance_remove covenant human)
+	(ai_allegiance_remove covenant player)
+	(set play_music_a30_05 false)
+	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 
 	(sleep_until (volume_test_objects cave_floor_exit (players)) 15)
 	(wake save_cave_floor_exit)
@@ -1347,7 +1374,10 @@
 	(wake obj_cliff_all_killed)
 	(ai_maneuver_enable cliff_marine 0)
 	(ai_follow_target_players cliff_marine)
-	(if (and global_river_end global_rubble_end) (set play_music_a30_07 true))
+	(if (and global_river_end global_rubble_end)
+		(set play_music_a30_07 false)
+		(set play_music_a30_07 true)
+	)
 
 	(sleep_until (> 7 (ai_living_count cliff_wave)) 15)
 	(ai_migrate cliff_wave cliff_wave/main_near)
@@ -1828,7 +1858,10 @@
 	(wake save_rubble_wave_3)
 
 	(sleep_until global_rubble_wave_4 5)
-	(if (and global_river_end global_cliff_end) (set play_music_a30_07 true))
+	(if (and global_river_end global_cliff_end)
+		(set play_music_a30_07 false)
+		(set play_music_a30_07 true)
+	)
 	(set global_rubble_count (ai_living_count rubble_wave))
 	(sleep_until (> (- global_rubble_count 1) (ai_living_count rubble_wave)) 15 delay_dawdle)
 ;	(sleep_until (> 4 (ai_living_count rubble_wave)) 15 delay_late)
@@ -2133,7 +2166,10 @@
 	(wake mission_river_wave_3)
 
 	(sleep_until global_river_wave_3 5)
-	(if (and global_rubble_end global_cliff_end) (set play_music_a30_07 true))
+	(if (and global_rubble_end global_cliff_end)
+		(set play_music_a30_06 false)
+		(set play_music_a30_07 true)
+	)
 
 	(sleep_until (> 6 (ai_living_count river_wave)) 15)
 	(ai_migrate river_wave river_wave/wave_2_retreat)
