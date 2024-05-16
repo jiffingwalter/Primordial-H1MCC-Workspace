@@ -96,3 +96,7 @@
 	(cheat_all_weapons)
 	; REPEAT
 )
+
+(script static void respawnblocks
+	(object_create_anew_containing "qblock")
+)
