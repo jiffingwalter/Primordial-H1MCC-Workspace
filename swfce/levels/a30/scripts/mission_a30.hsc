@@ -1262,13 +1262,12 @@
 	(sleep_until (or (volume_test_objects cave_gap (players))
 				  (< 0 (device_group_get bridge_control_position))) 1)
 	(print "debug: cave_gap triggered")
-	(ai_timer_expire cave_floor/plank_elite)
 
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1 delay_late)
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1)
 	(cutscene_bridge)
 
-	
+	; post bridge...
 	(sleep_until cutscene_bridge_finished)
 	(print "debug: begin post bridge cutscene")
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
@@ -1276,6 +1275,7 @@
 	(ai_place cave_floor)
 	(ai_set_team cave_floor covenant)
 	(ai_magically_see_players cave_floor)
+	(ai_timer_expire cave_floor/plank_elite)
 
 	(sleep_until (volume_test_objects cave_floor_exit (players)) 15)
 	(wake save_cave_floor_exit)
