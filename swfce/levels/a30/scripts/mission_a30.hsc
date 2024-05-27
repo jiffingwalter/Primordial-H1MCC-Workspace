@@ -1208,6 +1208,8 @@
 	(sleep 90)
 
 	(device_set_position bridge 1)
+	(object_destroy_containing "dlight")
+	(object_destroy_containing "dbeacon")
 	(effect_new_on_object_marker "swfce\effects\explosions\shell explosion big" stereo "speakers")
 	(effect_new_on_object_marker "swfce\effects\explosions\shell explosion big" stereo "speakers")
 	(object_destroy stereo)
@@ -1247,12 +1249,36 @@
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 )
 
+(script dormant mission_cave_entrance
+	(print "script: mission_cave_entrance")
+	(sleep_until (volume_test_objects cave_entrance (players)) 1)
+	(ai_place cave_entrance)
+
+	(sleep_until (volume_test_objects cave_driving (players)) 1)
+	(ai_place cave_driving)
+
+	(sleep_until (volume_test_objects cave_pretzel_outer (players)) 1)
+	(ai_place cave_pretzel_upper)
+
+	(sleep_until (volume_test_objects cave_pretzel (players)) 1)
+	(ai_place cave_pretzel_lower)
+)
+
 (script dormant mission_cave
 	(print "script: mission_cave")
 	(sleep_until (volume_test_objects cave_floor_entrance (players)) 15)
 	(print "debug: mission cave triggered...")
-
 	(if (and (game_is_cooperative) (not (or (vehicle_test_seat_list jeep W-gunner (players)) (vehicle_test_seat_list jeep W-passenger (players))))) (volume_teleport_players_not_inside cave_floor_entrance cave_flag))
+
+	(object_destroy "bus_field1_1")
+	(object_destroy "pod_of_death")
+
+	(object_create dance_bgm)
+	(ai_place cave_line)
+	(ai_place cave_bouncer)
+
+	(sleep_until (volume_test_objects cave_bouncer_trigger (players)) 1)
+	(ai_set_team cave_bouncer covenant)
 
 	(wake save_cave_floor_enter)
 	(ai_place cave_floor)
@@ -1269,7 +1295,7 @@
 
 	; post bridge...
 	(sleep_until cutscene_bridge_finished)
-	(print "debug: begin post bridge cutscene")
+	(print "debug: begin post bridge sequence")
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 	(ai_erase cave_floor)
 	(ai_place cave_floor)
@@ -2703,6 +2729,7 @@
 	(ai_conversation intro_1b)
 	(wake mission_lz)
 	(wake mission_first)
+	(wake mission_cave_entrance)
 	(wake mission_cave)
 	
 	(sleep_until (volume_test_objects cave_exit (players)) 1)
