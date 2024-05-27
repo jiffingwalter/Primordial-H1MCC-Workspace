@@ -1259,9 +1259,16 @@
 
 	(sleep_until (volume_test_objects cave_pretzel_outer (players)) 1)
 	(ai_place cave_pretzel_upper)
+	(vehicle_load_magic cave_pretzel_turret "gunner" (ai_actors cave_pretzel_upper/grunt_turret))
+	(ai_place cave_pretzel_lower)
 
 	(sleep_until (volume_test_objects cave_pretzel (players)) 1)
-	(ai_place cave_pretzel_lower)
+	(ai_set_deaf cave_pretzel_lower false)
+)
+
+(script dormant cave_unleash_queue
+	(sleep_until (< (ai_living_count cave_bouncer) 1))
+	(ai_command_list cave_line cave_line_go_to_dance)
 )
 
 (script dormant mission_cave
@@ -1276,6 +1283,7 @@
 	(object_create dance_bgm)
 	(ai_place cave_line)
 	(ai_place cave_bouncer)
+	(wake cave_unleash_queue)
 
 	(sleep_until (volume_test_objects cave_bouncer_trigger (players)) 1)
 	(ai_set_team cave_bouncer covenant)
