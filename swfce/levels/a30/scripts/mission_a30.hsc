@@ -1268,12 +1268,14 @@
 
 (script dormant cave_unleash_queue
 	(sleep_until (< (ai_living_count cave_bouncer) 1))
-	(ai_command_list cave_line cave_line_go_to_dance)
+	(ai_set_blind cave_line false)
+	(ai_set_deaf cave_line false)
+	(ai_command_list_advance cave_line/line)
 )
 
 (script dormant mission_cave
 	(print "script: mission_cave")
-	(sleep_until (volume_test_objects cave_floor_entrance (players)) 15)
+	(sleep_until (volume_test_objects cave_floor_entrance (players)) 1)
 	(print "debug: mission cave triggered...")
 	(if (and (game_is_cooperative) (not (or (vehicle_test_seat_list jeep W-gunner (players)) (vehicle_test_seat_list jeep W-passenger (players))))) (volume_teleport_players_not_inside cave_floor_entrance cave_flag))
 
@@ -1287,6 +1289,7 @@
 
 	(sleep_until (volume_test_objects cave_bouncer_trigger (players)) 1)
 	(ai_set_team cave_bouncer covenant)
+	(ai_set_blind cave_bouncer false)
 
 	(wake save_cave_floor_enter)
 	(ai_place cave_floor)
@@ -1307,7 +1310,8 @@
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 	(ai_erase cave_floor)
 	(ai_place cave_floor)
-	(ai_set_team cave_floor covenant)
+	(ai_allegiance_remove player unused9)
+	(ai_allegiance_remove human unused9)
 	(ai_magically_see_players cave_floor)
 	(ai_timer_expire cave_floor/plank_elite)
 
@@ -2703,10 +2707,16 @@
 	(hud_show_motion_sensor 0)
 	(fade_out 0 0 0 0)
 	(print "mission script is running")
+	; allegiances...
 	(ai_allegiance player human)
+	; unused6 = passive actors
 	(ai_allegiance player unused6)
 	(ai_allegiance human unused6)
 	(ai_allegiance covenant unused6)
+	; unused9 = neutral covenant (dancers)
+	(ai_allegiance player unused9)
+	(ai_allegiance human unused9)
+	(ai_allegiance covenant unused9)
 	(if (cinematic_skip_start) (cutscene_intro))
 	(cinematic_skip_stop)
 	(wake setup_dead)
