@@ -1190,12 +1190,11 @@
 	
 	(print "bridge_glory_1a")
 	(camera_set bridge_glory_1a 0)
+	(device_set_position bridge 0)
 	
 	(print "bridge_glory_1b")
 	(camera_set bridge_glory_1b 300)
 	(sleep 150)
-
-	(device_set_position bridge 0)
 
 	(print "bridge_glory_1c")
 	(camera_set bridge_glory_1c 300)
@@ -1290,6 +1289,7 @@
 	(sleep_until (volume_test_objects cave_bouncer_trigger (players)) 1)
 	(ai_set_team cave_bouncer covenant)
 	(ai_set_blind cave_bouncer false)
+	(ai_magically_see_players cave_bouncer)
 
 	(wake save_cave_floor_enter)
 	(ai_place cave_floor)
@@ -1308,7 +1308,7 @@
 	(sleep_until cutscene_bridge_finished)
 	(print "debug: begin post bridge sequence")
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
-	(ai_erase cave_floor)
+	;(ai_erase cave_floor)
 	(ai_place cave_floor)
 	(ai_allegiance_remove player unused9)
 	(ai_allegiance_remove human unused9)
@@ -2681,6 +2681,15 @@
 (script static void skipto_field1
 	(print "not implemented")
 	(skipto_shared)
+)
+
+(global boolean skippedto_caveent false)
+(script static void skipto_caveent
+	(print "debug: skipping to cave entrance section")
+	(skipto_shared)
+	(set skippedto_caveent true)
+	(volume_teleport_players_not_inside cave_entrance skip_caveent)
+	(object_create skip_jeep_caveent)
 )
 
 (global boolean skippedto_bridge false)
