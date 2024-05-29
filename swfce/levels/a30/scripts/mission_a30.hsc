@@ -1062,14 +1062,13 @@
 	(ai_maneuver_enable first_wave 0)
 	(ai_follow_target_players first_wave)
 	(ai_magically_see_players first_wave)
-	;(set play_music_a30_03_alt true)
+	(set play_music_a30_01_alt true)
 
 	(sleep_until (= 0 (ai_living_count first_wave)) 15 delay_fail)
 	(if (< 0 (ai_living_count first_wave)) (sleep_until (game_all_quiet) 1 delay_dawdle))
-;ADD Combat state check
+	;ADD Combat state check
 	(sleep delay_calm)
-	;(set play_music_a30_03_alt false)
-	;(set play_music_a30_03 false)
+	(set play_music_a30_01_alt false)
 	(set play_music_a30_01 false)
 	(set global_first_end true)
 	(set test_first_kill true)
