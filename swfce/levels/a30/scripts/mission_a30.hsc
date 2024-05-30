@@ -1053,7 +1053,7 @@
 	(wake mission_first_wave_5)
 
 	(sleep_until global_first_wave_5 5)
-	;(set play_music_a30_03 true)
+	(set play_music_a30_01_alt true)
 	(wake mission_first_wave_6)
 	
 	(sleep_until global_first_wave_6 5)
@@ -1062,7 +1062,6 @@
 	(ai_maneuver_enable first_wave 0)
 	(ai_follow_target_players first_wave)
 	(ai_magically_see_players first_wave)
-	(set play_music_a30_01_alt true)
 
 	(sleep_until (= 0 (ai_living_count first_wave)) 15 delay_fail)
 	(if (< 0 (ai_living_count first_wave)) (sleep_until (game_all_quiet) 1 delay_dawdle))
