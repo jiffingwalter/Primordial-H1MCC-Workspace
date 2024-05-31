@@ -1067,7 +1067,6 @@
 	(if (< 0 (ai_living_count first_wave)) (sleep_until (game_all_quiet) 1 delay_dawdle))
 	;ADD Combat state check
 	(sleep delay_calm)
-	(set play_music_a30_01_alt false)
 	(set play_music_a30_01 false)
 	(set global_first_end true)
 	(set test_first_kill true)
