@@ -102,13 +102,14 @@
 )
 
 ;music testing
-(global string test_music_ref "swfce\levels\a30\music\a30_01")
+(global string test_music_ref "swfce\levels\a30\music\a30_06")
 (global boolean play_test_music false)
 (global boolean play_test_music_alt false)
 (script dormant test_music_func
 	(sleep_until play_test_music)
 	(print "test music in...")
-	(sound_looping_start "swfce\levels\a30\music\a30_01" none 1)
+	(print test_music_ref)
+	(sound_looping_start "swfce\levels\a30\music\a30_06" none 1)
 
 	(sleep_until 
 		(or 
@@ -118,7 +119,7 @@
 	1 global_delay_music)
 	(if play_test_music_alt
 		(begin
-			(sound_looping_set_alternate "swfce\levels\a30\music\a30_01" 1)
+			(sound_looping_set_alternate "swfce\levels\a30\music\a30_06" 1)
 			(print "test music alt...")
 			(sleep_until (not play_test_music) 1 global_delay_music)
 			(set play_test_music_alt false)
@@ -126,7 +127,7 @@
 	)
 	(set play_test_music false)
 	(print "test music out...")
-	(sound_looping_stop "swfce\levels\a30\music\a30_01")
+	(sound_looping_stop "swfce\levels\a30\music\a30_06")
 	(sleep -1)
 )
 (script static void test_music
