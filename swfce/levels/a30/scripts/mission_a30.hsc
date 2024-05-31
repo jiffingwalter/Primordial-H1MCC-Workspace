@@ -313,7 +313,7 @@
 ;========== Banshee Scripts ==========
 ;*
 (script static void final_banshee_river
-	(set play_music_a30_07 true)
+	(set play_music_a30_06 true)
 	(object_create final_banshee_1)
 	(unit_set_enterable_by_player final_banshee_1 0)
 	(ai_place final_banshee/river_pilot_1)
@@ -1424,8 +1424,7 @@
 	(ai_maneuver_enable cliff_marine 0)
 	(ai_follow_target_players cliff_marine)
 	(if (and global_river_end global_rubble_end)
-		(set play_music_a30_06 false)
-		(set play_music_a30_07 true)
+		(set play_music_a30_06_alt true)
 	)
 
 	(sleep_until (> 7 (ai_living_count cliff_wave)) 15)
@@ -1448,7 +1447,7 @@
 	(set global_cliff_end true)
 	(set global_cliff_dead true)
 	(sleep 10)
-	(set play_music_a30_07 false)
+	(set play_music_a30_06 false)
 	(if (and global_river_end global_rubble_end) (wake mission_extraction_cliff))
 	(if (and global_river_end global_rubble_end) (set global_extraction true))
 	(if (and global_river_end global_rubble_end) (sleep -1))
@@ -1908,8 +1907,7 @@
 
 	(sleep_until global_rubble_wave_4 5)
 	(if (and global_river_end global_cliff_end)
-		(set play_music_a30_06 false)
-		(set play_music_a30_07 true)
+		(set play_music_a30_06_alt true)
 	)
 	(set global_rubble_count (ai_living_count rubble_wave))
 	(sleep_until (> (- global_rubble_count 1) (ai_living_count rubble_wave)) 15 delay_dawdle)
@@ -1940,7 +1938,7 @@
 	(set global_rubble_end true)
 	(set global_rubble_dead true)
 	(sleep 10)
-	(set play_music_a30_07 false)
+	(set play_music_a30_06 false)
 	(if (and global_river_end global_cliff_end) (wake mission_extraction_rubble))
 	(if (and global_river_end global_cliff_end) (set global_extraction true))
 	(if (and global_river_end global_cliff_end) (sleep -1))
@@ -2216,8 +2214,7 @@
 
 	(sleep_until global_river_wave_3 5)
 	(if (and global_rubble_end global_cliff_end)
-		(set play_music_a30_06 false)
-		(set play_music_a30_07 true)
+		(set play_music_a30_06_alt true)
 	)
 
 	(sleep_until (> 6 (ai_living_count river_wave)) 15)
@@ -2240,7 +2237,7 @@
 	(set global_river_end true)
 	(set global_river_dead true)
 	(sleep 10)
-	(set play_music_a30_07 false)
+	(set play_music_a30_06 false)
 	(if (and global_rubble_end global_cliff_end) (wake mission_extraction_river))
 	(if (and global_rubble_end global_cliff_end) (set global_extraction true))
 	(if (and global_rubble_end global_cliff_end) (sleep -1))
