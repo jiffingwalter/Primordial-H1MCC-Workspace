@@ -30,6 +30,7 @@
 
 (script static void mission_extraction_cliff_skip
 	(print "script: mission_extraction_cliff_skip")
+	(set play_music_a30_06 false)
 	(ai off)
 	(object_beautify foehammer_cliff on)
 	(camera_control on)
@@ -71,6 +72,7 @@
 
 (script dormant mission_extraction_cliff
 	(print "script: mission_extraction_cliff")
+	(set play_music_a30_06 false)
 	(object_create foehammer_cliff)
 	(unit_set_enterable_by_player foehammer_cliff 0)
 	(object_teleport foehammer_cliff foehammer_cliff_flag)
@@ -124,6 +126,7 @@
 
 (script static void mission_extraction_rubble_skip
 	(print "script: mission_extraction_rubble_skip")
+	(set play_music_a30_06 false)
 	(ai off)
 	(object_beautify foehammer_rubble on)
 	(camera_control on)
@@ -165,6 +168,7 @@
 
 (script dormant mission_extraction_rubble
 	(print "script: mission_extraction_rubble")
+	(set play_music_a30_06 false)
 	(object_create foehammer_rubble)
 	(unit_set_enterable_by_player foehammer_rubble 0)
 	(object_teleport foehammer_rubble foehammer_rubble_flag)
@@ -218,6 +222,7 @@
 
 (script static void mission_extraction_river_skip
 	(print "script: mission_extraction_river_skip")
+	(set play_music_a30_06 false)
 	(ai off)
 	(object_beautify foehammer_river on)
 	(camera_control on)
@@ -259,6 +264,7 @@
 
 (script dormant mission_extraction_river
 	(print "script: mission_extraction_river")
+	(set play_music_a30_06 false)
 	(object_create foehammer_river)
 	(unit_set_enterable_by_player foehammer_river 0)
 	(object_teleport foehammer_river foehammer_river_flag)
@@ -978,7 +984,7 @@
 	(sleep_until (volume_test_objects cave_driving (players)) 5)
 	(ai_conversation first_driving)
 
-	(sleep_until (volume_test_objects cave_pretzel (players)) 5)
+	(sleep_until (volume_test_objects cave_pretzel_end (players)) 5)
 	(set play_music_a30_04 false)
 	)
 
@@ -1210,7 +1216,9 @@
 	(effect_new_on_object_marker "swfce\effects\explosions\shell explosion big" stereo "speakers")
 	(object_destroy stereo)
 	(object_destroy dance_bgm)
-	; ...todo: make dancers stop dancing
+	(ai_command_list_advance cave_floor1)
+	(ai_command_list_advance cave_floor2)
+	(ai_command_list_advance cave_floor3)
 
 	(print "bridge_glory_1e")
 	(camera_set bridge_glory_1e 200)
@@ -1269,6 +1277,39 @@
 	(ai_command_list_advance cave_line/line)
 )
 
+(script static void cave_set_dancer_alligences
+	;unused7
+	(ai_allegiance player unused7)
+	(ai_allegiance human unused7)
+	(ai_allegiance covenant unused7)
+	(ai_allegiance unused7 unused8)
+	;unused8
+	(ai_allegiance player unused8)
+	(ai_allegiance human unused8)
+	(ai_allegiance covenant unused8)
+	(ai_allegiance unused8 unused9)
+	;unused9
+	(ai_allegiance player unused9)
+	(ai_allegiance human unused9)
+	(ai_allegiance covenant unused9)
+	(ai_allegiance unused9 unused7)
+)
+
+(script static void cave_break_dancer_alligences
+	;unused7
+	(ai_allegiance_remove player unused7)
+	(ai_allegiance_remove human unused7)
+	(ai_allegiance_remove unused7 unused8)
+	;unused8
+	(ai_allegiance_remove player unused8)
+	(ai_allegiance_remove human unused8)
+	(ai_allegiance_remove unused8 unused9)
+	;unused9
+	(ai_allegiance_remove player unused9)
+	(ai_allegiance_remove human unused9)
+	(ai_allegiance_remove unused9 unused7)
+)
+
 (script dormant mission_cave
 	(print "script: mission_cave")
 	(sleep_until (volume_test_objects cave_floor_entrance (players)) 1)
@@ -1279,6 +1320,7 @@
 	(object_destroy "pod_of_death")
 
 	(object_create dance_bgm)
+	(cave_set_dancer_alligences)
 	(ai_place cave_line)
 	(ai_place cave_bouncer)
 	(wake cave_unleash_queue)
@@ -1289,7 +1331,9 @@
 	(ai_magically_see_players cave_bouncer)
 
 	(wake save_cave_floor_enter)
-	(ai_place cave_floor)
+	(ai_place cave_floor1)
+	(ai_place cave_floor2)
+	(ai_place cave_floor3)
 	(objects_predict (ai_actors cave_floor))
 	(wake obj_cave_prompt)
 
@@ -1306,11 +1350,9 @@
 	(print "debug: begin post bridge sequence")
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
 	;(ai_erase cave_floor)
-	(ai_place cave_floor)
-	(ai_allegiance_remove player unused9)
-	(ai_allegiance_remove human unused9)
-	(ai_magically_see_players cave_floor)
-	(ai_timer_expire cave_floor/plank_elite)
+	;(ai_place cave_floor)
+	(cave_break_dancer_alligences)
+	(ai_timer_expire cave_floor1/plank_elite)
 
 	(sleep_until (volume_test_objects cave_floor_exit (players)) 15)
 	(wake save_cave_floor_exit)
@@ -1447,12 +1489,12 @@
 	(set global_cliff_end true)
 	(set global_cliff_dead true)
 	(sleep 10)
-	(set play_music_a30_06 false)
 	(if (and global_river_end global_rubble_end) (wake mission_extraction_cliff))
 	(if (and global_river_end global_rubble_end) (set global_extraction true))
 	(if (and global_river_end global_rubble_end) (sleep -1))
 	(if global_cliff_all_killed (ai_conversation cliff_abandon_killed))
 	(if global_cliff_all_killed (sleep -1))
+	(sleep 10)
 	(object_create foehammer_cliff)
 	(unit_set_enterable_by_player foehammer_cliff 0)
 	(cond ((or (volume_test_objects cliff_all jeep)
@@ -1938,7 +1980,6 @@
 	(set global_rubble_end true)
 	(set global_rubble_dead true)
 	(sleep 10)
-	(set play_music_a30_06 false)
 	(if (and global_river_end global_cliff_end) (wake mission_extraction_rubble))
 	(if (and global_river_end global_cliff_end) (set global_extraction true))
 	(if (and global_river_end global_cliff_end) (sleep -1))
@@ -2237,7 +2278,6 @@
 	(set global_river_end true)
 	(set global_river_dead true)
 	(sleep 10)
-	(set play_music_a30_06 false)
 	(if (and global_rubble_end global_cliff_end) (wake mission_extraction_river))
 	(if (and global_rubble_end global_cliff_end) (set global_extraction true))
 	(if (and global_rubble_end global_cliff_end) (sleep -1))
@@ -2710,16 +2750,15 @@
 	(hud_show_motion_sensor 0)
 	(fade_out 0 0 0 0)
 	(print "mission script is running")
+
 	; allegiances...
 	(ai_allegiance player human)
 	; unused6 = passive actors
 	(ai_allegiance player unused6)
 	(ai_allegiance human unused6)
 	(ai_allegiance covenant unused6)
-	; unused9 = neutral covenant (dancers)
-	(ai_allegiance player unused9)
-	(ai_allegiance human unused9)
-	(ai_allegiance covenant unused9)
+
+	; cinematic
 	(if (cinematic_skip_start) (cutscene_intro))
 	(cinematic_skip_stop)
 	(wake setup_dead)
@@ -2742,6 +2781,7 @@
 
    (mcc_mission_segment "01_start")
    
+	; mission
 	(wake objectives_a30)
 	(wake music_a30)
 
