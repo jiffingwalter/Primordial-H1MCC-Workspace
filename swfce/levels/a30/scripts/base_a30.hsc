@@ -377,15 +377,10 @@
 	(sound_looping_start "swfce\levels\a30\music\a30_01" none 1)
 
 	(sleep_until (or play_music_a30_01_alt
-				  (not play_music_a30_01)) 1 global_delay_music)
+				  (not play_music_a30_01)) 1)
 	(if play_music_a30_01_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_01" 1)
 							   (print "music: a30_01 alt...")
-							   (print "music: a30_01 alt...")
-							   (print "music: a30_01 alt...")
-							   (print "music: a30_01 alt...")
-							   (print "music: a30_01 alt...")
-
-							   (sleep_until (not play_music_a30_01) 1 global_delay_music)
+							   (sleep_until (not play_music_a30_01) 1)
 							   (set play_music_a30_01_alt false)
 							   ))
 	(set play_music_a30_01 false)
@@ -399,10 +394,10 @@
 	(sound_looping_start "swfce\levels\a30\music\a30_02" none 1)
 
 	(sleep_until (or play_music_a30_02_alt
-				  (not play_music_a30_02)) 1 global_delay_music)
+				  (not play_music_a30_02)) 1)
 	(if play_music_a30_02_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_02" 1)
 							   (print "music: a30_02 alt...")
-							   (sleep_until (not play_music_a30_02) 1 global_delay_music)
+							   (sleep_until (not play_music_a30_02) 1)
 							   (set play_music_a30_02_alt false)
 							   ))
 	(set play_music_a30_02 false)
@@ -416,10 +411,10 @@
 	(sound_looping_start "swfce\levels\a30\music\a30_03" none 1)
 
 	(sleep_until (or play_music_a30_03_alt
-				  (not play_music_a30_03)) 1 global_delay_music)
+				  (not play_music_a30_03)) 1)
 	(if play_music_a30_03_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_03" 1)
 							   (print "music: a30_03 alt...")
-							   (sleep_until (not play_music_a30_03) 1 global_delay_music)
+							   (sleep_until (not play_music_a30_03) 1)
 							   (set play_music_a30_03_alt false)
 							   ))
 	(set play_music_a30_03 false)
@@ -433,10 +428,10 @@
 	(sound_looping_start "swfce\levels\a30\music\a30_04" none 1)
 
 	(sleep_until (or play_music_a30_04_alt
-				  (not play_music_a30_04)) 1 global_delay_music)
+				  (not play_music_a30_04)) 1)
 	(if play_music_a30_04_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_04" 1)
 							   (print "music: a30_04 alt...")
-							   (sleep_until (not play_music_a30_04) 1 global_delay_music)
+							   (sleep_until (not play_music_a30_04) 1)
 							   (set play_music_a30_04_alt false)
 							   ))
 	(set play_music_a30_04 false)
@@ -450,10 +445,10 @@
 	(sound_looping_start "swfce\levels\a30\music\a30_05" none 1)
 
 	(sleep_until (or play_music_a30_05_alt
-				  (not play_music_a30_05)) 1 global_delay_music)
+				  (not play_music_a30_05)) 1)
 	(if play_music_a30_05_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_05" 1)
 							   (print "music: a30_05 alt...")
-							   (sleep_until (not play_music_a30_05) 1 global_delay_music)
+							   (sleep_until (not play_music_a30_05) 1)
 							   (set play_music_a30_05_alt false)
 							   ))
 	(set play_music_a30_05 false)
@@ -467,10 +462,10 @@
 	(sound_looping_start "swfce\levels\a30\music\a30_06" none 1)
 
 	(sleep_until (or play_music_a30_06_alt
-				  (not play_music_a30_06)) 1 global_delay_music)
+				  (not play_music_a30_06)) 1)
 	(if play_music_a30_06_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_06" 1)
 							   (print "music: a30_06 alt...")
-							   (sleep_until (not play_music_a30_06) 1 global_delay_music)
+							   (sleep_until (not play_music_a30_06) 1)
 							   (set play_music_a30_06_alt false)
 							   ))
 	(set play_music_a30_06 false)
@@ -484,10 +479,10 @@
 	(sound_looping_start "swfce\levels\a30\music\a30_07" none 1)
 
 	(sleep_until (or play_music_a30_07_alt
-				  (not play_music_a30_07)) 1 global_delay_music)
+				  (not play_music_a30_07)) 1)
 	(if play_music_a30_07_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_07" 1)
 							   (print "music: a30_07 alt...")
-							   (sleep_until (not play_music_a30_07) 1 global_delay_music)
+							   (sleep_until (not play_music_a30_07) 1)
 							   (set play_music_a30_07_alt false)
 							   ))
 	(set play_music_a30_07 false)

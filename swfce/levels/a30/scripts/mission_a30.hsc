@@ -319,7 +319,6 @@
 ;========== Banshee Scripts ==========
 ;*
 (script static void final_banshee_river
-	(set play_music_a30_06 true)
 	(object_create final_banshee_1)
 	(unit_set_enterable_by_player final_banshee_1 0)
 	(ai_place final_banshee/river_pilot_1)
@@ -340,7 +339,6 @@
 	)
 
 (script static void final_banshee_cliff
-	(set play_music_a30_07 true)
 	(object_create final_banshee_1)
 	(unit_set_enterable_by_player final_banshee_1 0)
 	(ai_place final_banshee/cliff_pilot_1)
@@ -356,11 +354,9 @@
 	(ai_magically_see_players final_banshee)
 
 	(sleep_until (=  0 (ai_living_count final_banshee)) 1)
-	(set play_music_a30_07 false)
 	)
 
 (script static void final_banshee_rubble
-	(set play_music_a30_07 true)
 	(object_create final_banshee_1)
 	(unit_set_enterable_by_player final_banshee_1 0)
 	(ai_place final_banshee/rubble_pilot_1)
@@ -376,7 +372,6 @@
 	(ai_magically_see_players final_banshee)
 
 	(sleep_until (=  0 (ai_living_count final_banshee)) 1)
-	(set play_music_a30_07 false)
 	)
 *;
 
@@ -2491,21 +2486,6 @@
 			 ((and global_cliff_end global_river_end) (activate_team_nav_point_flag "default_red" player rubble_nav_flag 0))
 			 ((and global_rubble_end global_cliff_end) (activate_team_nav_point_flag "default_red" player river_nav_flag 0))
 		 ))
-
-;	(sleep_until (and global_cliff_start
-;				   global_rubble_start
-;			  	   global_river_start) 15)
-;	(set mark_final true)
-;	(sleep_until (and global_cliff_end
-;				   global_rubble_end
-;			  	   global_river_end) 15)
-;	(cond ((volume_test_objects cliff_all (players)) (mission_extraction_cliff))
-;		 ((volume_test_objects rubble_all (players)) (mission_extraction_rubble))
-;		 ((volume_test_objects river_all (players)) (mission_extraction_river))
-;		 ((not mark_final_cliff_waiting) (mission_extraction_cliff))
-;		 ((not mark_final_rubble_waiting) (mission_extraction_rubble))
-;		 ((not mark_final_river_waiting) (mission_extraction_river))
-;		 )
 	)
 
 (script dormant mission_field2
@@ -2786,8 +2766,7 @@
 	(show_hud 1)
 	(game_save_no_timeout)
 
-	(sleep_until (or global_cliff_start global_rubble_start global_river_start) 1)
-	;(set play_music_a30_06 false)
+	;(sleep_until (or global_cliff_start global_rubble_start global_river_start) 1)
 	)
 
 (script startup mission_killer
