@@ -431,7 +431,6 @@
 		 ((volume_test_objects lz_landing (players)) (ai_conversation lz_cship_danger))
 		 (true (ai_conversation lz_cship_safe))
 		 )
-	;(set play_music_a30_01_alt true)
 
 	(vehicle_hover lz_cship 0)
 	(recording_play_and_hover lz_cship lz_cship_landing_drop)
@@ -458,7 +457,6 @@
 	(sleep 30)
 	(unit_close lz_cship)
 	(object_set_collideable lz_cship 0)
-	;(set play_music_a30_01 false)
 
 	(sleep_until (= (ai_living_count lz_search) 0) 1)
 	(set mark_lz_dropship true)
@@ -1278,36 +1276,15 @@
 )
 
 (script static void cave_set_dancer_alligences
-	;unused7
-	(ai_allegiance player unused7)
 	(ai_allegiance human unused7)
-	(ai_allegiance covenant unused7)
-	(ai_allegiance unused7 unused8)
-	;unused8
-	(ai_allegiance player unused8)
 	(ai_allegiance human unused8)
-	(ai_allegiance covenant unused8)
-	(ai_allegiance unused8 unused9)
-	;unused9
-	(ai_allegiance player unused9)
 	(ai_allegiance human unused9)
-	(ai_allegiance covenant unused9)
-	(ai_allegiance unused9 unused7)
 )
 
 (script static void cave_break_dancer_alligences
-	;unused7
-	(ai_allegiance_remove player unused7)
 	(ai_allegiance_remove human unused7)
-	(ai_allegiance_remove unused7 unused8)
-	;unused8
-	(ai_allegiance_remove player unused8)
 	(ai_allegiance_remove human unused8)
-	(ai_allegiance_remove unused8 unused9)
-	;unused9
-	(ai_allegiance_remove player unused9)
 	(ai_allegiance_remove human unused9)
-	(ai_allegiance_remove unused9 unused7)
 )
 
 (script dormant mission_cave
@@ -1326,7 +1303,7 @@
 	(wake cave_unleash_queue)
 
 	(sleep_until (volume_test_objects cave_bouncer_trigger (players)) 1)
-	(ai_set_team cave_bouncer covenant)
+	(ai_command_list_advance cave_bouncer)
 	(ai_set_blind cave_bouncer false)
 	(ai_magically_see_players cave_bouncer)
 
@@ -1349,8 +1326,6 @@
 	(sleep_until cutscene_bridge_finished)
 	(print "debug: begin post bridge sequence")
 	(effect_new "swfce\sound\sfx\impulse\record_scratch\record scratch sfx" record_scratch_sfx)
-	;(ai_erase cave_floor)
-	;(ai_place cave_floor)
 	(cave_break_dancer_alligences)
 	(ai_timer_expire cave_floor1/plank_elite)
 

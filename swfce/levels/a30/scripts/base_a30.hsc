@@ -380,6 +380,11 @@
 				  (not play_music_a30_01)) 1 global_delay_music)
 	(if play_music_a30_01_alt (begin (sound_looping_set_alternate "swfce\levels\a30\music\a30_01" 1)
 							   (print "music: a30_01 alt...")
+							   (print "music: a30_01 alt...")
+							   (print "music: a30_01 alt...")
+							   (print "music: a30_01 alt...")
+							   (print "music: a30_01 alt...")
+
 							   (sleep_until (not play_music_a30_01) 1 global_delay_music)
 							   (set play_music_a30_01_alt false)
 							   ))
