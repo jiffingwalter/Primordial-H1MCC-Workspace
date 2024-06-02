@@ -2706,12 +2706,8 @@
 	(fade_out 0 0 0 0)
 	(print "mission script is running")
 
-	; allegiances...
 	(ai_allegiance player human)
-	; unused6 = passive actors
-	(ai_allegiance player unused6)
-	(ai_allegiance human unused6)
-	(ai_allegiance covenant unused6)
+	(prim_set_passive_alligence)
 
 	; cinematic
 	(if (cinematic_skip_start) (cutscene_intro))

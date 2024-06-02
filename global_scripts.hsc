@@ -73,6 +73,13 @@
 	)
 
 ; PRIMORDIALS GLOBAL SCRIPTS
+; set passive ai alligences
+(script static void prim_set_passive_alligence
+	(ai_allegiance player unused6)
+	(ai_allegiance human unused6)
+	(ai_allegiance covenant unused6)
+)
+
 ; debug shortcuts
 (script static void bump
 	(print "toggling bump possession")
