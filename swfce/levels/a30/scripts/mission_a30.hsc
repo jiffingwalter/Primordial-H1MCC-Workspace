@@ -78,19 +78,19 @@
 	(object_teleport foehammer_cliff foehammer_cliff_flag)
 	(recording_play_and_hover foehammer_cliff foehammer_cliff_in)
 
-;	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
-;		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
-;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
-;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
-;		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
+	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
+		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
+	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
+		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
+	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
+		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
+	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
+		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
 
 	(ai_migrate cliff_marine cliff_marine/waiting_marine)
 
 	(sleep (recording_time foehammer_cliff))
-;	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
+	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
 	(activate_team_nav_point_object "default_red" player foehammer_cliff 1)
 
 	(ai_go_to_vehicle cliff_marine foehammer_cliff "riderLB")
@@ -99,8 +99,8 @@
 	(ai_go_to_vehicle cliff_marine foehammer_cliff "riderRM")
 
 	(unit_set_enterable_by_player foehammer_cliff 1)
-;	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
+	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
+	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
 	
 	(set global_timer (+ (game_time) delay_lost))
 	(if (game_is_cooperative) (sleep_until (or (vehicle_test_seat_list foehammer_cliff "P-riderLF" (players))
@@ -144,8 +144,8 @@
 	(recording_play_and_delete foehammer_rubble foehammer_rubble_out)
 	(camera_set rubble_extraction_2 350)
 	(sleep 60)
-;	(sound_impulse_start sound\dialog\a30\A30_extract_060_Cortana none 1)
-;	(sleep (sound_impulse_time sound\dialog\a30\A30_extract_060_Cortana))
+;(sound_impulse_start sound\dialog\a30\A30_extract_060_Cortana none 1)
+	(sleep (sound_impulse_time sound\dialog\a30\A30_extract_060_Cortana))
 	(print "cortana done")
 	(sleep (- (camera_time) 30))
 	(fade_out 0 0 0 30)
@@ -174,19 +174,19 @@
 	(object_teleport foehammer_rubble foehammer_rubble_flag)
 	(recording_play_and_hover foehammer_rubble foehammer_rubble_in)
 
-;	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
-;		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
-;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
-;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
-;		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
+	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
+		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
+	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
+		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
+	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
+		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
+	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
+		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
 
 	(ai_migrate rubble_marine rubble_marine/waiting_marine)
 
 	(sleep (recording_time foehammer_rubble))
-;	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
+	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
 	(activate_team_nav_point_object "default_red" player foehammer_rubble 1)
 
 	(ai_go_to_vehicle rubble_marine foehammer_rubble "riderLB")
@@ -195,8 +195,8 @@
 	(ai_go_to_vehicle rubble_marine foehammer_rubble "riderRM")
 
 	(unit_set_enterable_by_player foehammer_rubble 1)
-;	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
+	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
+	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
 
 	(set global_timer (+ (game_time) delay_lost))
 	(if (game_is_cooperative) (sleep_until (or (vehicle_test_seat_list foehammer_rubble "P-riderLF" (players))
@@ -240,8 +240,8 @@
 	(recording_play_and_delete foehammer_river foehammer_river_out)
 	(camera_set river_extraction_2 600)
 	(sleep 200)
-;	(sound_impulse_start sound\dialog\a30\A30_extract_060_Cortana none 1)
-;	(sleep (sound_impulse_time sound\dialog\a30\A30_extract_060_Cortana))
+	(sound_impulse_start sound\dialog\a30\A30_extract_060_Cortana none 1)
+	(sleep (sound_impulse_time sound\dialog\a30\A30_extract_060_Cortana))
 	(print "cortana done")
 	(sleep (- (camera_time) 30))
 	(fade_out 0 0 0 30)
@@ -270,19 +270,19 @@
 	(object_teleport foehammer_river foehammer_river_flag)
 	(recording_play_and_hover foehammer_river foehammer_river_in)
 
-;	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
-;		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
-;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
-;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
-;		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
+	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
+		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
+	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
+		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
+	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
+		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
+	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
+		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
 
 	(ai_migrate river_marine river_marine/waiting_marine)
 
 	(sleep (recording_time foehammer_river))
-;	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
+	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
 	(activate_team_nav_point_object "default_red" player foehammer_river 1)
 
 	(ai_go_to_vehicle river_marine foehammer_river "riderLB")
@@ -291,8 +291,8 @@
 	(ai_go_to_vehicle river_marine foehammer_river "riderRM")
 
 	(unit_set_enterable_by_player foehammer_river 1)
-;	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
-;	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
+	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
+	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
 	
 	(set global_timer (+ (game_time) delay_lost))
 	(if (game_is_cooperative) (sleep_until (or (vehicle_test_seat_list foehammer_river "P-riderLF" (players))
@@ -418,14 +418,14 @@
 	(objects_predict lz_cship)
 
 	(sleep (max 0 (- (recording_time lz_cship) 750)))
-	(ai_conversation lz_cship_enter)
-	(sleep_until (< 4 (ai_conversation_status lz_cship_enter)) 1)
+	; (ai_conversation lz_cship_enter)
+	; (sleep_until (< 4 (ai_conversation_status lz_cship_enter)) 1)
 
 	(sleep (recording_time lz_cship))
-	(cond ((volume_test_objects lz_bridge (players)) (ai_conversation lz_cship_danger))
-		 ((volume_test_objects lz_landing (players)) (ai_conversation lz_cship_danger))
-		 (true (ai_conversation lz_cship_safe))
-		 )
+	; (cond ((volume_test_objects lz_bridge (players)) (ai_conversation lz_cship_danger))
+	; 	 ((volume_test_objects lz_landing (players)) (ai_conversation lz_cship_danger))
+	; 	 (true (ai_conversation lz_cship_safe))
+	; 	 )
 
 	(vehicle_hover lz_cship 0)
 	(recording_play_and_hover lz_cship lz_cship_landing_drop)
@@ -463,19 +463,17 @@
 	(ai_place bobombs_1/landing)
 	(sleep_until (or (volume_test_objects plant_trigger (players))
 				  (volume_test_objects lz_bridge (players))) 1 delay_dawdle)
-	(sleep_until (or (< 4 (ai_conversation_status intro_1))
-				  (volume_test_objects lz_bridge (players))) 1)
-	(ai_conversation lz_prompt_1)
+	(sleep_until (volume_test_objects lz_bridge (players)) 1)
+	;(ai_conversation lz_prompt_1)
 
-	(sleep_until (or (< 4 (ai_conversation_status lz_prompt_1))
-				  (volume_test_objects lz_bridge (players))) 1)
+	(sleep_until (volume_test_objects lz_bridge (players)) 1)
 	(set mark_evade true)
 
 	(sleep_until (or (volume_test_objects plant_trigger (players))
 				  (volume_test_objects lz_bridge (players))) 1)
-	(if (volume_test_objects plant_trigger (players)) (ai_conversation flavor_plant))
-	(if (volume_test_objects plant_trigger (players)) (sleep_until (or (< 4 (ai_conversation_status flavor_plant))
-				  (volume_test_objects lz_bridge (players))) 1))
+	;(if (volume_test_objects plant_trigger (players)) (ai_conversation flavor_plant))
+	;(if (volume_test_objects plant_trigger (players)) (sleep_until (or (< 4 (ai_conversation_status flavor_plant))
+	;			  (volume_test_objects lz_bridge (players))) 1))
 
 	(wake mission_lz_dropship)
 
@@ -502,7 +500,7 @@
 				  (and (< 0 (player_count))
 					  (not (or (volume_test_objects first_structure_1 (players))
 							 (volume_test_objects first_structure_2 (players)))))) 15)
-	(if (not global_first_end) (ai_conversation first_abandon))
+	;(if (not global_first_end) (ai_conversation first_abandon))
 	)
 
 (script dormant obj_first_all_killed
@@ -597,7 +595,7 @@
 	(sleep 90)
 	(ai_retreat first_marine)
 	(if global_first_end (sleep -1))
-	(ai_conversation first_retreat)
+	;(ai_conversation first_retreat)
 	
 	(sleep 45)
 	(wake mission_first_retreat)
@@ -669,8 +667,8 @@
 	(sleep 30)
 	(sleep (recording_time fort_cship))
 
-	(if (> (ai_living_count first_marine) 1) (sound_impulse_start "sound\dialog\a30\A30_210_Bisenti" none 1))
-		(sleep (sound_impulse_time "sound\dialog\a30\A30_210_Bisenti"))
+	;(if (> (ai_living_count first_marine) 1) (sound_impulse_start "sound\dialog\a30\A30_210_Bisenti" none 1))
+	;	(sleep (sound_impulse_time "sound\dialog\a30\A30_210_Bisenti"))
 	(ai_disregard (ai_actors first_wave/wave_2_lz_toon) 0)
 	(ai_magically_see_encounter first_marine first_wave)
 	(ai_migrate first_marine/base_toon first_marine/base_fort)
@@ -727,8 +725,8 @@
 	(objects_predict pipe_cship)
 
 	(sleep (recording_time pipe_cship))
-	(if (> (ai_living_count first_marine) 1) (sound_impulse_start "sound\dialog\a30\A30_210_Fitzgerald" none 1))
-		(sleep (sound_impulse_time "sound\dialog\a30\A30_210_Fitzgerald"))
+	;(if (> (ai_living_count first_marine) 1) (sound_impulse_start "sound\dialog\a30\A30_210_Fitzgerald" none 1))
+	;	(sleep (sound_impulse_time "sound\dialog\a30\A30_210_Fitzgerald"))
 
 	(ai_disregard (ai_actors first_wave/wave_3_lz_toon) 0)
 	(ai_magically_see_encounter first_marine first_wave)
@@ -786,8 +784,8 @@
 	(objects_predict back_cship)
 
 	(sleep (recording_time back_cship))
-	(if (> (ai_living_count first_marine) 1) (sound_impulse_start "sound\dialog\a30\A30_220_Bisenti" none 1))
-		(sleep (sound_impulse_time "sound\dialog\a30\A30_220_Bisenti"))
+	;(if (> (ai_living_count first_marine) 1) (sound_impulse_start "sound\dialog\a30\A30_220_Bisenti" none 1))
+	;	(sleep (sound_impulse_time "sound\dialog\a30\A30_220_Bisenti"))
 	(ai_disregard (ai_actors first_wave/wave_4_lz_toon) 0)
 	(ai_magically_see_encounter first_marine first_wave)
 	(ai_migrate first_marine/base_toon first_marine/base_back)
@@ -952,7 +950,7 @@
 	
 	(sleep_until (or (volume_test_objects cave_entrance (players))
 				  (vehicle_test_seat_list jeep W-driver (players))) 5 delay_lost)
-	(if (not (vehicle_test_seat_list jeep W-driver (players))) (ai_conversation cave_no_jeep))
+	;(if (not (vehicle_test_seat_list jeep W-driver (players))) (ai_conversation cave_no_jeep))
 
 	(sleep_until (vehicle_test_seat_list jeep W-driver (players)))
 	(deactivate_team_nav_point_object player jeep)
@@ -968,14 +966,14 @@
 
 	(sleep_until (volume_test_objects cave_entrance (players)) 1 delay_lost)
 	(if (not (volume_test_objects cave_entrance (players))) (activate_team_nav_point_flag "default_red" player cave_nav_flag 0))
-	(if (not (volume_test_objects cave_entrance (players))) (ai_conversation cave_prompt))
+	;(if (not (volume_test_objects cave_entrance (players))) (ai_conversation cave_prompt))
 
 	(sleep_until (volume_test_objects cave_entrance (players)) 1)
-	(ai_conversation cave_entrance)
+	;(ai_conversation cave_entrance)
 	(deactivate_team_nav_point_flag player cave_nav_flag)
 
 	(sleep_until (volume_test_objects cave_driving (players)) 5)
-	(ai_conversation first_driving)
+	;(ai_conversation first_driving)
 
 	(sleep_until (volume_test_objects cave_pretzel_end (players)) 5)
 	(set play_music_a30_04 false)
@@ -990,7 +988,7 @@
 (script dormant mission_first
 	(print "script: mission_first")
 	(sleep_until (volume_test_objects first_arrival (players)) 5)
-	(if (game_safe_to_speak) (ai_conversation first_arrival))
+	;(if (game_safe_to_speak) (ai_conversation first_arrival))
 	(wake save_first_arrival)
 	(wake mission_field1)
 	(ai_place first_marine)
@@ -1311,7 +1309,6 @@
 
 	(sleep_until (or (volume_test_objects cave_gap (players))
 				  (< 0 (device_group_get bridge_control_position))) 1)
-	(print "debug: cave_gap triggered")
 
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1 delay_late)
 	(sleep_until (< 0 (device_group_get bridge_control_position)) 1)
@@ -1326,7 +1323,7 @@
 
 	(sleep_until (volume_test_objects cave_floor_exit (players)) 15)
 	(wake save_cave_floor_exit)
-	(ai_conversation second_driving)
+;	(ai_conversation second_driving)
 
 	(sleep_until (= (structure_bsp_index) 1))
 	(device_set_position_immediate bridge 0)
@@ -1359,7 +1356,7 @@
 
 (script dormant obj_cliff_arrival
 	(sleep_until (volume_test_objects cliff_arrival (players)) 15)
-	(if (not global_cliff_welcome) (ai_conversation cliff_arrival))
+;	(if (not global_cliff_welcome) (ai_conversation cliff_arrival))
 	(wake save_cliff_arrival)
 	)
 
@@ -1398,9 +1395,9 @@
 	(if (< (ai_living_fraction cliff_wave) .3) (set global_cliff_welcome true))
 	(sleep_until (game_safe_to_speak) 1)
 	(wake save_cliff_welcome)
-	(ai_conversation cliff_welcome)
+;	(ai_conversation cliff_welcome)
 	
-	(sleep_until (< 4 (ai_conversation_status cliff_welcome)) 1)
+;	(sleep_until (< 4 (ai_conversation_status cliff_welcome)) 1)
 	(set global_cliff_welcome true)
 	)
 
@@ -1452,7 +1449,7 @@
 ;	(if mark_final_banshee (sleep_until (=  0 (ai_living_count final_banshee)) 1 delay_lost))
 ;	(ai_kill final_banshee)
 	(set test_cliff_kill true)
-	(ai_conversation_stop cliff_welcome)
+;	(ai_conversation_stop cliff_welcome)
 	(sleep delay_calm)
 	(ai_follow_target_disable cliff_marine)
 	(ai_maneuver_enable cliff_marine 1)
@@ -1875,7 +1872,7 @@
 	(wake mission_rubble_marine)
 
 	(sleep_until (volume_test_objects rubble_arrival (players)) 15)
-	(ai_conversation rubble_arrival)
+	;(ai_conversation rubble_arrival)
 	(deactivate_team_nav_point_flag player cliff_nav_flag)
 	(deactivate_team_nav_point_flag player rubble_nav_flag)
 	(deactivate_team_nav_point_flag player river_nav_flag)
@@ -1889,9 +1886,9 @@
 				  (volume_test_objects rubble_attack (players))) 15)
 	(sleep_until (and (< (ai_living_count rubble_wave) 3) 
 				  (volume_test_objects rubble_attack (players))) 15 delay_late)
-	(ai_conversation rubble_welcome)
+	;(ai_conversation rubble_welcome)
 
-	(sleep_until (< 4 (ai_conversation_status rubble_welcome)) 1 delay_late)
+	;(sleep_until (< 4 (ai_conversation_status rubble_welcome)) 1 delay_late)
 	(set global_rubble_welcome true)
 	(wake obj_rubble_abandon)
 	(wake obj_rubble_all_killed)
@@ -1945,7 +1942,7 @@
 ;	(if mark_final_banshee (sleep_until (=  0 (ai_living_count final_banshee)) 1 delay_lost))
 ;	(ai_kill final_banshee)
 	(set test_rubble_kill true)
-	(ai_conversation_stop rubble_welcome)
+	;(ai_conversation_stop rubble_welcome)
 	(sleep delay_calm)
 	(set global_rubble_end true)
 	(set global_rubble_dead true)
@@ -2061,7 +2058,8 @@
 		 (global_river_dead (sleep -1))
 		 (global_river_all_killed (ai_conversation river_abandon_killed))
 		 (global_river_welcome (ai_conversation river_abandon_welcome))
-		 (true (ai_conversation river_abandon)))
+		 (true (ai_conversation river_abandon))
+		)
 ;coop If it starts to be a problem that two players can run all over, fix it here
 	)
 
@@ -2192,7 +2190,7 @@
 
 	(sleep_until (volume_test_objects river_attack (players)) 15)
 	(sleep_until (game_safe_to_speak) 1)
-	(ai_conversation river_arrival)
+	;(ai_conversation river_arrival)
 	(deactivate_team_nav_point_flag player cliff_nav_flag)
 	(deactivate_team_nav_point_flag player rubble_nav_flag)
 	(deactivate_team_nav_point_flag player river_nav_flag)
@@ -2467,7 +2465,7 @@
 	(sleep_until (and global_cliff_end
 				   global_rubble_end
 			  	   global_river_end) 15 delay_dawdle)
-	(ai_conversation third_driving)
+	;(ai_conversation third_driving)
 
 	(sleep_until (and global_cliff_end
 				   global_rubble_end
@@ -2536,7 +2534,7 @@
 	
 	(sleep 60)
 	
-;	(sound_impulse_start sound\dialog\a30\a30_insert_010_cortana none 1)
+	(sound_impulse_start sound\dialog\a30\a30_insert_010_cortana none 1)
 	
 	(sleep 30)
 	
@@ -2721,7 +2719,7 @@
 	(sleep 30)
 	(fade_in 1 1 1 120)
 	(sleep 30)
-	(ai_conversation intro_1)
+	;(ai_conversation intro_1)
 	(sleep 120)
 	(cinematic_show_letterbox 0)
 	(player_camera_control 1)
@@ -2738,7 +2736,7 @@
 
 	(sleep_until (not (volume_test_objects_all lz_lifeboat (players))) 1)
 	(wake save_mission_start)
-	(ai_conversation intro_1b)
+	;(ai_conversation intro_1b)
 	(wake mission_lz)
 	(wake mission_first)
 	(wake mission_cave_entrance)
