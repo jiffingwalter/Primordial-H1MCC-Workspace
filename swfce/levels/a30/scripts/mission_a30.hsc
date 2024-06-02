@@ -78,19 +78,19 @@
 	(object_teleport foehammer_cliff foehammer_cliff_flag)
 	(recording_play_and_hover foehammer_cliff foehammer_cliff_in)
 
-	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
-		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
-	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
-		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
-	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
-		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
-	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
-		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
+;		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
+;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
+;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
+;		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
 
 	(ai_migrate cliff_marine cliff_marine/waiting_marine)
 
 	(sleep (recording_time foehammer_cliff))
-	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
+;	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
 	(activate_team_nav_point_object "default_red" player foehammer_cliff 1)
 
 	(ai_go_to_vehicle cliff_marine foehammer_cliff "riderLB")
@@ -99,8 +99,8 @@
 	(ai_go_to_vehicle cliff_marine foehammer_cliff "riderRM")
 
 	(unit_set_enterable_by_player foehammer_cliff 1)
-	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
-	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
+;	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
 	
 	(set global_timer (+ (game_time) delay_lost))
 	(if (game_is_cooperative) (sleep_until (or (vehicle_test_seat_list foehammer_cliff "P-riderLF" (players))
@@ -144,8 +144,8 @@
 	(recording_play_and_delete foehammer_rubble foehammer_rubble_out)
 	(camera_set rubble_extraction_2 350)
 	(sleep 60)
-	(sound_impulse_start sound\dialog\a30\A30_extract_060_Cortana none 1)
-	(sleep (sound_impulse_time sound\dialog\a30\A30_extract_060_Cortana))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_060_Cortana none 1)
+;	(sleep (sound_impulse_time sound\dialog\a30\A30_extract_060_Cortana))
 	(print "cortana done")
 	(sleep (- (camera_time) 30))
 	(fade_out 0 0 0 30)
@@ -174,19 +174,19 @@
 	(object_teleport foehammer_rubble foehammer_rubble_flag)
 	(recording_play_and_hover foehammer_rubble foehammer_rubble_in)
 
-	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
-		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
-	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
-		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
-	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
-		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
-	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
-		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
+;		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
+;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
+;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
+;		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
 
 	(ai_migrate rubble_marine rubble_marine/waiting_marine)
 
 	(sleep (recording_time foehammer_rubble))
-	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
+;	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
 	(activate_team_nav_point_object "default_red" player foehammer_rubble 1)
 
 	(ai_go_to_vehicle rubble_marine foehammer_rubble "riderLB")
@@ -195,8 +195,8 @@
 	(ai_go_to_vehicle rubble_marine foehammer_rubble "riderRM")
 
 	(unit_set_enterable_by_player foehammer_rubble 1)
-	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
-	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
+;	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
 
 	(set global_timer (+ (game_time) delay_lost))
 	(if (game_is_cooperative) (sleep_until (or (vehicle_test_seat_list foehammer_rubble "P-riderLF" (players))
@@ -240,8 +240,8 @@
 	(recording_play_and_delete foehammer_river foehammer_river_out)
 	(camera_set river_extraction_2 600)
 	(sleep 200)
-	(sound_impulse_start sound\dialog\a30\A30_extract_060_Cortana none 1)
-	(sleep (sound_impulse_time sound\dialog\a30\A30_extract_060_Cortana))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_060_Cortana none 1)
+;	(sleep (sound_impulse_time sound\dialog\a30\A30_extract_060_Cortana))
 	(print "cortana done")
 	(sleep (- (camera_time) 30))
 	(fade_out 0 0 0 30)
@@ -270,19 +270,19 @@
 	(object_teleport foehammer_river foehammer_river_flag)
 	(recording_play_and_hover foehammer_river foehammer_river_in)
 
-	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
-		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
-	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
-		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
-	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
-		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
-	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
-		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_010_Cortana none 1)
+;		(sleep (sound_impulse_time sound\dialog\a30\A30_extract_010_Cortana))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_020_Pilot none 1)
+;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_020_Pilot)))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_030_Cortana none 1)
+;		(sleep (+ 30 (sound_impulse_time sound\dialog\a30\A30_extract_030_Cortana)))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_040_Cortana none 1)
+;		(sleep (+ 60 (sound_impulse_time sound\dialog\a30\A30_extract_040_Cortana)))
 
 	(ai_migrate river_marine river_marine/waiting_marine)
 
 	(sleep (recording_time foehammer_river))
-	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
+;	(sound_impulse_start "sound\dialog\a30\A30_1141_Cortana" none 1)
 	(activate_team_nav_point_object "default_red" player foehammer_river 1)
 
 	(ai_go_to_vehicle river_marine foehammer_river "riderLB")
@@ -291,8 +291,8 @@
 	(ai_go_to_vehicle river_marine foehammer_river "riderRM")
 
 	(unit_set_enterable_by_player foehammer_river 1)
-	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
-	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
+;	(sleep (sound_impulse_time "sound\dialog\a30\A30_1141_Cortana"))
+;	(sound_impulse_start sound\dialog\a30\A30_extract_050_Pilot none 1)
 	
 	(set global_timer (+ (game_time) delay_lost))
 	(if (game_is_cooperative) (sleep_until (or (vehicle_test_seat_list foehammer_river "P-riderLF" (players))
@@ -1375,8 +1375,8 @@
 	(sleep_until (or (< (ai_living_fraction cliff_wave) .5)
 				  (volume_test_objects cliff_right_fort_first_floor (players))
 				  (volume_test_objects cliff_left_fort_first_floor (players))) 5)
-	(if (not (volume_test_objects cliff_inside_left_bottom (players))) (sound_impulse_start "sound\dialog\a30\a30_540_cortana" none 1))
-	(sleep (sound_impulse_time "sound\dialog\a30\a30_540_cortana" ))
+;	(if (not (volume_test_objects cliff_inside_left_bottom (players))) (sound_impulse_start "sound\dialog\a30\a30_540_cortana" none 1))
+;	(sleep (sound_impulse_time "sound\dialog\a30\a30_540_cortana" ))
 
 	(ai_timer_expire cliff_wave/left_fort_inside_grunt)
 	(ai_timer_expire cliff_wave/right_fort_inside_grunt)
@@ -2536,7 +2536,7 @@
 	
 	(sleep 60)
 	
-	(sound_impulse_start sound\dialog\a30\a30_insert_010_cortana none 1)
+;	(sound_impulse_start sound\dialog\a30\a30_insert_010_cortana none 1)
 	
 	(sleep 30)
 	
