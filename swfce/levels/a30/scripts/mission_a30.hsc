@@ -6,10 +6,19 @@
 
 (script continuous gotohell_beatch
 	(if debug (print "a player has entered the kill zone..."))
-	(sleep_until (volume_test_objects gotohell (players)) delay_dawdle)
-	(if (volume_test_objects gotohell (list_get (players) 0)) (damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0)))
-	(if (volume_test_objects gotohell (list_get (players) 1)) (damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 1)))
-	)
+	(sleep_until (or
+		(volume_test_objects gotohell (players))
+		(volume_test_objects gotohell_again (players))
+	) delay_dawdle)
+	(if (or
+		(volume_test_objects gotohell (list_get (players) 0))
+		(volume_test_objects gotohell_again (list_get (players) 0))
+	) (damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0)))
+	(if (or
+		(volume_test_objects gotohell (list_get (players) 1))
+		(volume_test_objects gotohell_again (list_get (players) 1))
+	) (damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 1)))
+)
 
 (script continuous tutorial_sniper
 	(if (or (game_is_cooperative)
@@ -1337,6 +1346,7 @@
 
 	(sleep_until (= (structure_bsp_index) 1))
 	(device_set_position_immediate bridge 0)
+	(ai_kill cave_carriers)
 	)
 
 ;========== Cliff Scripts ==========
