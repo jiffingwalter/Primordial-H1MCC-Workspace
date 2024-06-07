@@ -5,11 +5,11 @@
 (global boolean debug false)
 
 (script continuous gotohell_beatch
-	(if debug (print "a player has entered the kill zone..."))
 	(sleep_until (or
 		(volume_test_objects gotohell (players))
 		(volume_test_objects gotohell_again (players))
 	) delay_dawdle)
+	(if debug (print "a player has entered the kill zone..."))
 	(if (or
 		(volume_test_objects gotohell (list_get (players) 0))
 		(volume_test_objects gotohell_again (list_get (players) 0))
@@ -21,6 +21,7 @@
 )
 
 (script continuous tutorial_sniper
+	(sleep_forever);tutorial disabled, dummy
 	(if (or (game_is_cooperative)
 		   (not (= (game_difficulty_get) normal))
 		   (unit_solo_player_integrated_night_vision_is_active))
@@ -2523,6 +2524,8 @@
 
 (script dormant mission_field2
 	(print "script: mission_field2")
+	(sleep 90)
+	(if (not (or (game_is_cooperative)(volume_test_object cave_exit jeep))) (ai_place field2_jeep_marine))
 	(sleep_until (volume_test_objects field2_trigger (players)))
 	(ai_place bobombs_2/field2)
 	(ai_place bobombs_2/field2_carriers)
