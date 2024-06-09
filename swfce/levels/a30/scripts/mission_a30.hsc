@@ -471,6 +471,7 @@
 	(print "script: mission_lz")
 	(set play_music_a30_01 true)
 	(ai_place bobombs_1/landing)
+	(ai_place lz_search/pass_jackal)
 	(sleep_until (or (volume_test_objects plant_trigger (players))
 				  (volume_test_objects lz_bridge (players))) 1 delay_dawdle)
 	(sleep_until (volume_test_objects lz_bridge (players)) 1)
@@ -498,6 +499,8 @@
 	(sleep_until (volume_test_objects lz_pass (players)) 1)
 	(ai_place lz_search/pass_grunt)
 	(ai_place lz_search/pass_elite)
+	(sleep_until (volume_test_objects pass_mouth (players)) 1)
+	(ai_place lz_search/last_jackal)
 	(objects_predict (ai_actors lz_search))
 	)
 
