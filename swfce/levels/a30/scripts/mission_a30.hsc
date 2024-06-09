@@ -1472,6 +1472,7 @@
 	(set test_cliff_kill true)
 ;	(ai_conversation_stop cliff_welcome)
 	(sleep delay_calm)
+	(increment_rescue_attempt)
 	(ai_follow_target_disable cliff_marine)
 	(ai_maneuver_enable cliff_marine 1)
 	(set global_cliff_end true)
@@ -1970,6 +1971,7 @@
 	(set test_rubble_kill true)
 	;(ai_conversation_stop rubble_welcome)
 	(sleep delay_calm)
+	(increment_rescue_attempt)
 	(set global_rubble_end true)
 	(set global_rubble_dead true)
 	(sleep 10)
@@ -2274,6 +2276,7 @@
 	(set test_river_kill true)
 	(ai_conversation_stop river_welcome)
 	(sleep delay_calm)
+	(increment_rescue_attempt)
 	(set global_river_end true)
 	(set global_river_dead true)
 	(sleep 10)
@@ -2529,6 +2532,11 @@
 	(sleep_until (volume_test_objects field2_trigger (players)))
 	(ai_place bobombs_2/field2)
 	(ai_place bobombs_2/field2_carriers)
+)
+
+(script static short increment_rescue_attempt
+	(print "debug: incremented rescue attempt...")
+	(set global_marine_rescue_attempt (+ global_marine_rescue_attempt 1))
 )
 
 ;========== Main Mission Script ==========

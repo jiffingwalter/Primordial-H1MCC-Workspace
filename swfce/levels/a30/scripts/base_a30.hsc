@@ -15,6 +15,7 @@
 
 (global boolean global_mission_won false)
 (global boolean global_mission_lost false)
+(global short global_marine_rescue_attempt 0)
 (global boolean global_one_marine_rescued false)
 (global boolean global_two_marine_rescued false)
 (global boolean global_three_marine_rescued false)

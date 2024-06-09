@@ -77,15 +77,6 @@
 ; 	(if collision_debug (set collision_debug 0) (set collision_debug 1))
 ; )
 
-(script static void test_dropship
-	(print "spawning test dropship")
-	(object_destroy osprey)
-	(object_create osprey)
-	(vehicle_hover osprey 1)
-	(ai_place test_dropship/passengers)
-	(vehicle_load_magic osprey "passenger" (ai_actors test_dropship/passengers))
-)
-
 (script continuous cheat_allweapons_control
 	; panel turned ON
 	(sleep_until (= 1 (device_get_position control_allweapons)) 1)
@@ -116,12 +107,12 @@
 			play_test_music_alt 
 			(not play_test_music)
 		)
-	1 global_delay_music)
+	1)
 	(if play_test_music_alt
 		(begin
 			(sound_looping_set_alternate "swfce\levels\a30\music\a30_06" 1)
 			(print "test music alt...")
-			(sleep_until (not play_test_music) 1 global_delay_music)
+			(sleep_until (not play_test_music) 1)
 			(set play_test_music_alt false)
 		)
 	)
