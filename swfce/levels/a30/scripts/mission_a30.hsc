@@ -2690,7 +2690,17 @@
 	(object_destroy dead_marine_3)
 	)
 
-;; dev cheats and skips
+;;; dev cheats and skips ------------------------------------------------------
+(script static void place_skiphog
+	(object_create_anew jeep)
+	(object_create_anew gunner)
+	(unit_enter_vehicle gunner jeep "W-gunner")
+	(ai_attach gunner jeep_marine/jeep_marine)
+	(object_create_anew passenger)
+	(unit_enter_vehicle passenger jeep "W-passenger")
+	(ai_attach passenger jeep_marine/jeep_marine)
+)
+
 (script static void skipto_shared
 	(sound_looping_set_scale "swfce\levels\a30\music\a30_01" 0)
 	(kill_music)
@@ -2714,7 +2724,8 @@
 	(skipto_shared)
 	(set skippedto_caveent true)
 	(volume_teleport_players_not_inside cave_entrance skip_caveent)
-	(object_create skip_jeep_caveent)
+	(place_skiphog)
+	(object_teleport jeep skip_caveent_hog)
 )
 
 (global boolean skippedto_bridge false)
@@ -2732,9 +2743,9 @@
 	(set skippedto_field2 true)
 	(switch_bsp 1)
 	(volume_teleport_players_not_inside cave_exit skip_field2)
-	;(object_create jeep_field2)
 )
 
+;;; root mission script ---------------------------------------------------------
 (script startup mission_a30
    (if (mcc_mission_segment "cine1_intro") (sleep 1))              
    
@@ -2786,7 +2797,6 @@
 	(wake mission_rubble)
 	(wake mission_river)
 	(wake mission_obj)
-
 	(set play_music_a30_06 true)
 	(sleep 30)
 	(show_hud 0)
