@@ -2,6 +2,7 @@
 
 ;========== Global Variables ==========
 
+
 ;========== Junk Scripts ==========
 
 (script static void c10_cinematic_placeholder
@@ -78,8 +79,8 @@
 	)
 
 (script dormant dialog_marine_f
-	(print "Marine: I'm smart!  I hid, not like the others… dead, worse than dead.")
-	(print "Marine: Those things hauled them off, still breathing… still screaming.")
+	(print "Marine: I'm smart!  I hid, not like the others, dead, worse than dead.")
+	(print "Marine: Those things hauled them off, still breathing, still screaming.")
 	)
 
 (script dormant dialog_marine_g
@@ -91,7 +92,7 @@
 	)
 
 (script dormant dialog_marine_i
-	(print "Marine: Sarge, Jenkins, Bisenti… all of them!  Those…things killed them all!")
+	(print "Marine: Sarge, Jenkins, Bisenti, all of them!  Those things killed them all!")
 	)
 
 (script dormant dialog_marine_j
