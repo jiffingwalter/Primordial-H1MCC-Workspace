@@ -254,17 +254,17 @@
 
 (script startup music_c10_01
 	(sleep_until play_music_c10_01)
-	(print "swfce\swfce\levels\c10\music\c10_01")
-	(sound_looping_start "swfce\swfce\levels\c10\music\c10_01" none 1)
+	(print "swfce\levels\c10\music\c10_01")
+	(sound_looping_start "swfce\levels\c10\music\c10_01" none 1)
 	(sleep_until (or (not play_music_c10_01) play_music_c10_01_alt) 1)
-	(if play_music_c10_01_alt (sound_looping_set_alternate "swfce\swfce\levels\c10\music\c10_01" 1))
+	(if play_music_c10_01_alt (sound_looping_set_alternate "swfce\levels\c10\music\c10_01" 1))
 	(sleep_until (not play_music_c10_01) 1)
-	(sound_looping_stop "swfce\swfce\levels\c10\music\c10_01")
+	(sound_looping_stop "swfce\levels\c10\music\c10_01")
 	)
 
 (script startup music_c10_02
 	(sleep_until play_music_c10_02)
-	(print "swfce\swfce\levels\c10\music\c10_02")
+	(print "swfce\levels\c10\music\c10_02")
 	(sound_looping_start "swfce\levels\c10\music\c10_02" none 1)
 	(sleep_until (or (not play_music_c10_02) play_music_c10_02_alt) 1)
 	(if play_music_c10_02_alt (sound_looping_set_alternate "swfce\levels\c10\music\c10_02" 1))
@@ -461,8 +461,9 @@
 
 	(recording_play_and_hover insertion_pelican insertion_pelican_in)
 	
-	(sound_looping_start sound\sinomatixx_music\c10_insertion_music none 1)
-	
+	;(sound_looping_start sound\sinomatixx_music\c10_insertion_music none 1)
+	(set play_music_c10_01 true)
+
 	(fade_in 0 0 0 60)
 	(camera_set insertion_2 400)
 	(sleep 200)
@@ -498,7 +499,6 @@
 	(ai_disregard (players) false)
 	(game_save_totally_unsafe)
 	(sleep_until (> (ai_conversation_status insertion) 4) 12 (* 30 12))
-	(sleep 30)
 	(object_create pelican_radio)
 	(vehicle_hover insertion_pelican 0)
 	(recording_play_and_delete insertion_pelican insertion_pelican_out)
@@ -564,7 +564,6 @@
 (script dormant enc_swamp2
 	(sleep_until (volume_test_objects enc_swamp2 (players)))
 	(game_save_no_timeout)
-	(set play_music_c10_01 false)
 	; Place the ai
 	(ai_place enc_swamp2/squadA)
 	
@@ -593,10 +592,8 @@
 
 ; Swamp Encounter 1, occurs near the dropship
 (script dormant enc_swamp1
-	(sleep_until (or (volume_test_objects pelican_radio (players))
-				  (volume_test_objects enc_swamp1 (players))) 1)
+	(sleep_until (volume_test_objects enc_swamp1 (players)))
 	(game_save_no_timeout)
-	(set play_music_c10_01 true)
 	(ai_place enc_swamp1/squadA)
 	(objects_predict (ai_actors enc_swamp1))
 	(ai_magically_see_players enc_swamp1)
@@ -624,15 +621,14 @@
 	(ai_maneuver enc_swamp1/squadA)
 	(ai_place enc_swamp1/tree_jackal)
 	; Create the guns, staggering them a bit... sleep a bit, then start removing
-;	(object_create enc_swamp1_ar1) (sleep 35)
-;	(object_create enc_swamp1_ar2) (sleep 20)
-;	(object_create enc_swamp1_ar3)
-;	(sleep 110)
+	(object_create enc_swamp1_ar1) (sleep 35)
+	(object_create enc_swamp1_ar2) (sleep 20)
+	(object_create enc_swamp1_ar3) (sleep 60)
 	
 	; Remove rifles
-;	(object_destroy enc_swamp1_ar2) (sleep 35)
-;	(object_destroy enc_swamp1_ar1) (sleep 20)
-;	(object_destroy enc_swamp1_ar3) (sleep 35)
+	(object_destroy enc_swamp1_ar2) (sleep 15)
+	(object_destroy enc_swamp1_ar1) (sleep 20)
+	(object_destroy enc_swamp1_ar3) (sleep 35)
 ;	(sleep 30)
 ;	(object_create enc_swamp1_ar2) (sleep 65)
 ;	(object_destroy enc_swamp1_ar2)
@@ -786,11 +782,9 @@
 	(object_create lift_a_falling_control)
 
 	(sleep_until (!= (device_get_position lift_a_falling) 0))
-	(set play_music_c10_04 true)
 
 	(sleep_until (= (device_get_position lift_a_falling) 1))
 	(sleep (* 15 30))
-	(set play_music_c10_04 false)
 	)
 
 (script dormant ini_int_a_hall_b
@@ -1754,16 +1748,16 @@
 	(wake inc6)
 	(wake inc7)
 ;	(wake ini_pelican_radio)
-;	(wake ini_see_flood_a)
-;	(wake ini_see_flood_b)
-;	(wake ini_see_flood_c)
-;	(wake ini_see_flood_d)
+	(wake ini_see_flood_a)
+	(wake ini_see_flood_b)
+	(wake ini_see_flood_c)
+	(wake ini_see_flood_d)
 
 	(sleep_until (volume_test_objects enc_swamp2 (players)) 1)
-;	(set play_music_c10_01 false)
 
 	(sleep_until (volume_test_objects int_a_trigger_3 (players)) 1)
 	(device_set_position lift_a 0)
+	(set play_music_c10_01_alt true)
 
 	(sleep_until (= (device_get_position lift_a) 0) 1)
 	(game_save_no_timeout)
@@ -1782,7 +1776,6 @@
 	(game_save_no_timeout)
 
 	(sleep_until (volume_test_objects lift_a_flood_trigger (players)) 1)
-;	(set play_music_c10_02 false)
 	(ai_place halla_bottom)
 	(ai_maneuver lifta_bottom)
 ;	(wake ini_int_a_bay_a_cov)
@@ -1815,6 +1808,7 @@
 
 (script dormant mission_control
 	(sleep_until (volume_test_objects bayb_trigger (players)) 1)
+	(set play_music_c10_01 false)
 	(set play_music_c10_02 true)
 ;	(ai_place int_b_infection/control_ini)
 
@@ -1872,6 +1866,7 @@
 
 	(sleep_until (< (ai_living_count int_b_infection) 20) 1)
 	(sleep_until (< (ai_living_count int_b_infection) 10) 1 (* 15 30))
+	(set play_music_c10_03 true)
 	(ai_place int_b_infection/control_b)
 	(ai_place int_b_infection/control_b)
 	(sleep 15)
@@ -1880,7 +1875,6 @@
 
 	(sleep_until (< (ai_living_count int_b_infection) 20) 1)
 	(sleep_until (< (ai_living_count int_b_infection) 10) 1 (* 15 30))
-	(set play_music_c10_03 true)
 	(ai_place int_b_infection/control_e)
 	(ai_place int_b_infection/control_e)
 	(ai_place int_b_infection/control_e)
@@ -1893,14 +1887,14 @@
 
 ; begin primordial edit!
 	; let player breath/finish off infection waves, then place spooky topside flood
-	(sleep 200)
+	(sleep 60)
 	(if debug (print "placing flood up top..."))
 	(ai_place int_b_flood/control_stare)
 	
 	; wait until player notices combat form to trigger oh shit music for 1000 yard stare
 	(sleep_until (objects_can_see_object (players) (list_get (ai_actors int_b_flood/control_stare) 0) 10))
 	(if debug (print "flood noticed..."))
-	(sleep 100)
+	(sleep 60)
 	
 	(if debug (print "c10_03_alt started"))
 	(set play_music_c10_03_alt true)
@@ -1959,7 +1953,9 @@
 
 	(sleep_until (volume_test_objects bayb_trigger (players)) 1)
 	(set play_music_c10_03 false)
-	(set play_music_c10_03_alt false)
+	(sleep 15)
+	(set play_music_c10_04 true)
+
 	(game_save_no_timeout)
 	(wake enc_int_b_bay_b_flood)
 ;	(wake ini_int_b_bay_b_breakin)
@@ -1987,11 +1983,15 @@
 	(sleep_until (volume_test_objects lift_b_flood_trigger (players)))
 	(game_save_no_timeout)
 	(wake ini_int_a_lift_b)
+
+	(sleep_until (volume_test_objects lift_b_music_trigger (players)))
+	(set play_music_c10_04 false)
+
 	(sleep_until (!= (device_get_position lift_b) 0))
 	(set play_music_c10_05 true)
 
 	(sleep_until (volume_test_objects int_b_hall_a_trigger_b (players)) 1)
-	(set play_music_c10_05 false)
+	
 	)
 	
 (script dormant mission_int_b
@@ -2046,6 +2046,7 @@
 
 	(sleep_until (or (volume_test_objects int_b_hall_g_trigger (players))
 				  (volume_test_objects int_b_hall_g_trigger_b (players))))
+	(set play_music_c10_05 false)
 	(if (not (game_is_cooperative)) (begin (object_destroy last_door_a) (object_create last_bashed_a) (device_set_position_immediate last_bashed_a .4)))
 	(game_save_no_timeout)
 	(wake enc_int_d_bay_c_flood)
@@ -2065,7 +2066,7 @@
 	(ai_magically_see_players int_d_flood/lift_d_rush)
 	(wake enc_int_d_lift_d_flood)
 
-	(sleep_until (!= (device_get_position lift_d) 1) 1)
+	(sleep_until (volume_test_objects lift_d_music_trigger (players)) 1)
 	(game_save_no_timeout)
 	(set play_music_c10_06 false)
 	)
