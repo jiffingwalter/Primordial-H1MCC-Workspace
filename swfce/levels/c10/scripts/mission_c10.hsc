@@ -254,71 +254,78 @@
 
 (script startup music_c10_01
 	(sleep_until play_music_c10_01)
-	(print "swfce\levels\c10\music\c10_01")
+	(print "music: swfce\levels\c10\music\c10_01")
 	(sound_looping_start "swfce\levels\c10\music\c10_01" none 1)
 	(sleep_until (or (not play_music_c10_01) play_music_c10_01_alt) 1)
 	(if play_music_c10_01_alt (sound_looping_set_alternate "swfce\levels\c10\music\c10_01" 1))
 	(sleep_until (not play_music_c10_01) 1)
+	(print "music: stopping music 01")
 	(sound_looping_stop "swfce\levels\c10\music\c10_01")
 	)
 
 (script startup music_c10_02
 	(sleep_until play_music_c10_02)
-	(print "swfce\levels\c10\music\c10_02")
+	(print "music: swfce\levels\c10\music\c10_02")
 	(sound_looping_start "swfce\levels\c10\music\c10_02" none 1)
 	(sleep_until (or (not play_music_c10_02) play_music_c10_02_alt) 1)
 	(if play_music_c10_02_alt (sound_looping_set_alternate "swfce\levels\c10\music\c10_02" 1))
 	(sleep_until (not play_music_c10_02) 1)
+	(print "music: stopping music 02")
 	(sound_looping_stop "swfce\levels\c10\music\c10_02")
 	)
 
 (script startup music_c10_03
 	(sleep_until play_music_c10_03)
-	(print "swfce\levels\c10\music\c10_03")
+	(print "music: swfce\levels\c10\music\c10_03")
 	(sound_looping_start "swfce\levels\c10\music\c10_03" none 1)
 	(sleep_until (or (not play_music_c10_03) play_music_c10_03_alt) 1)
 	(if play_music_c10_03_alt (sound_looping_set_alternate "swfce\levels\c10\music\c10_03" 1))
 	(sleep_until (not play_music_c10_03) 1)
+	(print "music: stopping music 03")
 	(sound_looping_stop "swfce\levels\c10\music\c10_03")
 	)
 
 (script startup music_c10_04
 	(sleep_until play_music_c10_04)
-	(print "swfce\levels\c10\music\c10_04")
+	(print "music: swfce\levels\c10\music\c10_04")
 	(sound_looping_start "swfce\levels\c10\music\c10_04" none 1)
 	(sleep_until (or (not play_music_c10_04) play_music_c10_04_alt) 1)
 	(if play_music_c10_04_alt (sound_looping_set_alternate "swfce\levels\c10\music\c10_04" 1))
 	(sleep_until (not play_music_c10_04) 1)
+	(print "music: stopping music 04")
 	(sound_looping_stop "swfce\levels\c10\music\c10_04")
 	)
 
 (script startup music_c10_05
 	(sleep_until play_music_c10_05)
-	(print "swfce\levels\c10\music\c10_05")
+	(print "music: swfce\levels\c10\music\c10_05")
 	(sound_looping_start "swfce\levels\c10\music\c10_05" none 1)
 	(sleep_until (or (not play_music_c10_05) play_music_c10_05_alt) 1)
 	(if play_music_c10_05_alt (sound_looping_set_alternate "swfce\levels\c10\music\c10_05" 1))
 	(sleep_until (not play_music_c10_05) 1)
+	(print "music: stopping music 05")
 	(sound_looping_stop "swfce\levels\c10\music\c10_05")
 	)
 
 (script startup music_c10_06
 	(sleep_until play_music_c10_06)
-	(print "swfce\levels\c10\music\c10_06")
+	(print "music: swfce\levels\c10\music\c10_06")
 	(sound_looping_start "swfce\levels\c10\music\c10_06" none 1)
 	(sleep_until (or (not play_music_c10_06) play_music_c10_06_alt) 1)
 	(if play_music_c10_06_alt (sound_looping_set_alternate "swfce\levels\c10\music\c10_06" 1))
 	(sleep_until (not play_music_c10_06) 1)
+	(print "music: stopping music 06")
 	(sound_looping_stop "swfce\levels\c10\music\c10_06")
 	)
 
 (script startup music_c10_07
 	(sleep_until play_music_c10_07)
-	(print "swfce\levels\c10\music\c10_07")
+	(print "music: swfce\levels\c10\music\c10_07")
 	(sound_looping_start "swfce\levels\c10\music\c10_07" none 1)
 	(sleep_until (or (not play_music_c10_07) play_music_c10_07_alt) 1)
 	(if play_music_c10_07_alt (sound_looping_set_alternate "swfce\levels\c10\music\c10_07" 1))
 	(sleep_until (not play_music_c10_07) 1)
+	(print "music: stopping music 07")
 	(sound_looping_stop "swfce\levels\c10\music\c10_07")
 	)
 ;========== Objective,Help and Title Screen Scripts ==========
@@ -621,17 +628,17 @@
 	(ai_maneuver enc_swamp1/squadA)
 	(ai_place enc_swamp1/tree_jackal)
 	; Create the guns, staggering them a bit... sleep a bit, then start removing
-	(object_create enc_swamp1_ar1) (sleep 35)
-	(object_create enc_swamp1_ar2) (sleep 20)
-	(object_create enc_swamp1_ar3) (sleep 60)
+	(object_create enc_swamp1_asr1) (sleep 35)
+	(object_create enc_swamp1_asr2) (sleep 20)
+	(object_create enc_swamp1_asr3) (sleep 60)
 	
 	; Remove rifles
-	(object_destroy enc_swamp1_ar2) (sleep 15)
-	(object_destroy enc_swamp1_ar1) (sleep 20)
-	(object_destroy enc_swamp1_ar3) (sleep 35)
+	(object_destroy enc_swamp1_asr2) (sleep 15)
+	(object_destroy enc_swamp1_asr1) (sleep 20)
+	(object_destroy enc_swamp1_asr3) (sleep 35)
 ;	(sleep 30)
-;	(object_create enc_swamp1_ar2) (sleep 65)
-;	(object_destroy enc_swamp1_ar2)
+;	(object_create enc_swamp1_asr2) (sleep 65)
+;	(object_destroy enc_swamp1_asr2)
 	)
 
 ; Cleap up my scripts
