@@ -1871,9 +1871,11 @@
 	(device_set_position control_door_bashed_d 1)
 	(ai_magically_see_players int_b_infection)
 
+	(sleep_until (= (device_get_position control_door_bashed)) 5)
+	(set play_music_c10_03 true)
+
 	(sleep_until (< (ai_living_count int_b_infection) 20) 1)
 	(sleep_until (< (ai_living_count int_b_infection) 10) 1 (* 15 30))
-	(set play_music_c10_03 true)
 	(ai_place int_b_infection/control_b)
 	(ai_place int_b_infection/control_b)
 	(sleep 15)
@@ -1894,18 +1896,14 @@
 
 ; begin primordial edit!
 	; let player breath/finish off infection waves, then place spooky topside flood
-	(sleep 60)
 	(if debug (print "placing flood up top..."))
 	(ai_place int_b_flood/control_stare)
 	
 	; wait until player notices combat form to trigger oh shit music for 1000 yard stare
 	(sleep_until (objects_can_see_object (players) (list_get (ai_actors int_b_flood/control_stare) 0) 10))
 	(if debug (print "flood noticed..."))
-	(sleep 60)
-	
-	(if debug (print "c10_03_alt started"))
 	(set play_music_c10_03_alt true)
-	(sleep 150)
+	(sleep (* 30 3))
 	
 	; tell staring flood to move away, open top doors and introduce combat forms
 	(ai_command_list_advance int_b_flood/control_stare)
@@ -1927,7 +1925,7 @@
 			(< (ai_living_count int_b_flood/control_g) 1)
 			(< (ai_living_count int_b_flood/control_h) 1)
 		)
-	)
+	5 (* 30 10))
 	(if debug (print "control_g and h are dead, trigger door bash"))
 
 	; ...then continue as usual with exit door bashingness
@@ -1998,7 +1996,6 @@
 	(set play_music_c10_05 true)
 
 	(sleep_until (volume_test_objects int_b_hall_a_trigger_b (players)) 1)
-	
 	)
 	
 (script dormant mission_int_b
@@ -2115,20 +2112,19 @@
 	
 	(ai_place swamp_b_flood/last_wave)
 	(ai_magically_see_players swamp_b_flood)
-	(sleep_until (< (ai_living_count swamp_b_flood/last_wave) 1))
+	(sleep_until (< (ai_strength  swamp_b_flood/last_wave) 0.25) 900)
 	
 	(ai_place swamp_b_flood/last_wave)
 	(ai_magically_see_players swamp_b_flood)
-	(sleep_until (< (ai_living_count swamp_b_flood/last_wave) 2))
+	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) 900)
 	
 	(ai_place swamp_b_flood/last_wave)
 	(ai_magically_see_players swamp_b_flood)
-	(sleep_until (< (ai_living_count swamp_b_flood/last_wave) 3))
+	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) 900)
 ; prim edit over
 	
 	(wake enc_swamp_b_sentinels)
 ;	(set play_music_c10_07 false)
-	(sleep (* 30 2))
 	(ai_place swamp_b_flood/last_wave)
 	(ai_magically_see_players swamp_b_flood)
 	(ai_magically_see_encounter swamp_b_sentinels swamp_b_flood)
@@ -2173,6 +2169,7 @@
 	(sleep 1)
 	
 	(deactivate_team_nav_point_object player crashed_dropship)
+	(play_music_c10_01 false)
 	(ai_allegiance_remove player flood)
 	(ai_allegiance_remove flood player)
 	
@@ -2204,6 +2201,7 @@
 	(deactivate_team_nav_point_object player crashed_dropship)
 	(ai_allegiance_remove player flood)
 	(ai_allegiance_remove flood player)
+	(play_music_c10_01 false)
 	
 	(player_enable_input false)
 	(print "switching to bsp 2...")
@@ -2231,9 +2229,9 @@
 	(sleep 1)
 	
 	(deactivate_team_nav_point_object player crashed_dropship)
-
 	(ai_allegiance_remove player flood)
 	(ai_allegiance_remove flood player)
+	(play_music_c10_01 false)
 
 	(player_enable_input false)
 	(print "switching to bsp 3...")
