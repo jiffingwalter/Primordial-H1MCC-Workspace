@@ -2112,12 +2112,12 @@
 	(print "wave 1")
 	(ai_place swamp_b_flood/last_wave)
 	(ai_magically_see_players swamp_b_flood)
-	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) (* 30 20))
+	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) (* 30 15))
 	
 	(print "wave 2")
 	(ai_place swamp_b_flood/last_wave)
 	(ai_place swamp_b_flood/last_wave)
-	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) (* 30 20))
+	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) (* 30 15))
 	
 	(print "wave 3")
 	(ai_place swamp_b_flood/last_wave)
@@ -2141,7 +2141,7 @@
 						 (volume_test_objects swamp_b_trigger_c (players))
 						 (volume_test_objects swamp_b_trigger_d (players))
 						 (volume_test_objects swamp_b_trigger_e (players))))
-				  (= (ai_living_count swamp_b_sentinels) 0)
+				  (< (ai_living_count swamp_b_sentinels) 2)
 				  (< (ai_living_count swamp_b_flood/last_wave) 2)
 				  (< (unit_get_health (player0)) .25)) 1 (* 90 30))
 	(if (or (!= (game_difficulty_get) normal) (game_is_cooperative))
