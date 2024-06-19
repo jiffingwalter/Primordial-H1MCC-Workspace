@@ -1871,7 +1871,6 @@
 	(device_set_position control_door_bashed_d 1)
 	(ai_magically_see_players int_b_infection)
 
-	(sleep_until (= (device_get_position control_door_bashed)) 5)
 	(set play_music_c10_03 true)
 
 	(sleep_until (< (ai_living_count int_b_infection) 20) 1)
@@ -2110,26 +2109,33 @@
 	; once player reaches tower, flood waves get progressively denser till sentinels show up and aid player
 	(sleep_until (volume_test_objects monitor_trigger (players)))
 	
+	(print "wave 1")
 	(ai_place swamp_b_flood/last_wave)
 	(ai_magically_see_players swamp_b_flood)
-	(sleep_until (< (ai_strength  swamp_b_flood/last_wave) 0.25) 900)
+	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) (* 30 20))
 	
+	(print "wave 2")
 	(ai_place swamp_b_flood/last_wave)
-	(ai_magically_see_players swamp_b_flood)
-	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) 900)
+	(ai_place swamp_b_flood/last_wave)
+	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) (* 30 20))
 	
+	(print "wave 3")
 	(ai_place swamp_b_flood/last_wave)
-	(ai_magically_see_players swamp_b_flood)
-	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) 900)
+	(ai_place swamp_b_flood/last_wave)
+	(ai_place swamp_b_flood/last_wave)
+	(sleep_until (< (ai_strength swamp_b_flood/last_wave) 0.25) (* 30 20))
 ; prim edit over
 	
+	(print "final wave")
 	(wake enc_swamp_b_sentinels)
 ;	(set play_music_c10_07 false)
+	(ai_place swamp_b_flood/last_wave)
+	(ai_place swamp_b_flood/last_wave)
+	(ai_place swamp_b_flood/last_wave)
 	(ai_place swamp_b_flood/last_wave)
 	(ai_magically_see_players swamp_b_flood)
 	(ai_magically_see_encounter swamp_b_sentinels swamp_b_flood)
 	(sleep 150)
-	(set play_music_c10_07 false)
 
 	(sleep_until (or (not (or (volume_test_objects swamp_b_trigger_f (players))
 						 (volume_test_objects swamp_b_trigger_c (players))
@@ -2141,6 +2147,7 @@
 	(if (or (!= (game_difficulty_get) normal) (game_is_cooperative))
 		(sleep_until (or (= (ai_living_count swamp_b_sentinels) 0)
 					  (< (ai_living_count swamp_b_flood/last_wave) 2))))
+	(set play_music_c10_07 false)
 	(sleep (* 8 30))
 	(ai_disregard (players) true)
 	(wake chapter_friends)            
@@ -2169,7 +2176,7 @@
 	(sleep 1)
 	
 	(deactivate_team_nav_point_object player crashed_dropship)
-	(play_music_c10_01 false)
+	(set play_music_c10_01 false)
 	(ai_allegiance_remove player flood)
 	(ai_allegiance_remove flood player)
 	
@@ -2201,7 +2208,7 @@
 	(deactivate_team_nav_point_object player crashed_dropship)
 	(ai_allegiance_remove player flood)
 	(ai_allegiance_remove flood player)
-	(play_music_c10_01 false)
+	(set play_music_c10_01 false)
 	
 	(player_enable_input false)
 	(print "switching to bsp 2...")
@@ -2231,7 +2238,7 @@
 	(deactivate_team_nav_point_object player crashed_dropship)
 	(ai_allegiance_remove player flood)
 	(ai_allegiance_remove flood player)
-	(play_music_c10_01 false)
+	(set play_music_c10_01 false)
 
 	(player_enable_input false)
 	(print "switching to bsp 3...")
