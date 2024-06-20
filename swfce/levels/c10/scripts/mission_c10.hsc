@@ -430,86 +430,6 @@
 	(object_create int_a_bay_a_ar_2)
 	)
 *;
-(script dormant insertion
-
-;	marty
-
-	(fade_out 0 0 0 0)
-	(cinematic_start)
-	(show_hud 0)
-	(camera_control on)
-	
-	(object_destroy insertion_pelican)
-	(object_create insertion_pelican)
-	(object_teleport insertion_pelican insertion_flag)
-	(sleep 1)
-
-	(unit_enter_vehicle (player0) insertion_pelican "P-riderLF")
-	(unit_enter_vehicle (player1) insertion_pelican "P-riderRF")
-	(unit_set_enterable_by_player insertion_pelican false)
-
-;	(object_set_facing (player0) initial_facing)
-;	(object_set_facing (player1) initial_facing)
-	
-	(objects_predict insertion_pelican)
-;	(objects_predict (ai_actors swamp_a_marines))
-
-	(ai_place swamp_a_covenant/grunts_insertion)
-	(ai_place swamp_a_covenant/jackals_insertion)
-	(objects_predict (ai_actors swamp_a_covenant))
-	
-;	(ai_place swamp_a_marines/insertion)
-;	(ai_disregard (ai_actors swamp_a_marines/insertion) true)
-	(ai_disregard (players) true)
-
-	(camera_set insertion_1 0)
-
-	(sleep 5)
-
-	(recording_play_and_hover insertion_pelican insertion_pelican_in)
-	
-	;(sound_looping_start sound\sinomatixx_music\c10_insertion_music none 1)
-	(set play_music_c10_01 true)
-
-	(fade_in 0 0 0 60)
-	(camera_set insertion_2 400)
-	(sleep 200)
-;	(ai_follow_target_ai swamp_a_marines/insertion swamp_a_covenant/grunts_insertion)
-	(camera_set insertion_3 400)
-	(sleep 200)
-	
-	(cinematic_set_title chapter_lost)
-;	(object_create insertion_ar_1)
-;	(object_create insertion_ar_2)
-;	(object_create insertion_ar_3)
-	(sleep 60)
-	(ai_conversation insertion)
-	(sleep 150)
-	(fade_out 1 1 1 15)
-	(sleep 15)
-	(camera_control off)
-	(ai_erase swamp_a_marines)
-	(ai_erase swamp_a_covenant)
-	(sleep 15)
-;	(object_destroy insertion_ar_1)
-;	(object_destroy insertion_ar_2)
-;	(object_destroy insertion_ar_3)
-	(fade_in 1 1 1 15)
-	(sleep 15)
-	(cinematic_stop)
-	(show_hud 1)
-
-	(sleep (recording_time insertion_pelican))
-;	(vehicle_hover insertion_pelican 1)
-	(unit_exit_vehicle (player0))
-	(unit_exit_vehicle (player1))
-	(ai_disregard (players) false)
-	(game_save_totally_unsafe)
-	(sleep_until (> (ai_conversation_status insertion) 4) 12 (* 30 12))
-	(object_create pelican_radio)
-	(vehicle_hover insertion_pelican 0)
-	(recording_play_and_delete insertion_pelican insertion_pelican_out)
-	)
 
 ;========== save Game Scripts ==========
 
@@ -2281,8 +2201,95 @@
 	(player_enable_input true)
 	)
 
-;========== Main Script ==========
 
+;========== Cinematics ==========
+(global boolean cinematic_insertion_finished false)
+(script static void cinematic_insertion
+	(print "staring intro cinematic...")
+	(fade_out 0 0 0 0)
+	(cinematic_start)
+	(show_hud 0)
+	(camera_control on)
+	
+	(object_destroy insertion_pelican)
+	(object_create insertion_pelican)
+	(object_teleport insertion_pelican insertion_flag)
+	(sleep 1)
+
+	(unit_enter_vehicle (player0) insertion_pelican "P-riderLF")
+	(unit_enter_vehicle (player1) insertion_pelican "P-riderRF")
+	(unit_set_enterable_by_player insertion_pelican false)
+	
+	(objects_predict insertion_pelican)
+
+	(ai_place swamp_a_covenant/grunts_insertion)
+	(ai_place swamp_a_covenant/jackals_insertion)
+	(objects_predict (ai_actors swamp_a_covenant))
+	
+	(ai_disregard (players) true)
+
+	(camera_set insertion_1 0)
+
+	(sleep 5)
+
+	(recording_play_and_hover insertion_pelican insertion_pelican_in)
+	
+	;(sound_looping_start sound\sinomatixx_music\c10_insertion_music none 1)
+	(set play_music_c10_01 true)
+
+	(fade_in 0 0 0 60)
+	(camera_set insertion_2 400)
+	(sleep 200)
+	(camera_set insertion_3 400)
+	(sleep 200)
+	
+	(cinematic_set_title chapter_lost)
+	(sleep 60)
+	(ai_conversation insertion)
+	(sleep 150)
+	(fade_out 1 1 1 15)
+	(sleep 15)
+	(camera_control off)
+	(ai_erase swamp_a_marines)
+	(ai_erase swamp_a_covenant)
+	(sleep 15)
+	(fade_in 1 1 1 15)
+	(sleep 15)
+	(cinematic_stop)
+	(show_hud 1)
+
+	(set cinematic_insertion_finished true)
+	)
+
+(script static void cinematic_insertion_skip
+	(print "cinematic skipped...")
+	(fade_in 1 1 1 15)
+	(show_hud 0)
+	(camera_control on)
+	(object_teleport (player0) player0_start)
+	(object_teleport (player1) player1_start)
+	(sleep 1)
+
+	;pelican
+	(object_destroy insertion_pelican)
+	(object_create insertion_pelican)
+	(vehicle_hover insertion_pelican 1)
+	(object_teleport insertion_pelican insertion_skip)
+	(sleep 1)
+
+	;players and ai
+	(unit_enter_vehicle (player0) insertion_pelican "P-riderLF")
+	(unit_enter_vehicle (player1) insertion_pelican "P-riderRF")
+	(unit_set_enterable_by_player insertion_pelican false)
+	(camera_control off)
+	(ai_erase_all)
+	(show_hud 1)
+	(sleep 1)
+	(set cinematic_insertion_finished true)
+)
+
+;========== Main Script ==========
+(global boolean cinematic_ran false)
 (script startup mission_c10
 	(wake kill_all_continuous)
 	(fade_out 0 0 0 0)
@@ -2293,7 +2300,29 @@
 	(if (or (game_is_cooperative) (= (game_difficulty_get) impossible)) (begin (object_destroy_containing shotgun) (object_create_containing arc10)))
 	(if (and (not (game_is_cooperative)) (= (game_difficulty_get_real) easy)) (object_create_containing easy))            
    
-	(wake insertion)
+	; intro cinematic
+	(cinematic_insertion)
+	; (if (cinematic_skip_start)
+	; 	(begin
+	; 		(set cinematic_ran true)
+	; 		(cinematic_insertion)
+	; 	)		
+	; )
+	; (cinematic_skip_stop)
+	; (if (not cinematic_ran)
+	; 	(cinematic_insertion_skip)
+	; )
+	(sleep_until cinematic_insertion_finished 1)
+	(print "post cinematic stuff...")
+	(sleep (recording_time insertion_pelican))
+	(unit_exit_vehicle (player0))
+	(unit_exit_vehicle (player1))
+	(ai_disregard (players) false)
+	(game_save_totally_unsafe)
+	(sleep_until (> (ai_conversation_status insertion) 4) 12 (* 30 12))
+	(vehicle_hover insertion_pelican 0)
+	(recording_play_and_delete insertion_pelican insertion_pelican_out)
+
 	(wake mission_swamp_a)
 	
 	(sleep_until (volume_test_objects int_a_trigger (players)) 5)
