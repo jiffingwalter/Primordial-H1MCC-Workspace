@@ -2400,7 +2400,7 @@
 	; Wake spawn waves
 	(wake enc8_4_spawner)
 
-	(sleep_until (volume_test_objects enc_8_4_killer (players)) 5)
+	(sleep_until (volume_test_objects enc8_4_killer (players)) 5)
 	(if debug (print "Encounter 8.5... aka free reign to the players to be silly little guys"))
 	(sleep -1 enc8_4_spawner)
 	(sleep -1 fall_killerz)
