@@ -50,6 +50,7 @@
 (global short floor4_door2_count 0)
 
 ; Magic numbers
+(global short current_floor 1)
 (global short hud_objectives_display_time 90)
 (global short testing_save 5)
 (global short testing_fast 5)
@@ -688,31 +689,83 @@
 ;- Fall Killerz ----------------------------------------------------------------
 
 (script continuous fall_killerz
-	(if (volume_test_object fall_killer1 (list_get (players) 0))
+	; ground floor volume
+	(if (and 
+			(volume_test_object fall_killer0 (list_get (players) 0))
+			(= current_floor 2)
+		)
 		(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0))
 	)
-	(if (volume_test_object fall_killer2 (list_get (players) 0))
+	; floor 1 volume
+	(if (and 
+			(volume_test_object fall_killer1 (list_get (players) 0))
+			(or 
+				(= current_floor 1)
+				(= current_floor 3)
+			)
+		)
 		(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0))
 	)
-	(if (volume_test_object fall_killer3 (list_get (players) 0))
+	; floor 2 volume
+	(if (and 
+			(volume_test_object fall_killer2 (list_get (players) 0))
+			(or 
+				(= current_floor 2)
+				(= current_floor 4)
+			)
+		)
 		(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0))
 	)
+	; floor 3 volume
+	(if (and 
+			(volume_test_object fall_killer3 (list_get (players) 0))
+			(= current_floor 3)
+		)
+		(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0))
+	)
+	; pit 1 volume
 	(if (volume_test_object fall_killer4 (list_get (players) 0))
 		(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0))
 	)
+	; pit 2 volume
 	(if (volume_test_object fall_killer5 (list_get (players) 0))
 		(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 0))
 	)
 
 	(if coop
 		(begin
-			(if (volume_test_object fall_killer1 (list_get (players) 1))
+			; ground floor volume
+			(if (and 
+					(volume_test_object fall_killer0 (list_get (players) 1))
+					(= current_floor 2)
+				)
 				(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 1))
 			)
-			(if (volume_test_object fall_killer2 (list_get (players) 1))
+			; floor 1 volume
+			(if (and 
+					(volume_test_object fall_killer1 (list_get (players) 1))
+					(or 
+						(= current_floor 1)
+						(= current_floor 3)
+					)
+				)
 				(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 1))
 			)
-			(if (volume_test_object fall_killer3 (list_get (players) 1))
+			; floor 2 volume
+			(if (and 
+					(volume_test_object fall_killer2 (list_get (players) 1))
+					(or 
+						(= current_floor 2)
+						(= current_floor 4)
+					)
+				)
+				(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 1))
+			)
+			; floor 3 volume
+			(if (and 
+					(volume_test_object fall_killer3 (list_get (players) 1))
+					(= current_floor 3)
+				)
 				(damage_object "swfce\effects\damage effects\out of bounds" (list_get (players) 1))
 			)
 			(if (volume_test_object fall_killer4 (list_get (players) 1))
@@ -2346,6 +2399,11 @@
 	
 	; Wake spawn waves
 	(wake enc8_4_spawner)
+
+	(sleep_until (volume_test_objects enc_8_4_killer (players)) 5)
+	(if debug (print "Encounter 8.5... aka free reign to the players to be silly little guys"))
+	(sleep -1 enc8_4_spawner)
+	(sleep -1 fall_killerz)
 )
 
 
@@ -2458,7 +2516,7 @@
 			(volume_test_objects enc7_12d (players))
 			(volume_test_objects enc8_1 (players))
 		)
-	)
+	1)
 	
 	; music 04 end
 	(if debug (print "Music 04: stop"))
@@ -4549,6 +4607,21 @@
 	(sleep -1 enc7_spawner)
 )
 
+(script continuous current_floor_manager
+	(if (= (structure_bsp_index) 0)
+		(set current_floor 1)
+	)
+	(if (= (structure_bsp_index) 1)
+		(set current_floor 2)
+	)
+	(if (= (structure_bsp_index) 2)
+		(set current_floor 3)
+	)
+	(if (= (structure_bsp_index) 3)
+		(set current_floor 4)
+	)
+	(sleep 30)
+)
 
 ;- Encounter testing & cheats ----------------------------------------------------------------------
 
@@ -4665,6 +4738,7 @@
 	(set cheat_deathless_player true)
 	(set cheat_bottomless_clip true)
 	(set cheat_infinite_ammo true)
+	(sleep -1 fall_killerz)
 )
 
 (script static void cheats_off
@@ -4672,6 +4746,7 @@
 	(set cheat_deathless_player false)
 	(set cheat_bottomless_clip false)
 	(set cheat_infinite_ammo false)
+	(wake fall_killerz)
 )
 
 ; in-game cheats for mcc
