@@ -2532,6 +2532,7 @@
 	
 	(sleep -1 enc7_12_spawner)
 	
+	(ai_kill_silent enc7_9)
 	(ai_kill_silent enc7_12)
 	
 	; Debug
@@ -4563,11 +4564,13 @@
 ; camera mode for fun and dev stuff
 ; wait until player enters trigger and sits for 5 seconds, OR debug is on
 (global boolean camera_mode false)
-(script dormant cameramode_trigger
-	(sleep_until (volume_test_objects cammode_trigger (players)))
-	(sleep 100)
-	(sleep_until (volume_test_objects cammode_trigger (players)))
-	(set camera_mode true)
+(script continuous cameramode_testing
+	(sleep_until (volume_test_objects cammode_trigger (players)) 90)
+	(if (volume_test_objects cammode_trigger (players)) (set camera_mode true))
+)
+(script dormant cameramode_manager
+	(sleep_until camera_mode)
+
 	(print "Cheat area opened - spawning cameras")
 	;(print "Turning bump possession ON...")
 	;(set cheat_bump_possession true)
@@ -4590,7 +4593,7 @@
 	; Wakey!
 	(wake enc1)
 	(wake enc2)
-	(wake cameramode_trigger)
+	(wake cameramode_manager)
 	
 	; destroy scenery indexes
 	(object_destroy index)
