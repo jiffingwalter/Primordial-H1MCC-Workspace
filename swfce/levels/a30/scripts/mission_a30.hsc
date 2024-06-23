@@ -2535,6 +2535,8 @@
 	(sleep_until (volume_test_objects field2_trigger (players)))
 	(ai_place bobombs_2/field2)
 	(ai_place bobombs_2/field2_carriers)
+	(ai_place field2_turret)
+	(vehicle_load_magic field2_turret "gunner" (ai_actors field2_turret/gunner))
 )
 
 (script static short increment_rescue_attempt
