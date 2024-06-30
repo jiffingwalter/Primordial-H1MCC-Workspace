@@ -77,6 +77,11 @@
 ; 	(if collision_debug (set collision_debug 0) (set collision_debug 1))
 ; )
 
+;sandbox test script
+(script static void test
+	(set cheat_bump_possession (not cheat_bump_possession))
+)
+
 (script continuous cheat_allweapons_control
 	; panel turned ON
 	(sleep_until (= 1 (device_get_position control_allweapons)) 1)
@@ -88,7 +93,7 @@
 	; REPEAT
 )
 
-(script static void respawnblocks
+(script static void test_blocks
 	(object_create_anew_containing "qblock")
 )
 

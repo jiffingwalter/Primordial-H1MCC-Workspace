@@ -83,23 +83,23 @@
 ; debug shortcuts
 (script static void bump
 	(print "toggling bump possession")
-	(if cheat_bump_possession (set cheat_bump_possession 0) (set cheat_bump_possession 1))
+	(set cheat_bump_possession (not cheat_bump_possession))
 )
 (script static void cheats
 	(print "toggling cheats")
-	(if cheat_deathless_player (set cheat_deathless_player 0) (set cheat_deathless_player 1))
-	(if cheat_infinite_ammo (set cheat_infinite_ammo 0) (set cheat_infinite_ammo 1))
+	(set cheat_deathless_player (not cheat_deathless_player))
+	(set cheat_infinite_ammo (not cheat_infinite_ammo))
 )
 (script static void vehicles
 	(print "spawning all vehicles")
-	(if cheat_deathless_player (set cheat_deathless_player 0) (set cheat_deathless_player 1))
+	(set cheat_deathless_player (not cheat_deathless_player))
 	(cheat_all_vehicles)
 	(sleep 200)
-	(if cheat_deathless_player (set cheat_deathless_player 0) (set cheat_deathless_player 1))
+	(set cheat_deathless_player (not cheat_deathless_player))
 )
-(script static void db_collision
+(script static void debugcollision
 	(print "toggling collison debug")
-	(if debug_objects (set debug_objects 0) (set debug_objects 1))
-	(if debug_objects_collision_models (set debug_objects_collision_models 0) (set debug_objects_collision_models 1))
-	(if collision_debug (set collision_debug 0) (set collision_debug 1))
+	(set debug_objects (not debug_objects))
+	(set debug_objects_collision_models (not debug_objects_collision_models))
+	(set collision_debug (not collision_debug))
 )
