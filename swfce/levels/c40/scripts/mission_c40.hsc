@@ -627,7 +627,7 @@
 			play_speech
 		)
 		(begin
-			(sound_impulse_start sound\dialog\c40\c40_210_Cortana none 1)
+			;(sound_impulse_start sound\dialog\c40\c40_210_Cortana none 1)
 			(set play_speech false)
 		)
 	)	
@@ -661,8 +661,8 @@
  	(sound_impulse_start sound\sfx\impulse\impacts\c40_generator_overload pulse_gen3 1)
 	(sleep 60)
 	
-	(if debug (print "Cortana says, 'Good job, You've overloaded Generator #3'"))
-	(sound_impulse_start sound\dialog\c40\c40_270_Cortana none 1)
+	;(if debug (print "Cortana says, 'Good job, You've overloaded Generator #3'"))
+	;(sound_impulse_start sound\dialog\c40\c40_270_Cortana none 1)
 
 	;Place the units and give them sight
 	(sleep_until (= (device_get_position pulse_gen3) 0))
@@ -980,8 +980,8 @@
 	(ai_erase e51_a)
 	
 	;Place
-	(ai_conversation_stop cortana_230_250)
-	(ai_conversation cortana_260)
+	;(ai_conversation_stop cortana_230_250)
+	;(ai_conversation cortana_260)
 	
 	(wake e59_a)
 		
@@ -1037,7 +1037,7 @@
 	
 	(chapter_c40_3)
 	(waypoint5)
-	(ai_conversation cortana_230_250)	
+	;(ai_conversation cortana_230_250)	
 )
 
 ; Pulse Gen #2
@@ -1062,8 +1062,8 @@
 	(if (game_is_cooperative) (object_create ban_plat2_b))
 
 	(sleep 60)
-	(if debug (print "Cortana says, 'Good job, You've overloaded Generator #2'"))
-	(sound_impulse_start sound\dialog\c40\c40_220_Cortana none 1)		
+	;(if debug (print "Cortana says, 'Good job, You've overloaded Generator #2'"))
+	;(sound_impulse_start sound\dialog\c40\c40_220_Cortana none 1)		
 
 	(wake objective_4)
 
@@ -1340,7 +1340,7 @@
 	(sleep_until (volume_test_objects e46_speech_trigger (players)))
 	(if debug (print "Speaking!"))
 
-	(sound_impulse_start sound\dialog\c40\c40_200_Cortana none 1)	
+	;(sound_impulse_start sound\dialog\c40\c40_200_Cortana none 1)	
 	(waypoint4)
 	(wake objective_3)
 	(ai_place e46_c)
@@ -1698,8 +1698,8 @@
 	(sleep_until (volume_test_objects waypoint3_trigger (players)))
 	;Debug
 	(deactivate_team_nav_point_flag player waypoint3)
-	(sound_impulse_start sound\dialog\c40\c40_190_Cortana none 1)
-		(sleep (sound_impulse_time sound\dialog\c40\c40_190_Cortana))
+	;(sound_impulse_start sound\dialog\c40\c40_190_Cortana none 1)
+	;	(sleep (sound_impulse_time sound\dialog\c40\c40_190_Cortana))
 	;Blah
 	(wake e20_a)
 )
@@ -1714,8 +1714,8 @@
 	;Place the units and give them sight
 	(chapter_c40_2)
 	
-	(sound_impulse_start sound\dialog\c40\c40_180_Cortana none 1)
-		(sleep (sound_impulse_time sound\dialog\c40\c40_180_Cortana))
+	;(sound_impulse_start sound\dialog\c40\c40_180_Cortana none 1)
+	;	(sleep (sound_impulse_time sound\dialog\c40\c40_180_Cortana))
 	(waypoint_3)
 	(ai_place e8_a)
 	(wake e8_b)
@@ -1737,10 +1737,10 @@
 	;Open door to B
 	(device_set_power door_c1 1)
 
-	(if debug (print "Cortana says, 'Good job, You've overloaded Generator #1'"))
+	;(if debug (print "Cortana says, 'Good job, You've overloaded Generator #1'"))
 
 	(sleep 120)
-	(sound_impulse_start sound\dialog\c40\c40_170_Cortana none 1)
+	;(sound_impulse_start sound\dialog\c40\c40_170_Cortana none 1)
 ;		(sleep (sound_impulse_time sound\dialog\c40\c40_170_Cortana))
 	;Place the units and give them sight
 
@@ -1761,15 +1761,15 @@
 ;	(if debug (print "Sentinels Active!"))
 ;	(ai_place e7_b)
 
-	(sound_impulse_start sound\dialog\c40\c40_120_Cortana none 1)
-		(sleep_until (volume_test_objects pulse_1_trigger (players)) 1 (sound_impulse_time sound\dialog\c40\c40_120_Cortana))
-	(sound_impulse_stop sound\dialog\c40\c40_120_Cortana)
-	(sound_impulse_start sound\dialog\c40\c40_150_Cortana none 1)
-		(sleep_until (volume_test_objects pulse_1_trigger (players)) 1 (sound_impulse_time sound\dialog\c40\c40_150_Cortana))
-	(sound_impulse_stop sound\dialog\c40\c40_150_Cortana)
-	(sound_impulse_start sound\dialog\c40\c40_160_Cortana none 1)
-		(sleep_until (volume_test_objects pulse_1_trigger (players)) 1 (sound_impulse_time sound\dialog\c40\c40_160_Cortana))
-	(sound_impulse_stop sound\dialog\c40\c40_160_Cortana)
+	;(sound_impulse_start sound\dialog\c40\c40_120_Cortana none 1)
+	;	(sleep_until (volume_test_objects pulse_1_trigger (players)) 1 (sound_impulse_time sound\dialog\c40\c40_120_Cortana))
+	;(sound_impulse_stop sound\dialog\c40\c40_120_Cortana)
+	;(sound_impulse_start sound\dialog\c40\c40_150_Cortana none 1)
+	;	(sleep_until (volume_test_objects pulse_1_trigger (players)) 1 (sound_impulse_time sound\dialog\c40\c40_150_Cortana))
+	;(sound_impulse_stop sound\dialog\c40\c40_150_Cortana)
+	;(sound_impulse_start sound\dialog\c40\c40_160_Cortana none 1)
+	;	(sleep_until (volume_test_objects pulse_1_trigger (players)) 1 (sound_impulse_time sound\dialog\c40\c40_160_Cortana))
+	;(sound_impulse_stop sound\dialog\c40\c40_160_Cortana)
 )
 
 (script dormant e7_a
@@ -1818,7 +1818,7 @@
 
 	(set play_music_c40_02 true)
 		
-	(sound_impulse_start sound\dialog\c40\c40_110_Cortana none 1)
+	;(sound_impulse_start sound\dialog\c40\c40_110_Cortana none 1)
 	
 	(if (and (not (game_is_cooperative))
 		    (= normal (game_difficulty_get)))
@@ -1836,9 +1836,9 @@
 
 	;Debug
 	(if debug (print "Lower Canyon Encounter 5"))
-	(if debug (print "Cortana says, 'Those flood bodies look like the remains of Major. '"))
-	(if debug (print "Cortana says, 'Whacker. His team was heavy weapons squad, hopefully'"))
-	(if debug (print "Cortana says, 'they had some rocket launchers'"))
+	;(if debug (print "Cortana says, 'Those flood bodies look like the remains of Major. '"))
+	;(if debug (print "Cortana says, 'Whacker. His team was heavy weapons squad, hopefully'"))
+	;(if debug (print "Cortana says, 'they had some rocket launchers'"))
 
 	(ai_erase c3_base_tier_2/eli_maj_pla_top_tier)
 	(ai_erase c3_base_tier_2/jac_maj_pla_top_tier)
@@ -1876,7 +1876,7 @@
 	(wake e6_a)
 
 	(sleep_until (objects_can_see_object (players) fly_away_1 20))
-	(ai_conversation cortana_block_3)
+	;(ai_conversation cortana_block_3)
 )
 
 ; Flavor Script, FIGHT AT LANDBRIDGE
@@ -1892,11 +1892,11 @@
 	; sleep until the trigger
 	(sleep_until (volume_test_objects canyon3_base_trigger (players)))
 	;debug
-	(if debug (print "Cortana says, 'A Pulse Generator is at the top of this canyon.'"))
-	(if debug (print "Cortana says, 'Take that Covenant Banshee and get us up there!!'"))
+	;(if debug (print "Cortana says, 'A Pulse Generator is at the top of this canyon.'"))
+	;(if debug (print "Cortana says, 'Take that Covenant Banshee and get us up there!!'"))
 
 ;	Cortana speech
-	(ai_conversation cortana_block_2)
+	;(ai_conversation cortana_block_2)
 
 	(ai_place c3_base_tier_2)
 	
@@ -1968,8 +1968,8 @@
 	(device_set_position control_door_c 1)
 	(device_set_never_appears_locked control_door_c 1)	
 	
-	(if debug (print "Cortana says, 'The Covenant are trying to use Halo,'"))
-	(if debug (print "we must not let them have the Key!'"))
+	;(if debug (print "Cortana says, 'The Covenant are trying to use Halo,'"))
+	;(if debug (print "we must not let them have the Key!'"))
 	; Place the units and give them sight
 	(ai_place e2_b)
 	(sleep 1)
@@ -1999,7 +1999,7 @@
 (script dormant c40_20_30_40
 	(sleep_until (= (ai_living_count e1_a) 0))
 	(chapter_c40_1)
-	(ai_conversation cortana_block_1)
+	;(ai_conversation cortana_block_1)
 )
 	
 ; Encounter 1, WILD ON SENTINELS!!!
@@ -2007,11 +2007,11 @@
 	; Sleep until player enters trigger volume
 ;	(sleep_until (volume_test_objects e1_trigger (players)))
 	; Debug
-	(if debug (print "Cortana says 'LOOK OUT !!!'"))
+	;(if debug (print "Cortana says 'LOOK OUT !!!'"))
 
 	(device_set_power door_c1 0)
 
-	(sound_impulse_start sound\dialog\c40\c40_010_Cortana none 1)
+	;(sound_impulse_start sound\dialog\c40\c40_010_Cortana none 1)
 ;		(sleep (sound_impulse_time sound\dialog\c40\c40_010_Cortana))
 
 	; Place the units, blind them for a second so player doesn't get merked
