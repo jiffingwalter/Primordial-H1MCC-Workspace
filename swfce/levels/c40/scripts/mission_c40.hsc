@@ -833,6 +833,7 @@
 	(wake e62_d)
 	(sleep 2)
 	(wake end)
+	(set play_music_c40_07 false)
 )
 
 (script dormant e61_a
@@ -841,8 +842,7 @@
 	(ai_place e61_b)
 
 	(wake e62_a)
-	(sleep_until (volume_test_objects e61_c_trigger (players)))
-	(set play_music_c40_07 false)
+	;(sleep_until (volume_test_objects e61_c_trigger (players)))
 )
 
 (script dormant e60_e
@@ -882,6 +882,7 @@
 	(if debug (print "e60_a active"))
 	
 	;Place
+	(set play_music_c40_06 false)	
 	(set play_music_c40_07 true)
 	(chapter_c40_4)
 	(wake objective_5)
@@ -924,7 +925,7 @@
 	(ai_place e59_c)
 	(wake e60_a)
 	
-	(sleep 300)
+	(sleep_until (< (ai_living_fraction  e59_c) .1) 15 900)
 	(set play_music_c40_06 false)	
 )
 
@@ -943,7 +944,7 @@
  	(ai_place e59_a)
  	(wake e59_b)
  	
-	(sleep_until (= (device_get_position tun_garage_1) 1) 15)
+	(sleep_until (> (device_get_position tun_garage_1) .25) 1)
 	(set play_music_c40_06 true)
 	
 ; Deleting stuff now
@@ -2280,7 +2281,7 @@
 
 (script dormant music_c40_07
 	(sleep_until play_music_c40_07 1)
-	(sleep_until (> (device_get_position door_b2) 0))
+	;(sleep_until (> (device_get_position door_b2) 0))
 	(sound_looping_start "swfce\levels\c40\music\c40_07" none 1)
 	(if debug (print "music 7 in..."))
 
