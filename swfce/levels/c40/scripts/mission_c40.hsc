@@ -676,6 +676,7 @@
 	(ai_kill e66_a)
 	(sleep 60)
 	(sleep_until (> (list_count (players)) 0) 1)	; TG - Sleep until a player is alive
+	(set play_music_c40_09 false)
    
    (if (mcc_mission_segment "cine2_final") (sleep 1))              
    
@@ -711,20 +712,12 @@
 )
 
 ;Last music check
-(script dormant turn_off_music
+(script dormant last_music
 	(sleep_until (or (and (= (ai_living_count e62_d) 0)
 					  (= (ai_living_count e62_e) 0)
 					  (= (ai_living_count e65_a) 0))
-				  (volume_test_objects e65_a_trigger (players))))
-;)
-;		(or
-;			(vehicle_test_seat_list e62_a_ban_1 b-driver (players))
-;			(vehicle_test_seat_list e62_a_ban_2 b-driver (players))
-;		)
-;	)
-	
-	(set play_music_c40_11 false)
-	(set play_music_c40_11_alt false)
+				  (volume_test_objects music_09_trigger (players))))
+	(set play_music_c40_09 true)
 )
 
 
@@ -738,7 +731,7 @@
 	;Place, activate, blah, blah...
 	(wake e65_a_spawner)
 	(sleep 1)
-	(wake turn_off_music)
+	(wake last_music)
 	(sleep 1)
 	(wake last_waypoint_off)
 )
@@ -748,9 +741,15 @@
 	(if debug (print "3rd wave!!!"))
 	
 	(ai_place e62_e)
-	(sleep 2)
-	(set play_music_c40_11_alt true)		
+	(sleep 2)	
 	(wake e65_a)
+	(set play_music_c40_08_alt true)
+	
+	(sleep_until ( or
+				(vehicle_test_seat_list e62_a_ban_1 b-driver (players))
+				(vehicle_test_seat_list e62_a_ban_2 b-driver (players))))
+	(set play_music_c40_08 false)
+	(set play_music_c40_08_alt false)
 )
 
 (script dormant e62_d	
@@ -781,7 +780,7 @@
 	(if debug (print "Flood attacking!!!"))
 	
 	;Place
-	(set play_music_c40_11 true)	
+	(set play_music_c40_08 true)	
 
 	(ai_place e62_b)
 	(wake e65_a)
@@ -842,7 +841,8 @@
 	(ai_place e61_b)
 
 	(wake e62_a)
-	(sleep 1)
+	(sleep_until (volume_test_objects e61_c_trigger (players)))
+	(set play_music_c40_07 false)
 )
 
 (script dormant e60_e
@@ -882,7 +882,7 @@
 	(if debug (print "e60_a active"))
 	
 	;Place
-	(set play_music_c40_101 true)
+	(set play_music_c40_07 true)
 	(chapter_c40_4)
 	(wake objective_5)
 	(waypoint6)
@@ -920,11 +920,12 @@
 ;Flood Canyon 2st Part of Bridge
 (script dormant e59_c
 	(sleep_until (volume_test_objects e59_c_trigger (players)))
+	(set play_music_c40_06_alt true)	
 	(ai_place e59_c)
 	(wake e60_a)
 	
 	(sleep 300)
-	(set play_music_c40_10 false)	
+	(set play_music_c40_06 false)	
 )
 
 ;Flood Canyon 1st Part of Bridge
@@ -938,10 +939,12 @@
 ;Tunnel Bridge
 (script dormant e59_a
  	(sleep_until (volume_test_objects e59_a_trigger (players)))
+	(set play_music_c40_05 false)
  	(ai_place e59_a)
  	(wake e59_b)
  	
-	(set play_music_c40_10 true)	 	
+	(sleep_until (= (device_get_position tun_garage_1) 1) 15)
+	(set play_music_c40_06 true)
 	
 ; Deleting stuff now
 	(ai_erase e58_a)
@@ -1104,7 +1107,6 @@
 
 	(object_create pulse_gen2)
 	(deactivate_team_nav_point_flag player waypoint4)	
-	(set play_music_c40_09 false)	
 	;Debug
 )
 
@@ -1159,8 +1161,9 @@
 			(vehicle_test_seat_list e50_a_ban_2 b-driver (players))
 		)
 	)
-	
-	(set play_music_c40_09 true)	
+	(set play_music_c40_04 false)
+	(sleep 90)
+	(set play_music_c40_05 true)
 )
 
 ;Force Save
@@ -1254,6 +1257,7 @@
 ;Big first encounter on B(1) coming into canyon B 
 (script dormant e46_a
 	(sleep_until (volume_test_objects e46_a_trigger (players)))
+	(set play_music_c40_03 false)
 	
 	;Debug
 	(if debug (print "e46_canyonb active"))
@@ -1271,7 +1275,8 @@
 
 	(object_create_containing object_b)
 
-	(sleep 10) 
+	(sleep_until (volume_test_objects canyon2_transition (players)))
+	(set play_music_c40_04 true)
 
 	(ai_vehicle_enterable_distance c2_tur_a 7)	
 	(ai_vehicle_enterable_distance c2_tur_b 7)
@@ -1294,7 +1299,6 @@
 ;	(vehicle_load_magic c2_ban_b "driver" (ai_actors e46_b/eli_maj_pilot_b))
 
 	(sleep 150)
-;	(ai_place e46_c
 		
 	(wake e48_a)
 
@@ -1335,13 +1339,11 @@
 (script dormant e46_speech
 	(sleep_until (volume_test_objects e46_speech_trigger (players)))
 	(if debug (print "Speaking!"))
-	(set play_music_c40_08 false)	
-	(set play_music_c40_08_alt false)	
 
 	(sound_impulse_start sound\dialog\c40\c40_200_Cortana none 1)	
 	(waypoint4)
 	(wake objective_3)
-	(ai_place e46_C)
+	(ai_place e46_c)
 
 	;prim edit - put flood ghost drivers in da ghosts
 	(ai_vehicle_encounter c2_gho_b e46_c/fl_pilot_b )
@@ -1359,8 +1361,6 @@
 	(if debug (print "e44_a active"))
 	
 	;Place units/wake/etc...
-	(set play_music_c40_08_alt true)
-	
 	(ai_place e44_a)
 	(sleep 1)
 	(ai_magically_see_players e44_a/ambush)
@@ -1376,8 +1376,6 @@
 	(if debug (print "e43_c_triggered"))
 	
 	;Place units
-	(set play_music_c40_08 true)	
-
 	(ai_place e43_c)
 	(sleep 3)
 	(ai_magically_see_players e43_c)
@@ -1404,8 +1402,6 @@
 ;BSP B3(8) Top level triggers flavor chomp 
 (script dormant e43_a
 	(sleep_until (volume_test_objects e43_a_trigger (players)))
-	(set play_music_c40_07 false)
-	(set play_music_c40_07_alt false)
 	
 	;Debug
 	(if debug (print "e43_a active"))
@@ -1420,7 +1416,6 @@
 	(sleep 150)
 	(sleep_until (volume_test_objects music_c40_07_alt_trigger (players)))
 ;	(sleep_until (= (ai_living_count c3_cov_base/eli_maj_pla_pilot_a) 0))
-	(set play_music_c40_07_alt true)
 )
 
 ;Second bridge of the Double B heading towards BSP(8)
@@ -1432,7 +1427,7 @@
 	
 	;Place the units and give them sight
 	(wake banshee_alt)
-	(set play_music_c40_07 true)
+	(set play_music_c40_03_alt true)
 	
 	(device_set_power door_b2 1)
 	(device_set_power door_b3 1)
@@ -1562,7 +1557,6 @@
 	(wake e33_a)
 	
 	(sleep 210)
-	;(set play_music_c40_06 false)
 )
 
 (script dormant e31_c
@@ -1581,7 +1575,6 @@
 	
 	;Debug
 	(if debug (print "jumpers #1 active"))
-	(set play_music_c40_051 false);prim
 
 	;Place and blah
 	(ai_place e31_b)
@@ -1591,7 +1584,6 @@
 ;Encounter 30, Double Bridge in B Major x 2
 (script dormant e30_a
 	(sleep_until (volume_test_objects e30_a_trigger (players)))
-	;(set play_music_c40_051 false)
 	(sleep 1)	
 	;Debug
 	(if debug (print "E30_a active"))
@@ -1605,7 +1597,6 @@
 	(device_set_power door_b3 0)
 
 	(sleep 60)
-	;(set play_music_c40_06 true)
 
 ;	CLEANUP
 	(ai_erase e8_a)
@@ -1637,7 +1628,7 @@
 	(if debug (print "E22_a active"))
 	
 	;Place the units and give them sight
-	(set play_music_c40_051 true)
+	(set play_music_c40_03 true)
 
 	(ai_place e22_a)
 	(ai_place e23_a)
@@ -1652,6 +1643,7 @@
 ;Encounter 21_b, Grunt vs Grenade
 (script dormant e21_b
 	(sleep_until (volume_test_objects e21_b_trigger (players)))
+	(set play_music_c40_02 false)
 	
 	;Debug
 	(if debug (print "E21_b active"))
@@ -1716,7 +1708,6 @@
 (script dormant e8_a
 	(sleep_until (volume_test_objects e8_trigger (players)))
 
-	(set play_music_c40_05 false)
 	;Debug
 	(if debug (print "Targets on the Bridge"))
 
@@ -1763,8 +1754,6 @@
 
 (script dormant e7_b
 	(sleep_until (volume_test_objects e7_trigger_b (players)))
-	
-	(set play_music_c40_05 true)
 
 	;Debug
 	(deactivate_team_nav_point_flag player waypoint2)
@@ -1805,7 +1794,6 @@
 
 	;Place the units and give them sight
 	(waypoint_2)
-	(set play_music_c40_04 false)
 	(ai_place e6_a)
 	(ai_magically_see_players e6_a)
 ;	(wake e6_a_spawner)
@@ -1828,7 +1816,7 @@
 (script dormant banshee_help
 	(sleep_until (vehicle_test_seat_list fly_away_1 b-driver (players)))
 
-	(set play_music_c40_04 true)
+	(set play_music_c40_02 true)
 		
 	(sound_impulse_start sound\dialog\c40\c40_110_Cortana none 1)
 	
@@ -1839,7 +1827,7 @@
 
 (script dormant mortar_dead
 	(sleep_until (= (ai_living_count c3_cov_base/eli_maj_pla_pilot_a) 0))
-	(set play_music_c40_03 false)
+	(set play_music_c40_01 false)
 )
 
 ; Encounter 5, LOWER CANYON FLOOR
@@ -1873,8 +1861,6 @@
 	(sleep 1)
 
 	(ai_place c3_cov_base)
-	
-	(set play_music_c40_03 true)
 
 	(vehicle_load_magic c3_wra_a "driver" (ai_actors c3_cov_base/eli_maj_pla_pilot_a))
 	(ai_vehicle_encounter c3_wra_a c3_cov_base/eli_maj_pla_pilot_a)
@@ -1910,7 +1896,6 @@
 	(if debug (print "Cortana says, 'Take that Covenant Banshee and get us up there!!'"))
 
 ;	Cortana speech
-	(set play_music_c40_02 false)
 	(ai_conversation cortana_block_2)
 
 	(ai_place c3_base_tier_2)
@@ -1958,7 +1943,7 @@
 (script dormant door_green4
 	(sleep_until (> (device_get_position control_door_a) 0) 5)
 	(device_set_never_appears_locked control_door_a 1)
-	(set play_music_c40_02 true)
+	(set play_music_c40_01_alt true)
 )
 
 (script dormant door_green3
@@ -1982,7 +1967,6 @@
 	
 	(device_set_position control_door_c 1)
 	(device_set_never_appears_locked control_door_c 1)	
-	(set play_music_c40_01 false)
 	
 	(if debug (print "Cortana says, 'The Covenant are trying to use Halo,'"))
 	(if debug (print "we must not let them have the Key!'"))
@@ -2034,7 +2018,7 @@
 	(ai_place e1_a)
 	(ai_set_blind e1_a true)
 	(ai_set_current_state e1_a search)
-	(sleep 20)
+	(sleep 10)
 	(ai_set_blind e1_a false)
 	(ai_follow_target_players e1_a)
 	(ai_magically_see_players e1_a)
