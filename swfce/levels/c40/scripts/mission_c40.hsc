@@ -1817,17 +1817,16 @@
 (script dormant banshee_help
 	(sleep_until (vehicle_test_seat_list fly_away_1 b-driver (players)))
 
+	(set play_music_c40_01 false)
+	(sleep 60)
 	(set play_music_c40_02 true)
 		
 	;(sound_impulse_start sound\dialog\c40\c40_110_Cortana none 1)
-	
-	(if (and (not (game_is_cooperative))
-		    (= normal (game_difficulty_get)))
-	    (if (player0_joystick_set_is_normal) (display_scenario_help 4) (display_scenario_help 5)))
+
 )
 
 (script dormant mortar_dead
-	(sleep_until (= (ai_living_count c3_cov_base/eli_maj_pla_pilot_a) 0))
+	(sleep_until (= (ai_living_count c3_cov_base) 0))
 	(set play_music_c40_01 false)
 )
 
