@@ -73,7 +73,7 @@
 	)
 
 ; PRIMORDIALS GLOBAL SCRIPTS
-; set passive ai alligences
+; set passive ai alligences (butterflies, blindwolves, etc)
 (script static void prim_set_passive_alligence
 	(ai_allegiance player unused6)
 	(ai_allegiance human unused6)

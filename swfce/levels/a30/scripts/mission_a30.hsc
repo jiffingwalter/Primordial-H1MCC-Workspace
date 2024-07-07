@@ -327,7 +327,6 @@
 	)
 
 ;========== Banshee Scripts ==========
-;*
 (script static void final_banshee_river
 	(object_create final_banshee_1)
 	(unit_set_enterable_by_player final_banshee_1 0)
@@ -383,7 +382,6 @@
 
 	(sleep_until (=  0 (ai_living_count final_banshee)) 1)
 	)
-*;
 
 ;========== Landing Zone Scripts ==========
 
@@ -996,6 +994,20 @@
 	(print "script: mission_field1")
 	(sleep_until (volume_test_objects field1_trigger (players)) 5)
 	(ai_place bobombs_1/field1)
+	(ai_place field1_yoshis)
+	(wake field1_yoshi_mood_handler)
+)
+
+(script dormant field1_yoshi_mood_handler
+	(sleep_until (< (ai_strength field1_yoshis) 0.8))
+	(print "field1 yoshis have been pissed the frick off")
+	(ai_set_team field1_yoshis flood)
+)
+
+(script dormant field2_yoshi_mood_handler
+	(sleep_until (< (ai_strength field2_yoshis) 0.8))
+	(print "field2 yoshis have been pissed the frick off")
+	(ai_set_team field2_yoshis flood)
 )
 
 (script dormant mission_first
@@ -1462,7 +1474,7 @@
 
 	(sleep_until (> 7 (ai_living_count cliff_wave)) 15)
 	(ai_migrate cliff_wave cliff_wave/main_near)
-;	(if mark_final_banshee (final_banshee_cliff))
+	;(if (= global_marine_rescue_attempt 3) (final_banshee_cliff))
 	(ai_maneuver_enable cliff_wave 0)
 	(ai_follow_target_players cliff_wave)
 	(ai_magically_see_players cliff_wave)
@@ -1470,8 +1482,8 @@
 	(sleep_until (= 0 (ai_living_count cliff_wave)) 15 delay_late)
 	(if (not (or global_cliff_all_killed (= 0 (ai_living_count cliff_wave)))) (ai_conversation cliff_cleanup))
 	(sleep_until (= 0 (ai_living_count cliff_wave)) 15 delay_lost)
-;	(if mark_final_banshee (sleep_until (=  0 (ai_living_count final_banshee)) 1 delay_lost))
-;	(ai_kill final_banshee)
+	;(if (= global_marine_rescue_attempt 3) (sleep_until (=  0 (ai_living_count final_banshee)) 1 delay_lost))
+	;(ai_kill final_banshee)
 	(set test_cliff_kill true)
 ;	(ai_conversation_stop cliff_welcome)
 	(sleep delay_calm)
@@ -1959,7 +1971,7 @@
 	(sleep_until global_rubble_wave_5 5)
 
 	(sleep_until (> 5 (ai_living_count rubble_wave)) 15)
-;	(if mark_final_banshee (final_banshee_rubble))
+	;(if (= global_marine_rescue_attempt 3) (final_banshee_rubble))
 	(ai_maneuver_enable rubble_wave 0)
 	(ai_follow_target_players rubble_wave)
 	(ai_magically_see_players rubble_wave)
@@ -1969,8 +1981,8 @@
 
 	(sleep_until (= 0 (ai_living_count rubble_wave)) 15 delay_lost)
 	(if (< 0 (ai_living_count rubble_wave)) (sleep_until (game_all_quiet) 1 delay_dawdle))
-;	(if mark_final_banshee (sleep_until (=  0 (ai_living_count final_banshee)) 1 delay_lost))
-;	(ai_kill final_banshee)
+	;(if (= global_marine_rescue_attempt 3) (sleep_until (=  0 (ai_living_count final_banshee)) 1 delay_lost))
+	;(ai_kill final_banshee)
 	(set test_rubble_kill true)
 	;(ai_conversation_stop rubble_welcome)
 	(sleep delay_calm)
@@ -2264,7 +2276,7 @@
 
 	(sleep_until (> 6 (ai_living_count river_wave)) 15)
 	(ai_migrate river_wave river_wave/wave_2_retreat)
-;	(if mark_final_banshee (final_banshee_river))
+	;(if (= global_marine_rescue_attempt 3) (final_banshee_river))
 	(ai_maneuver_enable river_wave 0)
 	(ai_follow_target_players river_wave)
 	(ai_magically_see_players river_wave)
@@ -2274,8 +2286,8 @@
 
 	(sleep_until (= 0 (ai_living_count river_wave)) 15 delay_lost)
 	(if (< 0 (ai_living_count river_wave)) (sleep_until (game_all_quiet) 1 delay_dawdle))
-;	(if mark_final_banshee (sleep_until (=  0 (ai_living_count final_banshee)) 1 delay_lost))
-;	(ai_kill final_banshee)
+	;(if (= global_marine_rescue_attempt 3) (sleep_until (=  0 (ai_living_count final_banshee)) 1 delay_lost))
+	;(ai_kill final_banshee)
 	(set test_river_kill true)
 	(ai_conversation_stop river_welcome)
 	(sleep delay_calm)
@@ -2537,6 +2549,10 @@
 	(ai_place bobombs_2/field2_carriers)
 	(ai_place field2_turret)
 	(vehicle_load_magic field2_turret "gunner" (ai_actors field2_turret/gunner))
+
+	(sleep_until (= global_marine_rescue_attempt 2))
+	(ai_place field2_yoshis)
+	(wake field2_yoshi_mood_handler)
 )
 
 (script static short increment_rescue_attempt
@@ -2727,8 +2743,16 @@
 
 (global boolean skippedto_field1 false)
 (script static void skipto_field1
-	(print "not implemented")
+	(print "debug: skipping to field 1 section")
 	(skipto_shared)
+	(set skippedto_field1 true)
+	(volume_teleport_players_not_inside field1_trigger skip_field1)
+	(place_skiphog)
+	(object_teleport jeep skip_field1_hog)
+	(wake objective_cave)
+	(wake mission_field1)
+	(sleep -1 mission_lz)
+	(sleep -1 mission_first)
 )
 
 (global boolean skippedto_caveent false)
