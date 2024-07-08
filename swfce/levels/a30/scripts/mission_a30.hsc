@@ -2782,6 +2782,33 @@
 	(volume_teleport_players_not_inside cave_exit skip_field2)
 )
 
+(global boolean skippedto_rubble false)
+(script static void skipto_rubble
+	(print "debug: skipping to rubble section")
+	(skipto_shared)
+	(set skippedto_rubble true)
+	(switch_bsp 1)
+	(volume_teleport_players_not_inside rubble_all skip_rubble)
+)
+
+(global boolean skippedto_river false)
+(script static void skipto_river
+	(print "debug: skipping to river section")
+	(skipto_shared)
+	(set skippedto_river true)
+	(switch_bsp 1)
+	(volume_teleport_players_not_inside river_all skip_river)
+)
+
+(global boolean skippedto_cliff false)
+(script static void skipto_cliff
+	(print "debug: skipping to cliff section")
+	(skipto_shared)
+	(set skippedto_cliff true)
+	(switch_bsp 1)
+	(volume_teleport_players_not_inside cliff_all skip_cliff)
+)
+
 ;;; root mission script ---------------------------------------------------------
 (script startup mission_a30
    (if (mcc_mission_segment "cine1_intro") (sleep 1))              
