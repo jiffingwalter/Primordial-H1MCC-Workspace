@@ -72,8 +72,8 @@
 	(player_effect_start (real_random_range .7 .9) 1)
 	)
 
-; PRIMORDIALS GLOBAL SCRIPTS
-; set passive ai alligences (butterflies, blindwolves, etc)
+; PRIMORDIALS GLOBAL SCRIPTS ----------
+; set passive ai alligences (animals n such)
 (script static void prim_set_passive_alligence
 	(ai_allegiance player unused6)
 	(ai_allegiance human unused6)
@@ -81,11 +81,11 @@
 )
 
 ; debug shortcuts
-(script static void bump
+(script static boolean bump
 	(print "toggling bump possession")
 	(set cheat_bump_possession (not cheat_bump_possession))
 )
-(script static void cheats
+(script static boolean cheats
 	(print "toggling cheats")
 	(set cheat_deathless_player (not cheat_deathless_player))
 	(set cheat_infinite_ammo (not cheat_infinite_ammo))
@@ -97,9 +97,17 @@
 	(sleep 200)
 	(set cheat_deathless_player (not cheat_deathless_player))
 )
-(script static void debugcollision
+(script static boolean debugcollision
 	(print "toggling collison debug")
 	(set debug_objects (not debug_objects))
 	(set debug_objects_collision_models (not debug_objects_collision_models))
 	(set collision_debug (not collision_debug))
+)
+(global boolean debugsafetosave_bool false)
+(script static boolean debugsafetosave
+	(set debugsafetosave_bool (not debugsafetosave_bool))
+)
+(script continuous debugsafetosave_func
+	(if debugsafetosave_bool (if (game_safe_to_save) (print "safe to save... true") (print "safe to save... false")))
+	(sleep 30)
 )
