@@ -109,5 +109,5 @@
 )
 (script continuous debugsafetosave_func
 	(if debugsafetosave_bool (if (game_safe_to_save) (print "safe to save... true") (print "safe to save... false")))
-	(sleep 30)
+	(sleep 10)
 )
