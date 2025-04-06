@@ -16,7 +16,7 @@
 
 ; Functional vars
 (global short global_life_count 0) ; number of player lives (disrgarded if 'use checkpoints' or endless mode options are set)
-(global short global_game_status 0) ; 0 - not started, 1 - selecting options, 2 - in progress
+(global short global_game_status 0) ; 0 - not started, 1 - selecting options, 2 - in progress, 3 - GAME LOST
 (global short global_wave_num 0) ; current wave
 (global short global_round_num 0) ; current round
 (global short global_set_num 0) ; current set
@@ -52,15 +52,22 @@
     (set cheat_deathless_player 1) ; set player to invincible 
 
     ; get options...
+    ;todo: various device control checks here for each option...
 
     ; wait for confirmation...
+    (sleep_until (= 1 (device_get_position control_start_game)) 1)
 
-    ; set default global variables and modify stuff based on options...
+    ; set default global variables and modify stuff based on final options...
     (set wave_enemies_active_max 5)
     (set wave_enemies_per_wave 10)
+    (set global_life_count option_starting_lives)
 
-    ; start game...
+    ; initialize players and start game...
     (set global_game_status 2)
+    (fade_in 1 1 1 30)
+    (object_teleport (player0) "player_respawn_point")
+    (player_add_equipment (player0) "wep_assaultrifle" 0)
+    (player_add_equipment (player0) "gre_frag" 0)
 )
 
 ; core script - observe game state and take actions as necessary (player deaths, wave start and stopping, game over)
@@ -81,6 +88,13 @@
                 )
             )
             ;   is a minigame completed or failed?
+        )
+    )
+    (if (= global_game_status 3) ; was the game lost?
+        (begin 
+            (print "GAME OVER!")
+            (sleep (* 8 30))
+            (game_lost)
         )
     )
 )
@@ -119,12 +133,18 @@
 
 (script static void wave_start_next
     (print "starting next wave")
+    (set wave_in_progress true)
     ; update global state variables (incrementations and adjusting based on spawn scales)
 
     ; clear spawner variables
+    (set wave_enemies_spawned 0)
+
     ; check if its the next round and/or set
+
     ; check if its time for minigame or boss wave
+
     ; set wave spawner global to true
+    (set wave_spawner_on true)
 )
 
 ; add every single encounter's current living actor count and return it
@@ -144,6 +164,7 @@
     (if (= (unit_get_health (player0)) 0)
         (begin
             (print "PLAYER 0 DIED!")
+            ; todo: spawn a body on the player's current position to fake a death
             (player_respawn_sequence (player0))
         )
     )
@@ -174,22 +195,46 @@
 )
 (script static void (player_respawn_sequence (unit dead_player))
     (print "starting player respawn sequence")
-    (sound_impulse_start "swfce\sound\dialog\player\death" dead_player 1)
+    
+    ; snag player away from the action
+    (fade_in 1 1 1 30); TODO: CHANGE THIS TO AN EFFECT THAT SPAWNS ON PLAYER
+    (object_teleport dead_player "player_timeout_point")
+    (player_add_equipment dead_player "wep_none" 1)
+    (unit_set_current_vitality dead_player 80 80)
     (object_cannot_take_damage dead_player)
-    (fade_in 1 1 1 120)
+    (ai_disregard dead_player 1)
+    (set global_life_count (- global_life_count 1))
+    (sleep 1)
+    (sound_impulse_start "swfce\sound\dialog\player\death" dead_player 1)
 
-    ; teleport player away from the battlefield back into the start room with a view of the battlefield
-    ; decrement lives
+    ; if there's lives left, run the respawn logic
+    (if (not (= global_life_count 0))
+        (begin 
+            ; waiting in timeout
+            (sleep 120)
+            (sound_impulse_start "sound\sfx\ui\countdown_for_respawn" dead_player 1)
+            (sleep 30)
+            (sound_impulse_start "sound\sfx\ui\countdown_for_respawn" dead_player 1)
+            (sleep 30)
+            (sound_impulse_start "sound\sfx\ui\countdown_for_respawn" dead_player 1)
+            (sleep 30)
+            (sound_impulse_start "sound\sfx\ui\player_respawn" dead_player 1)
 
-    (sleep 120)
-    (sound_impulse_start "sound\sfx\ui\countdown_for_respawn" dead_player 1)
-    (sleep 30)
-    (sound_impulse_start "sound\sfx\ui\countdown_for_respawn" dead_player 1)
-    (sleep 30)
-    (sound_impulse_start "sound\sfx\ui\countdown_for_respawn" dead_player 1)
-    (sleep 30)
-    (sound_impulse_start "sound\sfx\ui\player_respawn" dead_player 1)
-    ; teleport player back to the game based on their number
+            ; put player back into the game
+            (fade_in 1 1 1 30); TODO: CHANGE THIS TO AN EFFECT THAT SPAWNS ON PLAYER
+            (ai_disregard dead_player 0)
+            (object_teleport dead_player "player_respawn_point")
+            ;todo: make weapon grant logic smarter (separate function?) 
+            (player_add_equipment dead_player "wep_assaultrifle" 0)
+            (player_add_equipment dead_player "gre_frag" 0)
+
+            ; give player 3 seconds of invulnurability after they "respawn"
+            (sleep 90)
+            (object_can_take_damage dead_player)
+        )
+        ; else, set the game status to lost
+        (set global_game_status 3)
+    )
 )
 
 ;; --- Debug/testing from sapien --- ;;
