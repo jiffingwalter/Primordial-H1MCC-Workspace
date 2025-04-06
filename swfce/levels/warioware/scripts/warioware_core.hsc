@@ -174,14 +174,39 @@
 )
 (script static void (player_respawn_sequence (unit dead_player))
     (print "starting player respawn sequence")
-    ; play long white flash on player's screen and a dumb death sound
+    (sound_impulse_start "swfce\sound\dialog\player\death" dead_player 1)
+    (object_cannot_take_damage dead_player)
+    (fade_in 1 1 1 120)
+
     ; teleport player away from the battlefield back into the start room with a view of the battlefield
     ; decrement lives
-    ; do countdown to respawn player and drop them back into the action
+
+    (sleep 120)
+    (sound_impulse_start "sound\sfx\ui\countdown_for_respawn" dead_player 1)
+    (sleep 30)
+    (sound_impulse_start "sound\sfx\ui\countdown_for_respawn" dead_player 1)
+    (sleep 30)
+    (sound_impulse_start "sound\sfx\ui\countdown_for_respawn" dead_player 1)
+    (sleep 30)
+    (sound_impulse_start "sound\sfx\ui\player_respawn" dead_player 1)
+    ; teleport player back to the game based on their number
 )
 
 ;; --- Debug/testing from sapien --- ;;
 (script static void test_game
     (set run_game_scripts true)
     (set wave_spawner_on true)
+)
+
+; put button here to make the holo panel start the next wave
+(script continuous test_start_wave
+	; panel turned ON
+	(sleep_until (= 1 (device_get_position control_start_game)) 1)
+    (device_set_power control_start_game 0)
+	(wave_start_next)
+	
+	; panel turned OFF
+	(sleep_until (= wave_in_progress false) 30)
+    (device_set_position control_start_game 0)
+    (device_set_power control_start_game 1)
 )
