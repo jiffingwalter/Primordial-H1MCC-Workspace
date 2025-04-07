@@ -47,6 +47,10 @@
 (global boolean player1_respawning false) ; is player 1 dead?
 (global boolean player2_respawning false) ; is player 2 dead?
 (global boolean player3_respawning false) ; is player 3 dead?
+(global boolean player0_invulnurable false)
+(global boolean player1_invulnurable false)
+(global boolean player2_invulnurable false)
+(global boolean player3_invulnurable false)
 
 ;; ---- Game control scripts ---- ;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
@@ -68,6 +72,9 @@
     (set wave_enemies_active_max 5)
     (set wave_enemies_per_wave 10)
     (set global_life_count option_starting_lives)
+    ; ai infighting alligences...
+    ; enemy danger multiplier...
+    ; 
 
     ; initialize players and start game...
     (set global_game_status 2)
@@ -170,8 +177,10 @@
     (set wave_enemies_living_count _wavemonitorlivingenemies_value)
 )
 
-; check if any players are "dead" and run respawn logic for them if so
+; observers for each player
+; TODO: copy changes from monitor_player0 to other players as well
 (script continuous monitor_player0
+    ; watch for player death
     (if (and 
         (= (unit_get_health (player0)) 0)
         (not (= game_swapping_loadout true))
@@ -181,6 +190,10 @@
             ; todo: spawn a body on the player's current position to fake a death
             (player_respawn_sequence (player0))
         )
+    )
+    ; maintain invincibility if it's enabled for this player
+    (if (= player0_invulnurable true)
+        (unit_set_current_vitality (player0) 80 80)
     )
 )
 (script continuous monitor_player1
@@ -207,6 +220,7 @@
         )
     )
 )
+
 ; manage respawning the player
 (script static void (player_respawn_sequence (unit dead_player))
     (print "starting player respawn sequence")
@@ -239,16 +253,103 @@
             (damage_object "swfce\effects\damage effects\screen white flash" dead_player)
             (ai_disregard dead_player 0)
             (object_teleport dead_player "player_respawn_point")
-            (effect_new_on_object_marker "swfce\effects\impulse\ww invuln" dead_player "body")
- 
-            (player_add_weapon dead_player "wep_assaultrifle")
-            (player_add_weapon dead_player "gre_frag")
+            (object_can_take_damage dead_player)
+            (player_set_loadout dead_player "preset_default")
 
             ; let player have 3 seconds of invulurability after spawning before turning it back off
+            (player_set_invuln dead_player true)
             (sleep 90)
-            (object_can_take_damage dead_player)
+            (player_set_invuln dead_player false)
         )
     )
+)
+
+; set a player's invulnerability status and attach invuln object to them
+(script static void (player_set_invuln (unit player_in) (boolean bool_in))
+    (if (= player_in (player0))
+        (begin   
+            (set player0_invulnurable bool_in)
+            (if (= bool_in true)
+                (begin 
+                    (object_create "player0_invuln_effect")
+                    (objects_attach player_in "body" "player0_invuln_effect" "smoker")
+                    (object_cannot_take_damage player_in)
+                )
+                (begin 
+                    (objects_detach player_in "player0_invuln_effect")
+                    (object_destroy "player0_invuln_effect")
+                    (effect_new_on_object_marker "swfce\effects\impulse\ww invuln fade" player_in "body")
+                    (object_can_take_damage player_in)
+                )
+            )
+        )
+    )
+    (if (= player_in (player1))
+        (begin   
+            (set player1_invulnurable bool_in)
+            (if (= bool_in true)
+                (begin 
+                    (object_create "player1_invuln_effect")
+                    (objects_attach player_in "body" "player1_invuln_effect" "smoker")
+                    (object_cannot_take_damage player_in)
+                )
+                (begin 
+                    (objects_detach player_in "player1_invuln_effect")
+                    (object_destroy "player1_invuln_effect")
+                    (effect_new_on_object_marker "swfce\effects\impulse\ww invuln fade" player_in "body")
+                    (object_can_take_damage player_in)
+                )
+            )
+        )
+    )
+    (if (= player_in (player2))
+        (begin   
+            (set player2_invulnurable bool_in)
+            (if (= bool_in true)
+                (begin 
+                    (object_create "player2_invuln_effect")
+                    (objects_attach player_in "body" "player2_invuln_effect" "smoker")
+                    (object_cannot_take_damage player_in)
+                )
+                (begin 
+                    (objects_detach player_in "player2_invuln_effect")
+                    (object_destroy "player2_invuln_effect")
+                    (effect_new_on_object_marker "swfce\effects\impulse\ww invuln fade" player_in "body")
+                    (object_can_take_damage player_in)
+                )
+            )
+        )
+    )
+    (if (= player_in (player3))
+        (begin   
+            (set player3_invulnurable bool_in)
+            (if (= bool_in true)
+                (begin 
+                    (object_create "player3_invuln_effect")
+                    (objects_attach player_in "body" "player3_invuln_effect" "smoker")
+                    (object_cannot_take_damage player_in)
+                )
+                (begin 
+                    (objects_detach player_in "player3_invuln_effect")
+                    (object_destroy "player3_invuln_effect")
+                    (effect_new_on_object_marker "swfce\effects\impulse\ww invuln fade" player_in "body")
+                    (object_can_take_damage player_in)
+                )
+            )
+        )
+    )
+)
+
+; set/replace the loadout for a single player
+(script static void (player_set_loadout (unit player_in) (starting_profile loadout_in))
+    (set game_swapping_loadout true)
+    (player_add_equipment player_in loadout_in 1)
+    (set game_swapping_loadout false)
+)
+
+; add a weapon or equipment to a single player
+(script static void (player_add_weapon (unit player_in) (starting_profile loadout_in))
+    (player_add_equipment player_in loadout_in 0)
 )
 
 ; monitor current life count and trigger end game if = 0
@@ -269,18 +370,6 @@
     (player_add_equipment (player2) loadout_in 1)
     (player_add_equipment (player3) loadout_in 1)
     (set game_swapping_loadout false)
-)
-
-; set/replace the loadout for a single player
-(script static void (player_set_loadout (unit player_in) (starting_profile loadout_in))
-    (set game_swapping_loadout true)
-    (player_add_equipment player_in loadout_in 1)
-    (set game_swapping_loadout false)
-)
-
-; add a weapon or equipment to a single player
-(script static void (player_add_weapon (unit player_in) (starting_profile loadout_in))
-    (player_add_equipment player_in loadout_in 0)
 )
 
 ;; --- Debug/testing stuff --- ;;
