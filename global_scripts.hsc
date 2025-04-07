@@ -99,12 +99,22 @@
 	(set cheat_infinite_ammo (not cheat_infinite_ammo))
 )
 
-(script static void pri_vehicles
+(script static void pri_vehs
 	(print "spawning all vehicles")
 	(set cheat_deathless_player (not cheat_deathless_player))
 	(cheat_all_vehicles)
 	(sleep 200)
 	(set cheat_deathless_player (not cheat_deathless_player))
+)
+
+(script static void pri_weps
+	(print "spawning all weapons")
+	(cheat_all_weapons)
+)
+
+(script static void pri_equip
+	(print "spawning all equipment")
+	(cheat_all_powerups)
 )
 
 (script static boolean pri_debug_collision
