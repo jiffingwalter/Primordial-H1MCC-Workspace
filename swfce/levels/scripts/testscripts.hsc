@@ -59,8 +59,8 @@
 )
 
 ;sandbox test script
-(script static void test
-	(set cheat_bump_possession (not cheat_bump_possession))
+(script static void test_effect
+    (effect_new_on_object_marker  "swfce\effects\impulse\ww invuln" (player0) "body")
 )
 
 (script continuous cheat_allweapons_control

@@ -42,6 +42,13 @@
 (global string wave_spawn_override_squad "") ; the name of a squad we're forcing to spawn from (none means random)
 (global ai wave_spawner_last_placed "enc_main") ; the last encounter and squad we placed an enemy from. (enc_main acts as null)
 
+; Player management vars
+(global boolean game_swapping_loadout false) ; override the player death listener to avoid accidential death detection when resetting starting profiles
+(global boolean player0_respawning false) ; is player 0 dead?
+(global boolean player1_respawning false) ; is player 1 dead?
+(global boolean player2_respawning false) ; is player 2 dead?
+(global boolean player3_respawning false) ; is player 3 dead?
+
 ;; ---- Game control scripts ---- ;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
 (script startup game_setup
@@ -49,12 +56,13 @@
     (set global_game_status 1)
 
     ; setup...
-    (set cheat_deathless_player 1) ; set player to invincible 
+    (set cheat_deathless_player 1) ; set player to invincible for respawn hack
+    (game_set_loadout "preset_initial")
 
     ; get options...
     ;todo: various device control checks here for each option...
 
-    ; wait for confirmation...
+    ; wait for confirmation of options by player...
     (sleep_until (= 1 (device_get_position control_start_game)) 1)
 
     ; set default global variables and modify stuff based on final options...
@@ -66,16 +74,16 @@
     (set global_game_status 2)
     (fade_in 1 1 1 30)
     (object_teleport (player0) "player_respawn_point")
-    (player_add_equipment (player0) "wep_assaultrifle" 0)
-    (player_add_equipment (player0) "gre_frag" 0)
+    (game_set_loadout "preset_default")
 )
 
-; core script - observe game state and take actions as necessary (player deaths, wave start and stopping, game over)
+; core script - observe game state and take actions as necessary (wave start and stopping, game over)
 (script continuous game_main
     (if (= global_game_status 2) ; is the game active?
         ; wait for conditions...
         (begin 
-            ;   are all enemies of the current wave dead? (max were spawned and none are alive) - turn off spawner and trigger next wave if so
+            ; are all enemies of the current wave dead? (max were spawned and none are alive) - turn off spawner and trigger next wave if so
+            ; TODO: modifiy this logic so that when the enemy count of the current wave is < 5 and we're not entering a new set, start a timer to begin the next wave automatically
             (if (and 
                     (= wave_enemies_living_count 0) 
                     (= wave_enemies_spawned wave_enemies_per_wave)
@@ -87,14 +95,18 @@
                     (set wave_in_progress false)
                 )
             )
-            ;   is a minigame completed or failed?
+            ; is a minigame completed or failed?
         )
     )
-    (if (= global_game_status 3) ; was the game lost?
+    (if (= global_game_status 3) ; status was set to lost, run lose game logic
         (begin 
             (print "GAME OVER!")
+
             (sleep (* 8 30))
+
             (game_lost)
+
+            (sleep -1)
         )
     )
 )
@@ -111,7 +123,7 @@
                 ; temp for test
                 (print "placed a bad guy!")
                 (wave_spawn_enemy "enc_common/grunt_pp")
-                
+                ; TODO: implement the rolling and danger spawn logic
                 ; 1. roll for an encounter (enemy faction) to spawn from, or choose an overrided encounter if set
 
                 ; 2. roll for a squad inside that encounter to spawn an enemy, or choose an overrided squad if set
@@ -123,7 +135,7 @@
     (sleep wave_enemies_spawn_delay)
 )
 
-; spawn an enemy and run shared logic
+; spawn a specified enemy and run shared logic
 (script static void (wave_spawn_enemy (ai enc))
     (ai_place enc)
     (set wave_spawner_last_placed enc)
@@ -161,7 +173,10 @@
 
 ; check if any players are "dead" and run respawn logic for them if so
 (script continuous monitor_player0
-    (if (= (unit_get_health (player0)) 0)
+    (if (and 
+        (= (unit_get_health (player0)) 0)
+        (not (= game_swapping_loadout true))
+    )
         (begin
             (print "PLAYER 0 DIED!")
             ; todo: spawn a body on the player's current position to fake a death
@@ -193,13 +208,14 @@
         )
     )
 )
+; manage respawning the player
 (script static void (player_respawn_sequence (unit dead_player))
     (print "starting player respawn sequence")
     
     ; snag player away from the action
-    (fade_in 1 1 1 30); TODO: CHANGE THIS TO AN EFFECT THAT SPAWNS ON PLAYER
+    (damage_object "swfce\effects\damage effects\screen white flash" dead_player)
     (object_teleport dead_player "player_timeout_point")
-    (player_add_equipment dead_player "wep_none" 1)
+    (player_set_loadout dead_player "wep_none")
     (unit_set_current_vitality dead_player 80 80)
     (object_cannot_take_damage dead_player)
     (ai_disregard dead_player 1)
@@ -207,8 +223,8 @@
     (sleep 1)
     (sound_impulse_start "swfce\sound\dialog\player\death" dead_player 1)
 
-    ; if there's lives left, run the respawn logic
-    (if (not (= global_life_count 0))
+    ; if there's still lives left, run the respawn logic
+    (if (not (<= global_life_count 0))
         (begin 
             ; waiting in timeout
             (sleep 120)
@@ -221,23 +237,54 @@
             (sound_impulse_start "sound\sfx\ui\player_respawn" dead_player 1)
 
             ; put player back into the game
-            (fade_in 1 1 1 30); TODO: CHANGE THIS TO AN EFFECT THAT SPAWNS ON PLAYER
+            (damage_object "swfce\effects\damage effects\screen white flash" dead_player)
             (ai_disregard dead_player 0)
             (object_teleport dead_player "player_respawn_point")
-            ;todo: make weapon grant logic smarter (separate function?) 
-            (player_add_equipment dead_player "wep_assaultrifle" 0)
-            (player_add_equipment dead_player "gre_frag" 0)
+            (effect_new_on_object_marker "swfce\effects\impulse\ww invuln" dead_player "body")
+ 
+            (player_add_weapon dead_player "wep_assaultrifle")
+            (player_add_weapon dead_player "gre_frag")
 
-            ; give player 3 seconds of invulnurability after they "respawn"
+            ; let player have 3 seconds of invulurability after spawning before turning it back off
             (sleep 90)
             (object_can_take_damage dead_player)
         )
-        ; else, set the game status to lost
+    )
+)
+
+; monitor current life count and trigger end game if = 0
+(script continuous game_monitor_lives
+    (if (and 
+            (= global_game_status 2)
+            (<= global_life_count 0)
+        )
         (set global_game_status 3)
     )
 )
 
-;; --- Debug/testing from sapien --- ;;
+; set/replace the loadout for all players
+(script static void (game_set_loadout (starting_profile loadout_in))
+    (set game_swapping_loadout true)
+    (player_add_equipment (player0) loadout_in 1)
+    (player_add_equipment (player1) loadout_in 1)
+    (player_add_equipment (player2) loadout_in 1)
+    (player_add_equipment (player3) loadout_in 1)
+    (set game_swapping_loadout false)
+)
+
+; set/replace the loadout for a single player
+(script static void (player_set_loadout (unit player_in) (starting_profile loadout_in))
+    (set game_swapping_loadout true)
+    (player_add_equipment player_in loadout_in 1)
+    (set game_swapping_loadout false)
+)
+
+; add a weapon or equipment to a single player
+(script static void (player_add_weapon (unit player_in) (starting_profile loadout_in))
+    (player_add_equipment player_in loadout_in 0)
+)
+
+;; --- Debug/testing stuff --- ;;
 (script static void test_game
     (set run_game_scripts true)
     (set wave_spawner_on true)
