@@ -43,10 +43,11 @@
 
 ; Player management vars
 (global boolean game_swapping_loadout false) ; override the player death listener to avoid accidential death detection when resetting starting profiles
-(global boolean player0_respawning false) ; is player 0 dead?
-(global boolean player1_respawning false) ; is player 1 dead?
-(global boolean player2_respawning false) ; is player 2 dead?
-(global boolean player3_respawning false) ; is player 3 dead?
+(global boolean player0_respawning false)
+(global boolean player1_respawning false)
+(global boolean player2_respawning false)
+(global boolean player3_respawning false)
+(global boolean players_all_dead false)
 (global boolean player0_invulnurable false)
 (global boolean player1_invulnurable false)
 (global boolean player2_invulnurable false)
@@ -171,7 +172,7 @@
     (set _wavemonitorlivingenemies_value 0)
     (set _wavemonitorlivingenemies_value (+ _wavemonitorlivingenemies_value (ai_living_count "enc_common")))
     (set _wavemonitorlivingenemies_value (+ _wavemonitorlivingenemies_value (ai_living_count "enc_uncommon")))
-    ;(set _wavemonitorlivingenemies_value (+ _wavemonitorlivingenemies_value (ai_living_count "enc_rare")))
+    (set _wavemonitorlivingenemies_value (+ _wavemonitorlivingenemies_value (ai_living_count "enc_rare")))
     ;(set _wavemonitorlivingenemies_value (+ _wavemonitorlivingenemies_value (ai_living_count "enc_superrare")))
     
     (set wave_enemies_living_count _wavemonitorlivingenemies_value)
@@ -188,6 +189,7 @@
         (begin
             (print "PLAYER 0 DIED!")
             ; todo: spawn a body on the player's current position to fake a death
+            (set player0_respawning true)
             (player_respawn_sequence (player0))
         )
     )
@@ -252,15 +254,21 @@
             ; put player back into the game
             (damage_object "swfce\effects\damage effects\screen white flash" dead_player)
             (ai_disregard dead_player 0)
-            (object_teleport dead_player "player_respawn_point")
             (object_can_take_damage dead_player)
             (player_set_loadout dead_player "preset_default")
+            (object_teleport dead_player "player_respawn_point")
+            ; reset dead player vars
+            (if (= dead_player (player0)) (set player0_respawning false))
+            (if (= dead_player (player1)) (set player1_respawning false))
+            (if (= dead_player (player2)) (set player2_respawning false))
+            (if (= dead_player (player3)) (set player3_respawning false))
 
             ; let player have 3 seconds of invulurability after spawning before turning it back off
             (player_set_invuln dead_player true)
             (sleep 90)
             (player_set_invuln dead_player false)
         )
+        ; TODO: see if there's any way to make the players "spectate" the field or another player if there's no lives left so they can see what happens
     )
 )
 
@@ -340,6 +348,18 @@
     )
 )
 
+(script static short players_check_all_dead
+    (if (and 
+            (= player0_respawning true)
+            (= player1_respawning true)
+            (= player2_respawning true)
+            (= player3_respawning true)
+        )
+        (set players_all_dead true)
+        (set players_all_dead false)
+    )
+)
+
 ; set/replace the loadout for a single player
 (script static void (player_set_loadout (unit player_in) (starting_profile loadout_in))
     (set game_swapping_loadout true)
@@ -352,11 +372,12 @@
     (player_add_equipment player_in loadout_in 0)
 )
 
-; monitor current life count and trigger end game if = 0
+; monitor current life count and trigger end game if = 0 and all players are dead
 (script continuous game_monitor_lives
     (if (and 
             (= global_game_status 2)
             (<= global_life_count 0)
+            (= (players_check_all_dead) true)
         )
         (set global_game_status 3)
     )
