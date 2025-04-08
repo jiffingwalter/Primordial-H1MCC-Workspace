@@ -348,7 +348,7 @@
     )
 )
 
-(script static short players_check_all_dead
+(script static boolean players_check_all_dead
     (if (and 
             (= player0_respawning true)
             (= player1_respawning true)
