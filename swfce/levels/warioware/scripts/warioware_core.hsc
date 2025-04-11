@@ -34,12 +34,17 @@
 (global short wave_enemies_spawn_delay 15) ; how fast to try to spawn enemies
 (global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends)
 (global short wave_enemies_active_max 1) ; the max amount of enemies allowed to be alive at one time
-(global short wave_enemies_active_scale 1) ; effects amount of enemies allowed to be active at one time
-(global short wave_enemies_danger_scale 0) ; effects chances of more dangerous enemies spawning
-(global short wave_enemies_weirdness_scale 0) ; effects chances of different enemy faction squads spawning
-(global string wave_spawn_override_encounter "") ; the name of an encounter we're forcing to spawn from (none means random)
-(global string wave_spawn_override_squad "") ; the name of a squad we're forcing to spawn from (none means random)
-(global ai wave_spawner_last_placed "enc_main") ; the last encounter and squad we placed an enemy from. (enc_main acts as null)
+(global real wave_enemies_active_scale 1.0) ; effects amount of enemies allowed to be active at one time
+(global real wave_enemies_danger_scale 0) ; effects chances of more dangerous enemies spawning
+(global real wave_enemies_weirdness_scale 0) ; effects chances of rarer enemy faction encounters being chosen
+; spawner function vars
+(global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
+(global ai spawner_override "enc_main") ; override the next spawn with an ai from this squad (enc_main acts as null)
+(global ai spawner_last_placed "enc_main") ; the last encounter and squad we placed an enemy from. (enc_main acts as null)
+(global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
+(global real spawner_enc_common_chance 1) ; chance of spawning an enemy from the common encounter, later scaled by weirdness
+(global real spawner_enc_uncommon_chance 0) ; chance of spawning an enemy from the uncommon encounter, later scaled by weirdness
+(global real spawner_enc_rare_chance 0) ; chance of spawning an enemy from the rare encounter, later scaled by weirdness
 
 ; Player management vars
 (global boolean game_swapping_loadout false) ; override the player death listener to avoid accidential death detection when resetting starting profiles
@@ -60,7 +65,7 @@
     (set global_game_status 1)
 
     ; setup...
-    (set cheat_deathless_player 1) ; set player to invincible for respawn hack
+    (set cheat_deathless_player 1) ; set players to invincible for respawn hack
     (game_set_loadout "preset_initial")
 
     ; get options...
@@ -74,8 +79,9 @@
     (set wave_enemies_per_wave 10)
     (set global_life_count option_starting_lives)
     ; ai infighting alligences...
-    ; enemy danger multiplier...
-    ; 
+    ; initial enemy danger multiplier...
+    ; initial enemy weirdness multiplier....
+    ; calculate initial enemy spawn chances...
 
     ; initialize players and start game...
     (set global_game_status 2)
@@ -127,16 +133,38 @@
                 (not (= wave_enemies_spawned wave_enemies_per_wave))
             )
             (begin 
-                ; temp for test
                 (print "placed a bad guy!")
+                
+                ; TEMP FOR TESTING
                 (wave_spawn_enemy "enc_common/grunt_pp")
-                ; TODO: implement the rolling and danger spawn logic
-                ; 1. roll for an encounter (enemy faction) to spawn from, or choose an overrided encounter if set
 
-                ; 2. roll for a squad inside that encounter to spawn an enemy, or choose an overrided squad if set
+                ; roll for an encounter (enemy faction) to spawn from based on if the dice roll lands inside the encounter's current spawn interval
+                ; TODO: make calculation with normalized chances between the 3 encounters
+                (set spawner_dice_roll (real_random_range 0 spawner_dice_limit))
+                (inspect spawner_dice_roll)
 
+                (if (<= spawner_dice_roll spawner_enc_common_chance)
+                    (print "spawning common");(set spawner_next_enc "common")
+                )
+                (if (and 
+                        (not (= spawner_enc_uncommon_chance 0))
+                        (> spawner_dice_roll spawner_enc_common_chance)
+                        (<= spawner_dice_roll (+ spawner_enc_common_chance spawner_enc_uncommon_chance))
+                    )
+                    (print "spawning uncommon");(set spawner_next_enc "uncommon")
+                )
+                (if (and 
+                        (not (= spawner_enc_rare_chance 0))
+                        (> spawner_dice_roll (+ spawner_enc_common_chance spawner_enc_uncommon_chance))
+                        ;(< spawner_dice_roll 1)
+                    )
+                    (print "spawning rare");(set spawner_next_enc "rare")
+                )
+
+                ; for the chosen encounter, roll for a squad to spawn an enemy, or choose the overrided squad if set
+                
             )
-            (print "tried to place a bad guy...")
+            (print "tried to place a bad guy")
         )
     )
     (sleep wave_enemies_spawn_delay)
@@ -145,8 +173,8 @@
 ; spawn a specified enemy and run shared logic
 (script static void (wave_spawn_enemy (ai enc))
     (ai_place enc)
-    (set wave_spawner_last_placed enc)
-    (ai_migrate wave_spawner_last_placed enc)
+    (set spawner_last_placed enc)
+    (ai_migrate spawner_last_placed "enc_main")
     (set wave_enemies_spawned (+ wave_enemies_spawned 1))
 )
 
@@ -154,6 +182,7 @@
     (print "starting next wave")
     (set wave_in_progress true)
     ; update global state variables (incrementations and adjusting based on spawn scales)
+    ; update enemy encounter spawner chance variables based on weirdness here
 
     ; clear spawner variables
     (set wave_enemies_spawned 0)
@@ -394,9 +423,30 @@
 )
 
 ;; --- Debug/testing stuff --- ;;
-(script static void test_game
-    (set run_game_scripts true)
-    (set wave_spawner_on true)
+(script static boolean test_game
+    (set run_game_scripts (not run_game_scripts))
+)
+(script static void test_randspawn
+    (set spawner_dice_roll (real_random_range 0 1))
+    (inspect spawner_dice_roll)
+
+    (if (<= spawner_dice_roll spawner_enc_common_chance)
+        (print "spawning common");(set spawner_next_enc "common")
+    )
+    (if (and 
+            (not (= spawner_enc_uncommon_chance 0))
+            (> spawner_dice_roll spawner_enc_common_chance)
+            (<= spawner_dice_roll (+ spawner_enc_common_chance spawner_enc_uncommon_chance))
+        )
+        (print "spawning uncommon");(set spawner_next_enc "uncommon")
+    )
+    (if (and 
+            (not (= spawner_enc_rare_chance 0))
+            (> spawner_dice_roll (+ spawner_enc_common_chance spawner_enc_uncommon_chance))
+            ;(< spawner_dice_roll 1)
+        )
+        (print "spawning rare");(set spawner_next_enc "rare")
+    )
 )
 
 ; put button here to make the holo panel start the next wave
@@ -411,6 +461,8 @@
     (device_set_position control_start_game 0)
     (device_set_power control_start_game 1)
 )
+
+
 
 ;; --- GPS script lifted from c20.net by Conscars --- ;;
 ; temporary variables for the calculation
