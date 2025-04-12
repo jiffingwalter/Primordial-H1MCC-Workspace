@@ -30,7 +30,7 @@
 (global boolean wave_is_boss false) ; is the current wave a boss wave?
 (global boolean wave_in_progress true) ; is a wave currently in progress?
 (global short wave_enemies_living_count 0) ; current amount of living enemies - get dynamically by adding up all encounter enemy counts
-(global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, dynamically increases
+(global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, dynamically increases with each wave
 (global short wave_enemies_spawn_delay 15) ; how fast to try to spawn enemies
 (global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends)
 (global short wave_enemies_active_max 1) ; the max amount of enemies allowed to be alive at one time
@@ -42,9 +42,14 @@
 (global ai spawner_override "enc_main") ; override the next spawn with an ai from this squad (enc_main acts as null)
 (global ai spawner_last_placed "enc_main") ; the last encounter and squad we placed an enemy from. (enc_main acts as null)
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
-(global real spawner_enc_common_chance 1) ; chance of spawning an enemy from the common encounter, later scaled by weirdness
-(global real spawner_enc_uncommon_chance 0) ; chance of spawning an enemy from the uncommon encounter, later scaled by weirdness
-(global real spawner_enc_rare_chance 0) ; chance of spawning an enemy from the rare encounter, later scaled by weirdness
+(global real spawner_dice_limit 0) ; upper limit for more dynamic dice rolls
+(global real spawner_enc_common_chance 0.9) ; initial chance of spawning an enemy from the common encounter
+(global real spawner_enc_uncommon_chance 0.4) ; initial chance of spawning an enemy from the uncommon encounter
+(global real spawner_enc_rare_chance 0.2) ; initial chance of spawning an enemy from the rare encounter
+(global real spawner_total_chance 0) ; all spawn encounter chances added up
+(global real spawner_enc_common_weight 0) ; normalized chance of common encounter spawn
+(global real spawner_enc_uncommon_weight 0) ; normalized chance of uncommon encounter spawn
+(global real spawner_enc_rare_weight 0) ; normalized chance of rare encounter spawn
 
 ; Player management vars
 (global boolean game_swapping_loadout false) ; override the player death listener to avoid accidential death detection when resetting starting profiles
@@ -161,7 +166,7 @@
                     (print "spawning rare");(set spawner_next_enc "rare")
                 )
 
-                ; for the chosen encounter, roll for a squad to spawn an enemy, or choose the overrided squad if set
+                ; for the chosen encounter, roll again for a squad to spawn an enemy, or choose the overrided squad if set
                 
             )
             (print "tried to place a bad guy")
@@ -181,13 +186,34 @@
 (script static void wave_start_next
     (print "starting next wave")
     (set wave_in_progress true)
-    ; update global state variables (incrementations and adjusting based on spawn scales)
-    ; update enemy encounter spawner chance variables based on weirdness here
+    ; --- update global and wave state variables --- (incrementations and adjusting based on spawn scales)
+    ; global wave num
+    ; global round num
+    ; global set num
+    ; global next wave delay
+    ; wave enemies per wave
+    ; wave enemies spawn delay
+    ; wave enemies active max
+    ; wave enemies danger scale
+    ; wave enemies weirdness scale
+    
+    ; --- spawn chance vars ---
+    ; get initial spawn weights
+    (set spawner_enc_common_weight (max (- 1 wave_enemies_weirdness_scale) (- 1 spawner_enc_common_chance)))
+    (set spawner_enc_uncommon_weight (min wave_enemies_weirdness_scale (- 1 spawner_enc_uncommon_chance)))
+    (set spawner_enc_rare_weight (max (- wave_enemies_weirdness_scale (- 1 spawner_enc_rare_chance)) 0))
+    ; add total chances for normalization
+    (set spawner_total_chance 0)
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
+    ; get normalized spawn weights
+    (set spawner_enc_common_weight (/ spawner_enc_common_weight spawner_total_chance))
+    (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
+    (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
 
-    ; clear spawner variables
+    ; --- reset functional vars ---
     (set wave_enemies_spawned 0)
-
-    ; check if its the next round and/or set
 
     ; check if its time for minigame or boss wave
 
@@ -447,6 +473,37 @@
         )
         (print "spawning rare");(set spawner_next_enc "rare")
     )
+)
+(script static void (test_spawnscales (real scale))
+    (print "chances...")
+    (set spawner_enc_common_weight (max (- 1 scale) (- 1 spawner_enc_common_chance)))
+    (inspect spawner_enc_common_weight)
+    (set spawner_enc_uncommon_weight (min scale (- 1 spawner_enc_uncommon_chance)))
+    (inspect spawner_enc_uncommon_weight)
+    (set spawner_enc_rare_weight (max (- scale (- 1 spawner_enc_rare_chance)) 0))
+    (inspect spawner_enc_rare_weight)
+
+    (print "total chance...")
+    (set spawner_total_chance 0)
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
+    (inspect spawner_total_chance)
+
+    (print "normalized weights...")
+    (set spawner_enc_common_weight (/ spawner_enc_common_weight spawner_total_chance))
+    (inspect spawner_enc_common_weight)
+    (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
+    (inspect spawner_enc_uncommon_weight)
+    (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
+    (inspect spawner_enc_rare_weight)
+
+    (print "final total weight...")
+    (set spawner_total_chance 0)
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
+    (inspect spawner_total_chance)
 )
 
 ; put button here to make the holo panel start the next wave
