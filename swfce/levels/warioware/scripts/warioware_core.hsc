@@ -43,6 +43,7 @@
 (global ai spawner_last_placed "enc_main") ; the last encounter and squad we placed an enemy from. (enc_main acts as null)
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
 (global real spawner_dice_limit 0) ; upper limit for more dynamic dice rolls
+(global boolean spawner_condition_matched false) ; did the spawner match a condition when choosing a squad? (triggers skipping the rest of the if statements)
 (global real spawner_enc_common_chance 0.9) ; initial chance of spawning an enemy from the common encounter
 (global real spawner_enc_uncommon_chance 0.4) ; initial chance of spawning an enemy from the uncommon encounter
 (global real spawner_enc_rare_chance 0.2) ; initial chance of spawning an enemy from the rare encounter
@@ -138,36 +139,67 @@
                 (not (= wave_enemies_spawned wave_enemies_per_wave))
             )
             (begin 
-                (print "placed a bad guy!")
+                (print "placing a bad guy!")
                 
                 ; TEMP FOR TESTING
                 (wave_spawn_enemy "enc_common/grunt_pp")
 
                 ; roll for an encounter (enemy faction) to spawn from based on if the dice roll lands inside the encounter's current spawn interval
                 ; TODO: make calculation with normalized chances between the 3 encounters
-                (set spawner_dice_roll (real_random_range 0 spawner_dice_limit))
+                (set spawner_dice_roll (real_random_range 0 1))
                 (inspect spawner_dice_roll)
 
-                (if (<= spawner_dice_roll spawner_enc_common_chance)
-                    (print "spawning common");(set spawner_next_enc "common")
+                (if (<= spawner_dice_roll spawner_enc_common_weight)
+                    (set spawner_next_enc "common")
                 )
                 (if (and 
                         (not (= spawner_enc_uncommon_chance 0))
-                        (> spawner_dice_roll spawner_enc_common_chance)
-                        (<= spawner_dice_roll (+ spawner_enc_common_chance spawner_enc_uncommon_chance))
+                        (> spawner_dice_roll spawner_enc_common_weight)
+                        (<= spawner_dice_roll (+ spawner_enc_common_weight spawner_enc_uncommon_weight))
                     )
-                    (print "spawning uncommon");(set spawner_next_enc "uncommon")
+                    (set spawner_next_enc "uncommon")
                 )
                 (if (and 
-                        (not (= spawner_enc_rare_chance 0))
-                        (> spawner_dice_roll (+ spawner_enc_common_chance spawner_enc_uncommon_chance))
+                        (not (= spawner_enc_rare_weight 0))
+                        (> spawner_dice_roll (+ spawner_enc_common_weight spawner_enc_uncommon_weight))
                         ;(< spawner_dice_roll 1)
                     )
-                    (print "spawning rare");(set spawner_next_enc "rare")
+                    (set spawner_next_enc "rare")
                 )
 
-                ; for the chosen encounter, roll again for a squad to spawn an enemy, or choose the overrided squad if set
-                
+                ; for the chosen encounter, roll again for a squad to spawn an enemy, or choose the overrided squad if set...
+                ; actor spawn chances will all be hardcoded and normalized (use generate chance weights.py)
+                ; actor spawn is decided on 3 conditions:
+                    ; 1. did we roll high enough to spawn this enemy?
+                    ; 2. is the current danger value high enough to spawn this enemy?
+                    ; 3. did we already spawn an enemy?
+                ; if first 2 aren't met, test the next one below. if 3rd is met, we skip the rest since that means we already placed one
+                (set spawner_condition_matched false)
+                ;COVENANT - 9 squads
+                (if (= spawner_next_enc "common")
+                    (begin 
+                        (set spawner_dice_roll (real_random_range 0 1))
+                        ; 1. hunter - 1
+                        (if (and (
+                            (< spawner_dice_roll 1)
+                            (> wave_enemies_danger_scale .75)
+                            (= spawner_condition_matched false)
+                        ))
+                            (begin 
+                                (wave_spawn_enemy "enc_common\hunter")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; 2. elite hammer - .98
+                        ; 3. elite stealth - .96
+                        ; 4. bobomb carrier - .92
+                        ; 5. elite needler - .87
+                        ; 6. elite plasma rifle - .79
+                        ; 7. jackal plasma pistol - .68
+                        ; 8. grunt needler - .53
+                        ; 9. grunt plasma pistol - .31
+                    )
+                )
             )
             (print "tried to place a bad guy")
         )
