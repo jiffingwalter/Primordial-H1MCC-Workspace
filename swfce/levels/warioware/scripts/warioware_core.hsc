@@ -39,7 +39,7 @@
 (global real wave_enemies_weirdness_scale 0) ; effects chances of rarer enemy faction encounters being chosen
 ; spawner function vars
 (global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
-(global ai spawner_override "enc_main") ; override the next spawn with an ai from this squad (enc_main acts as null)
+(global ai spawner_picker_override "enc_main") ; override the next spawn with an ai from this squad (enc_main acts as null)
 (global ai spawner_last_placed "enc_main") ; the last encounter and squad we placed an enemy from. (enc_main acts as null)
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
 (global real spawner_dice_limit 0) ; upper limit for more dynamic dice rolls
@@ -136,36 +136,36 @@
         ; check for current actors alive and if we're below the current max allowed actors, then...
         (if (and 
                 (< wave_enemies_living_count wave_enemies_active_max) 
-                (not (= wave_enemies_spawned wave_enemies_per_wave))
+                (!= wave_enemies_spawned wave_enemies_per_wave)
             )
             (begin 
                 (print "placing a bad guy!")
                 
                 ; TEMP FOR TESTING
-                (wave_spawn_enemy "enc_common/grunt_pp")
+                ;(wave_spawn_enemy "enc_common/grunt_pp")
 
                 ; roll for an encounter (enemy faction) to spawn from based on if the dice roll lands inside the encounter's current spawn interval
                 ; TODO: make calculation with normalized chances between the 3 encounters
                 (set spawner_dice_roll (real_random_range 0 1))
-                (inspect spawner_dice_roll)
 
                 (if (<= spawner_dice_roll spawner_enc_common_weight)
                     (set spawner_next_enc "common")
                 )
                 (if (and 
-                        (not (= spawner_enc_uncommon_chance 0))
+                        (!= spawner_enc_uncommon_chance 0)
                         (> spawner_dice_roll spawner_enc_common_weight)
                         (<= spawner_dice_roll (+ spawner_enc_common_weight spawner_enc_uncommon_weight))
                     )
                     (set spawner_next_enc "uncommon")
                 )
                 (if (and 
-                        (not (= spawner_enc_rare_weight 0))
+                        (!= spawner_enc_rare_weight 0)
                         (> spawner_dice_roll (+ spawner_enc_common_weight spawner_enc_uncommon_weight))
                         ;(< spawner_dice_roll 1)
                     )
                     (set spawner_next_enc "rare")
                 )
+                ;(inspect spawner_next_enc)
 
                 ; for the chosen encounter, roll again for a squad to spawn an enemy, or choose the overrided squad if set...
                 ; actor spawn chances will all be hardcoded and normalized (use generate chance weights.py)
@@ -174,30 +174,115 @@
                     ; 2. is the current danger value high enough to spawn this enemy?
                     ; 3. did we already spawn an enemy?
                 ; if first 2 aren't met, test the next one below. if 3rd is met, we skip the rest since that means we already placed one
+                ;TODO: figure out if i can normalize whatever spawns are currently possible???
                 (set spawner_condition_matched false)
+                (set spawner_dice_roll (real_random_range 0 1))
+                (inspect spawner_dice_roll)
                 ;COVENANT - 9 squads
-                (if (= spawner_next_enc "common")
+                (if (and 
+                        (= spawner_next_enc "common")
+                        (= spawner_picker_override "enc_main")
+                    )
                     (begin 
-                        (set spawner_dice_roll (real_random_range 0 1))
                         ; 1. hunter - 1
-                        (if (and (
-                            (< spawner_dice_roll 1)
-                            (> wave_enemies_danger_scale .75)
+                        (if (and 
+                            (<= 1 spawner_dice_roll)
+                            (>= wave_enemies_danger_scale .75)
                             (= spawner_condition_matched false)
-                        ))
+                        )
                             (begin 
-                                (wave_spawn_enemy "enc_common\hunter")
+                                (wave_spawn_enemy "enc_common/hunter")
                                 (set spawner_condition_matched true)
                             )
                         )
                         ; 2. elite hammer - .98
+                        (if (and 
+                            (<= .98 spawner_dice_roll)
+                            (>= wave_enemies_danger_scale .6)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_common/elite_ham")
+                                (set spawner_condition_matched true)
+                            )
+                        )
                         ; 3. elite stealth - .96
+                        (if (and 
+                            (<= .96 spawner_dice_roll)
+                            (>= wave_enemies_danger_scale .5)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_common/elite_stealth")
+                                (set spawner_condition_matched true)
+                            )
+                        )
                         ; 4. bobomb carrier - .92
+                        (if (and 
+                            (<= .92 spawner_dice_roll)
+                            (>= wave_enemies_danger_scale .4)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_common/bobomb_carrier")
+                                (set spawner_condition_matched true)
+                            )
+                        )
                         ; 5. elite needler - .87
-                        ; 6. elite plasma rifle - .79
-                        ; 7. jackal plasma pistol - .68
-                        ; 8. grunt needler - .53
-                        ; 9. grunt plasma pistol - .31
+                        (if (and 
+                            (<= .87 spawner_dice_roll)
+                            (>= wave_enemies_danger_scale .2)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_common/elite_ne")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; 6. elite plasma rifle - .82
+                        (if (and 
+                            (<= .82 spawner_dice_roll)
+                            (>= wave_enemies_danger_scale .1)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_common/elite_pr")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; 7. jackal plasma pistol - .75
+                        (if (and 
+                            (<= .75 spawner_dice_roll)
+                            (>= wave_enemies_danger_scale .05)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_common/jackal_pp")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; 8. grunt needler - .68
+                        (if (and 
+                            (<= .68 spawner_dice_roll)
+                            (>= wave_enemies_danger_scale 0)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_common/grunt_ne")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; 9. grunt plasma pistol - .50
+                        (if (and 
+                            (<= .50 spawner_dice_roll)
+                            (>= wave_enemies_danger_scale 0)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_common/grunt_pp")
+                                (set spawner_condition_matched true)
+                            )
+                        )
                     )
                 )
             )
@@ -213,6 +298,9 @@
     (set spawner_last_placed enc)
     (ai_migrate spawner_last_placed "enc_main")
     (set wave_enemies_spawned (+ wave_enemies_spawned 1))
+    (inspect enc)
+    (inspect spawner_last_placed)
+    (inspect wave_enemies_spawned)
 )
 
 (script static void wave_start_next
@@ -481,8 +569,10 @@
 )
 
 ;; --- Debug/testing stuff --- ;;
-(script static boolean test_game
-    (set run_game_scripts (not run_game_scripts))
+(script static void test_game
+    (set run_game_scripts true)
+    (sleep 5)
+    (device_set_position control_start_game 1)
 )
 (script static void test_randspawn
     (set spawner_dice_roll (real_random_range 0 1))
