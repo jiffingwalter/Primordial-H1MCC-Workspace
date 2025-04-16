@@ -6,8 +6,9 @@
 ; Game options set by player on start 
 (global short option_ai_infighting 1) ; Do different enemy factions: (0) work together, (1) attack each other, or (2) only focus on the player if they're there
 (global short option_minigames 1) ; Minigame wave frequency: (0) none, (1) normal, (2) less, (3) many
-(global short option_enemy_amount_scale 1) ; Multiplier for how fast enemy spawn scale increases: (0.5) less, (1) normal, (1.5) more, (2) insane
-(global short option_enemy_difficulty_scale 1) ; Multiplier for how many harder enemies appear: (0.5) less, (1) normal, (1.5) more, (2) insane
+(global short option_enemy_active_scale 1) ; Multiplier for how fast enemy spawn scale increases: (0.5) less, (1) normal, (1.5) more, (2) insane
+(global short option_difficulty_scale 1) ; Multiplier for how many harder enemies appear: (0.5) less, (1) normal, (1.5) more, (2) insane
+(global short option_weirdness_scale 1) ; Multiplier for how many harder enemies appear: (0.5) less, (1) normal, (1.5) more, (2) insane
 (global boolean option_spawn_friends true) ; Spawn friendly AI on each set?
 (global boolean option_spawn_blocks true) ; Spawn question blocks on each set?
 (global short option_starting_lives 10) ; Sets how many lives player starts with. 1, 5, 10, 20, -1 (endless)
@@ -28,21 +29,21 @@
 (global boolean wave_spawner_on false) ; do we currently want to spawn bad guys?
 (global boolean wave_is_minigame false) ; is the current wave a minigame wave?
 (global boolean wave_is_boss false) ; is the current wave a boss wave?
-(global boolean wave_in_progress true) ; is a wave currently in progress?
-(global short wave_enemies_living_count 0) ; current amount of living enemies - get dynamically by adding up all encounter enemy counts
-(global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, dynamically increases with each wave
+(global boolean wave_in_progress false) ; is a wave currently in progress?
+(global short wave_enemies_living_count 0) ; current amount of living enemies of all types
 (global short wave_enemies_spawn_delay 15) ; how fast to try to spawn enemies
 (global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends)
-(global short wave_enemies_active_max 1) ; the max amount of enemies allowed to be alive at one time
-(global real wave_enemies_active_scale 1.0) ; effects amount of enemies allowed to be active at one time
-(global real wave_enemies_danger_scale 0) ; effects chances of more dangerous enemies spawning
-(global real wave_enemies_weirdness_scale 0) ; effects chances of rarer enemy faction encounters being chosen
+(global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, scales based on option_enemy_active_scale
+(global short wave_enemies_active_max 1) ; the max amount of enemies allowed to be alive at one time, scales based on option_difficulty_scale
+(global real game_difficulty_level 0.0) ; effects chances of more dangerous enemies spawning and vehicles appearing - scales based on option_difficulty_scale
+(global real game_weirdness_level 0.0) ; effects chances of rarer enemy faction encounters being chosen and weirder minigames, scales based on option_weirdness_scale
 ; spawner function vars
 (global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
 (global ai spawner_picker_override "enc_main") ; override the next spawn with an ai from this squad (enc_main acts as null)
 (global ai spawner_last_placed "enc_main") ; the last encounter and squad we placed an enemy from. (enc_main acts as null)
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
-(global real spawner_dice_limit 0) ; upper limit for more dynamic dice rolls
+(global real spawner_dice_lower 0) ; lower limit for dice rolls, scales based on option_difficulty_scale
+(global real spawner_dice_upper 1) ; upper limit for dice rolls
 (global boolean spawner_condition_matched false) ; did the spawner match a condition when choosing a squad? (triggers skipping the rest of the if statements)
 (global real spawner_enc_common_chance 0.9) ; initial chance of spawning an enemy from the common encounter
 (global real spawner_enc_uncommon_chance 0.4) ; initial chance of spawning an enemy from the uncommon encounter
@@ -139,7 +140,7 @@
                 (!= wave_enemies_spawned wave_enemies_per_wave)
             )
             (begin 
-                (print "placing a bad guy!")
+                ;(print "placing a bad guy!")
                 
                 ; TEMP FOR TESTING
                 ;(wave_spawn_enemy "enc_common/grunt_pp")
@@ -176,8 +177,7 @@
                 ; if first 2 aren't met, test the next one below. if 3rd is met, we skip the rest since that means we already placed one
                 ;TODO: figure out if i can normalize whatever spawns are currently possible???
                 (set spawner_condition_matched false)
-                (set spawner_dice_roll (real_random_range 0 1))
-                (inspect spawner_dice_roll)
+                (set spawner_dice_roll (real_random_range spawner_dice_lower spawner_dice_upper))
                 ;COVENANT - 9 squads
                 (if (and 
                         (= spawner_next_enc "common")
@@ -187,7 +187,7 @@
                         ; 1. hunter - 1
                         (if (and 
                             (<= 1 spawner_dice_roll)
-                            (>= wave_enemies_danger_scale .75)
+                            (>= game_difficulty_level .6)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -198,7 +198,7 @@
                         ; 2. elite hammer - .98
                         (if (and 
                             (<= .98 spawner_dice_roll)
-                            (>= wave_enemies_danger_scale .6)
+                            (>= game_difficulty_level .5)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -209,7 +209,7 @@
                         ; 3. elite stealth - .96
                         (if (and 
                             (<= .96 spawner_dice_roll)
-                            (>= wave_enemies_danger_scale .5)
+                            (>= game_difficulty_level .4)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -220,7 +220,7 @@
                         ; 4. bobomb carrier - .92
                         (if (and 
                             (<= .92 spawner_dice_roll)
-                            (>= wave_enemies_danger_scale .4)
+                            (>= game_difficulty_level .3)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -231,7 +231,7 @@
                         ; 5. elite needler - .87
                         (if (and 
                             (<= .87 spawner_dice_roll)
-                            (>= wave_enemies_danger_scale .2)
+                            (>= game_difficulty_level .2)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -239,10 +239,10 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 6. elite plasma rifle - .82
+                        ; 6. elite plasma rifle - .79
                         (if (and 
-                            (<= .82 spawner_dice_roll)
-                            (>= wave_enemies_danger_scale .1)
+                            (<= .79 spawner_dice_roll)
+                            (>= game_difficulty_level .05)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -250,10 +250,10 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 7. jackal plasma pistol - .75
+                        ; 7. jackal plasma pistol - .68
                         (if (and 
-                            (<= .75 spawner_dice_roll)
-                            (>= wave_enemies_danger_scale .05)
+                            (<= .68 spawner_dice_roll)
+                            (>= game_difficulty_level 0)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -261,10 +261,10 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 8. grunt needler - .68
+                        ; 8. grunt needler - .50
                         (if (and 
-                            (<= .68 spawner_dice_roll)
-                            (>= wave_enemies_danger_scale 0)
+                            (<= .50 spawner_dice_roll)
+                            (>= game_difficulty_level 0)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -274,8 +274,8 @@
                         )
                         ; 9. grunt plasma pistol - .50
                         (if (and 
-                            (<= .50 spawner_dice_roll)
-                            (>= wave_enemies_danger_scale 0)
+                            ;(<= .40 spawner_dice_roll)
+                            (>= game_difficulty_level 0)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -283,10 +283,22 @@
                                 (set spawner_condition_matched true)
                             )
                         )
+                        (if
+                            (= spawner_condition_matched false)
+                            (begin 
+                                (print "***spawner: fell through all spawn cases***")
+                                (print "spawner dice roll:")
+                                (inspect spawner_dice_roll)
+                                (print "enemies danger scale:")
+                                (inspect game_difficulty_level)
+                                (print "condition matched:")
+                                (inspect spawner_condition_matched)
+                            )
+                        )
                     )
                 )
             )
-            (print "tried to place a bad guy")
+            ;(print "waiting to place a bad guy")
         )
     )
     (sleep wave_enemies_spawn_delay)
@@ -298,9 +310,9 @@
     (set spawner_last_placed enc)
     (ai_migrate spawner_last_placed "enc_main")
     (set wave_enemies_spawned (+ wave_enemies_spawned 1))
+    ; debug
+    (inspect spawner_dice_roll)
     (inspect enc)
-    (inspect spawner_last_placed)
-    (inspect wave_enemies_spawned)
 )
 
 (script static void wave_start_next
@@ -314,14 +326,15 @@
     ; wave enemies per wave
     ; wave enemies spawn delay
     ; wave enemies active max
-    ; wave enemies danger scale
-    ; wave enemies weirdness scale
+    ; wave game danger level
+    ; wave game weirdness level
+    ; spawner lower bound
     
     ; --- spawn chance vars ---
     ; get initial spawn weights
-    (set spawner_enc_common_weight (max (- 1 wave_enemies_weirdness_scale) (- 1 spawner_enc_common_chance)))
-    (set spawner_enc_uncommon_weight (min wave_enemies_weirdness_scale (- 1 spawner_enc_uncommon_chance)))
-    (set spawner_enc_rare_weight (max (- wave_enemies_weirdness_scale (- 1 spawner_enc_rare_chance)) 0))
+    (set spawner_enc_common_weight (max (- 1 game_weirdness_level) (- 1 spawner_enc_common_chance)))
+    (set spawner_enc_uncommon_weight (min game_weirdness_level (- 1 spawner_enc_uncommon_chance)))
+    (set spawner_enc_rare_weight (max (- game_weirdness_level (- 1 spawner_enc_rare_chance)) 0))
     ; add total chances for normalization
     (set spawner_total_chance 0)
     (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
