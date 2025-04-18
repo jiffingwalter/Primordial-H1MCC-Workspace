@@ -59,6 +59,7 @@
 (global boolean player1_respawning false)
 (global boolean player2_respawning false)
 (global boolean player3_respawning false)
+(global short players_dead 0)
 (global boolean players_all_dead false)
 (global boolean player0_invulnurable false)
 (global boolean player1_invulnurable false)
@@ -423,6 +424,7 @@
     (object_cannot_take_damage dead_player)
     (ai_disregard dead_player 1)
     (set global_life_count (- global_life_count 1))
+    (set players_dead (+ players_dead 1))
     (sleep 1)
     (sound_impulse_start "swfce\sound\dialog\player\death" dead_player 1)
 
@@ -450,6 +452,7 @@
             (if (= dead_player (player1)) (set player1_respawning false))
             (if (= dead_player (player2)) (set player2_respawning false))
             (if (= dead_player (player3)) (set player3_respawning false))
+            (set players_dead (- players_dead 1))
 
             ; let player have 3 seconds of invulurability after spawning before turning it back off
             (player_set_invuln dead_player true)
@@ -537,12 +540,7 @@
 )
 
 (script static boolean players_check_all_dead
-    (if (and 
-            (= player0_respawning true)
-            (= player1_respawning true)
-            (= player2_respawning true)
-            (= player3_respawning true)
-        )
+    (if (> players_dead (player_count))
         (set players_all_dead true)
         (set players_all_dead false)
     )
