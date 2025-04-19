@@ -59,8 +59,8 @@
 )
 
 ;sandbox test script
-(script static void test_effect
-    (effect_new_on_object_marker  "swfce\effects\impulse\ww invuln" (player0) "body")
+(script static void sandbox
+    (unit_enter_vehicle (player0) "hog" "w-driver")
 )
 
 (script continuous cheat_allweapons_control

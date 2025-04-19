@@ -1,48 +1,50 @@
 ;;; SUPER WACKY FUNWARE SCRIPT ;;;
 ; version 0.0.1
-; created with love and autism by primordial
+; created with love and autism by primordial <3
 
 ;; ---- Variables ---- ;;
 ; Game options set by player on start 
-(global short option_ai_infighting 1) ; Do different enemy factions: (0) work together, (1) attack each other, or (2) only focus on the player if they're there
-(global short option_minigames 1) ; Minigame wave frequency: (0) none, (1) normal, (2) less, (3) many
-(global short option_enemy_active_scale 1) ; Multiplier for how fast enemy spawn scale increases: (0.5) less, (1) normal, (1.5) more, (2) insane
-(global short option_difficulty_scale 1) ; Multiplier for how many harder enemies appear: (0.5) less, (1) normal, (1.5) more, (2) insane
-(global short option_weirdness_scale 1) ; Multiplier for how many harder enemies appear: (0.5) less, (1) normal, (1.5) more, (2) insane
+(global string option_ai_infighting "enabled") ; Do different enemy factions fight each other? enabled, disabled, conditional (enemies will fight but focus on the player)
+(global string option_minigames_frequency "normal") ; Minigame wave frequency: none, normal (every round), less (every 2 rounds), many (every single wave)
+(global string option_difficulty "normal") ; Multiplier for how many harder enemies appear: normal (1.1), less (1.05), more (1.2), insane (1.3)
+(global string option_weirdness "normal") ; Multiplier for how fast the game gets weirder: normal (1.1), less (1.05), more (1.2), insane (1.3)
 (global boolean option_spawn_friends true) ; Spawn friendly AI on each set?
 (global boolean option_spawn_blocks true) ; Spawn question blocks on each set?
-(global short option_starting_lives 10) ; Sets how many lives player starts with. 1, 5, 10, 20, -1 (endless)
+(global short option_starting_lives 10) ; Sets how many lives player starts with. 1, 5, 10, 15, 20, -1 (endless)
 (global boolean option_use_checkpoints false) ; Use checkpoints instead of lives, auto-turns on endless mode
 
 ; Functional vars
 (global short global_life_count 0) ; number of player lives (disrgarded if 'use checkpoints' or endless mode options are set)
-(global short global_game_status 0) ; 0 - not started, 1 - selecting options, 2 - in progress, 3 - GAME LOST
+(global short global_game_status 0) ; 0 - not started, 1 - in progress, 2 - lost
 (global short global_wave_num 0) ; current wave
 (global short global_round_num 0) ; current round
 (global short global_set_num 0) ; current set
-(global short global_next_wave_delay 90 ) ; how long to wait until next wave
 (global short global_total_difficulty_scale 0) ; all of the scales added into one number
 (global short global_timer_elapsed 0) ; holds amount of seconds passed in the game
 (global boolean global_timer_on false) ; if we're running the timer or not
+(global real game_difficulty_scale 1.0) ; how fast more dangerous enemies and vehicles appear, set based on option_difficulty_scale
+(global real game_difficulty_level 0.1) ; current difficulty level, scales based on game_difficulty_scale
+(global real game_weirdness_scale 1.0) ; how fast weirder stuff starts happening in the game, scales based on option_weirdness_scale
+(global real game_weirdness_level 0.1) ; current weirdness level, scales based on game_weirdness_scale
 
 ; Wave management vars
 (global boolean wave_spawner_on false) ; do we currently want to spawn bad guys?
 (global boolean wave_is_minigame false) ; is the current wave a minigame wave?
 (global boolean wave_is_boss false) ; is the current wave a boss wave?
 (global boolean wave_in_progress false) ; is a wave currently in progress?
-(global short wave_enemies_living_count 0) ; current amount of living enemies of all types
 (global short wave_enemies_spawn_delay 15) ; how fast to try to spawn enemies
+(global short wave_next_delay 180) ; how long to wait until spawning next wave
+(global short wave_enemies_living_count 0) ; current amount of living enemies of all types
 (global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends)
 (global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, scales based on option_enemy_active_scale
 (global short wave_enemies_active_max 1) ; the max amount of enemies allowed to be alive at one time, scales based on option_difficulty_scale
-(global real game_difficulty_level 0.0) ; effects chances of more dangerous enemies spawning and vehicles appearing - scales based on option_difficulty_scale
-(global real game_weirdness_level 0.0) ; effects chances of rarer enemy faction encounters being chosen and weirder minigames, scales based on option_weirdness_scale
+
 ; spawner function vars
 (global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
 (global ai spawner_picker_override "enc_main") ; override the next spawn with an ai from this squad (enc_main acts as null)
 (global ai spawner_last_placed "enc_main") ; the last encounter and squad we placed an enemy from. (enc_main acts as null)
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
-(global real spawner_dice_lower 0) ; lower limit for dice rolls, scales based on option_difficulty_scale
+(global real spawner_dice_lower 0.08) ; lower limit for dice rolls, scales based on option_difficulty_scale
 (global real spawner_dice_upper 1) ; upper limit for dice rolls
 (global boolean spawner_condition_matched false) ; did the spawner match a condition when choosing a squad? (triggers skipping the rest of the if statements)
 (global real spawner_enc_common_chance 0.9) ; initial chance of spawning an enemy from the common encounter
@@ -69,38 +71,87 @@
 ;; ---- Game control scripts ---- ;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
 (script startup game_setup
-    (print "game setup script")
-    (set global_game_status 1)
-
-    ; setup...
+    (print "startup")
     (set cheat_deathless_player 1) ; set players to invincible for respawn hack
     (game_set_loadout "preset_initial")
 
-    ; get options...
-    ;todo: various device control checks here for each option...
+    ; handle options setting...
+    ;todo: spawn and manage various device control checks here for each option...
 
-    ; wait for confirmation of options by player...
+    ;  *** wait for confirmation of options by player... ***
     (sleep_until (= 1 (device_get_position control_start_game)) 1)
 
-    ; set default global variables and modify stuff based on final options...
-    (set wave_enemies_active_max 5)
-    (set wave_enemies_per_wave 10)
-    (set global_life_count option_starting_lives)
-    ; ai infighting alligences...
-    ; initial enemy danger multiplier...
-    ; initial enemy weirdness multiplier....
-    ; calculate initial enemy spawn chances...
+    ; *** set final variables based on options ***
+    ; ai alligences...
+    (prim_set_passive_alligence)
+    (ai_allegiance player human)
+    (if (= option_ai_infighting "disabled")
+        (begin 
+            (ai_allegiance covenant flood)
+            (ai_allegiance covenant sentinel)
+            (ai_allegiance sentinel flood)
+        )
+    )
+    (if (= option_ai_infighting "conditional")
+        (ai_try_to_fight_player "enc_main")
+    )
 
-    ; initialize players and start game...
-    (set global_game_status 2)
+    ; initial difficulty scale...
+    (if (= option_difficulty "normal")
+        (set game_difficulty_scale 1.1)
+    )
+    (if (= option_difficulty "less")
+        (set game_difficulty_scale 1.05)
+    )
+    (if (= option_difficulty "more")
+        (set game_difficulty_scale 1.2)
+    )
+    (if (= option_difficulty "insane")
+        (set game_difficulty_scale 1.3)
+    )
+    ; initial weirdness scale...
+    (if (= option_weirdness "normal")
+        (set game_weirdness_scale 1.1)
+    )
+    (if (= option_weirdness "less")
+        (set game_weirdness_scale 1.05)
+    )
+    (if (= option_weirdness "more")
+        (set game_weirdness_scale 1.2)
+    )
+    (if (= option_weirdness "insane")
+        (set game_weirdness_scale 1.3)
+    )
+
+    ; wave vars...
+    (set wave_enemies_per_wave (* 10 (* game_difficulty_scale 2)))
+    (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
+    
+    ; misc...
+    (if (= option_use_checkpoints true)
+        (begin 
+            (set cheat_deathless_player 0)
+            (set global_life_count -1)
+        )
+        (set global_life_count option_starting_lives)
+    )
+
+    ; teleport players and start game...
+    (set global_game_status 1)
     (fade_in 1 1 1 30)
-    (object_teleport (player0) "player_respawn_point")
+    (object_teleport (player0) "player0_respawn_point")
+    (object_teleport (player1) "player1_respawn_point")
+    (object_teleport (player2) "player2_respawn_point")
+    (object_teleport (player3) "player3_respawn_point")
     (game_set_loadout "preset_default")
+    
+    (sleep 90)
+    (wave_start_next)
 )
 
 ; core script - observe game state and take actions as necessary (wave start and stopping, game over)
 (script continuous game_main
-    (if (= global_game_status 2) ; is the game active?
+    (if (= global_game_status 1) ; is the game active?
         ; wait for conditions...
         (begin 
             ; are all enemies of the current wave dead? (max were spawned and none are alive) - turn off spawner and trigger next wave if so
@@ -114,12 +165,13 @@
                     (print "ALL ENEMIES VANQUISHED, WAVE OVER")
                     (set wave_spawner_on false)
                     (set wave_in_progress false)
+                    (garbage_collect_now)
                 )
             )
             ; is a minigame completed or failed?
         )
     )
-    (if (= global_game_status 3) ; status was set to lost, run lose game logic
+    (if (= global_game_status 2) ; status was set to lost, run lose game logic
         (begin 
             (print "GAME OVER!")
 
@@ -142,12 +194,8 @@
             )
             (begin 
                 ;(print "placing a bad guy!")
-                
-                ; TEMP FOR TESTING
-                ;(wave_spawn_enemy "enc_common/grunt_pp")
 
                 ; roll for an encounter (enemy faction) to spawn from based on if the dice roll lands inside the encounter's current spawn interval
-                ; TODO: make calculation with normalized chances between the 3 encounters
                 (set spawner_dice_roll (real_random_range 0 1))
 
                 (if (<= spawner_dice_roll spawner_enc_common_weight)
@@ -275,7 +323,6 @@
                         )
                         ; 9. grunt plasma pistol - .50
                         (if (and 
-                            ;(<= .40 spawner_dice_roll)
                             (>= game_difficulty_level 0)
                             (= spawner_condition_matched false)
                         )
@@ -312,24 +359,36 @@
     (ai_migrate spawner_last_placed "enc_main")
     (set wave_enemies_spawned (+ wave_enemies_spawned 1))
     ; debug
-    (inspect spawner_dice_roll)
-    (inspect enc)
+    ;(inspect spawner_dice_roll)
+    ;(inspect enc)
 )
 
 (script static void wave_start_next
     (print "starting next wave")
     (set wave_in_progress true)
     ; --- update global and wave state variables --- (incrementations and adjusting based on spawn scales)
-    ; global wave num
-    ; global round num
-    ; global set num
-    ; global next wave delay
-    ; wave enemies per wave
-    ; wave enemies spawn delay
-    ; wave enemies active max
-    ; wave game danger level
-    ; wave game weirdness level
-    ; spawner lower bound
+    ; get wave/round/set
+    (set global_wave_num (+ global_wave_num 1))
+    (if (= (modulo global_wave_num 3) 0)
+        (set global_round_num (+ global_round_num 1))
+    )
+    (if (= (modulo global_round_num 5) 0)
+        (set global_set_num (+ global_set_num 1))
+    )
+    ; game values
+    (set game_difficulty_level (* game_difficulty_level game_difficulty_scale))
+    (set game_weirdness_level (* game_weirdness_level game_weirdness_scale))
+
+    ; wave values -- scale based on current difficulty level
+    (if (not (< wave_next_delay 50))
+        (set wave_next_delay (* wave_next_delay 0.99))
+    )
+    (if (not (< wave_enemies_spawn_delay 5))
+        (set wave_enemies_spawn_delay (* wave_enemies_spawn_delay 0.99))
+    )
+    (set wave_enemies_per_wave (* wave_enemies_per_wave (+ game_difficulty_level 1)))
+    (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
+    (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1)))
     
     ; --- spawn chance vars ---
     ; get initial spawn weights
@@ -351,7 +410,7 @@
 
     ; check if its time for minigame or boss wave
 
-    ; set wave spawner global to true
+    ; turn the wave spawner on
     (set wave_spawner_on true)
 )
 
@@ -373,7 +432,8 @@
     ; watch for player death
     (if (and 
         (= (unit_get_health (player0)) 0)
-        (not (= game_swapping_loadout true))
+        (!= game_swapping_loadout true)
+        (!= option_use_checkpoints true)
     )
         (begin
             (print "PLAYER 0 DIED!")
@@ -423,7 +483,13 @@
     (unit_set_current_vitality dead_player 80 80)
     (object_cannot_take_damage dead_player)
     (ai_disregard dead_player 1)
-    (set global_life_count (- global_life_count 1))
+    (if (and 
+            (> global_life_count 0)
+            (!= global_life_count -1)
+        )
+        (set global_life_count (- global_life_count 1))
+        ;todo: hud_objective of life count here
+    )
     (set players_dead (+ players_dead 1))
     (sleep 1)
     (sound_impulse_start "swfce\sound\dialog\player\death" dead_player 1)
@@ -446,12 +512,32 @@
             (ai_disregard dead_player 0)
             (object_can_take_damage dead_player)
             (player_set_loadout dead_player "preset_default")
-            (object_teleport dead_player "player_respawn_point")
-            ; reset dead player vars
-            (if (= dead_player (player0)) (set player0_respawning false))
-            (if (= dead_player (player1)) (set player1_respawning false))
-            (if (= dead_player (player2)) (set player2_respawning false))
-            (if (= dead_player (player3)) (set player3_respawning false))
+
+            ; player-specific stuff
+            (if (= dead_player (player0))
+                (begin 
+                    (object_teleport dead_player "player0_respawn_point")
+                    (set player0_respawning false)
+                )
+            )
+            (if (= dead_player (player1))
+                (begin 
+                    (object_teleport dead_player "player1_respawn_point")
+                    (set player1_respawning false)
+                )
+            )
+            (if (= dead_player (player2))
+                (begin 
+                    (object_teleport dead_player "player2_respawn_point")
+                    (set player2_respawning false)
+                )
+            )
+            (if (= dead_player (player3))
+                (begin 
+                    (object_teleport dead_player "player3_respawn_point")
+                    (set player3_respawning false)
+                )
+            )
             (set players_dead (- players_dead 1))
 
             ; let player have 3 seconds of invulurability after spawning before turning it back off
@@ -540,7 +626,7 @@
 )
 
 (script static boolean players_check_all_dead
-    (if (> players_dead (player_count))
+    (if (= players_dead (player_count))
         (set players_all_dead true)
         (set players_all_dead false)
     )
@@ -561,11 +647,12 @@
 ; monitor current life count and trigger end game if = 0 and all players are dead
 (script continuous game_monitor_lives
     (if (and 
-            (= global_game_status 2)
-            (<= global_life_count 0)
+            (= global_game_status 1)
+            (= global_life_count 0)
             (= (players_check_all_dead) true)
+            (!= option_use_checkpoints true)
         )
-        (set global_game_status 3)
+        (set global_game_status 2)
     )
 )
 
@@ -644,7 +731,6 @@
 	; panel turned ON
 	(sleep_until (= 1 (device_get_position control_start_game)) 1)
     (device_set_power control_start_game 0)
-	(wave_start_next)
 	
 	; panel turned OFF
 	(sleep_until (= wave_in_progress false) 30)
