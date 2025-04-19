@@ -37,7 +37,7 @@
 (global short wave_enemies_living_count 0) ; current amount of living enemies of all types
 (global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends)
 (global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, scales based on option_enemy_active_scale
-(global short wave_enemies_active_max 1) ; the max amount of enemies allowed to be alive at one time, scales based on option_difficulty_scale
+(global short wave_enemies_active_max 0) ; the max amount of enemies allowed to be alive at one time, scales based on option_difficulty_scale
 
 ; spawner function vars
 (global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
@@ -122,10 +122,6 @@
     (if (= option_weirdness "insane")
         (set game_weirdness_scale 1.3)
     )
-
-    ; wave vars...
-    (set wave_enemies_per_wave (* 10 (* game_difficulty_scale 2)))
-    (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
     
     ; misc...
     (if (= option_use_checkpoints true)
@@ -135,6 +131,10 @@
         )
         (set global_life_count option_starting_lives)
     )
+
+    ; wave vars...
+    (set wave_enemies_per_wave (* 10 (* game_difficulty_scale 2)))
+    (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
 
     ; teleport players and start game...
     (set global_game_status 1)
@@ -184,6 +184,101 @@
     )
 )
 
+(script static void wave_start_next
+    (print "starting next wave")
+    (set wave_in_progress true)
+
+    ; --- update global and wave state variables --- (incrementations and adjusting based on spawn scales)
+    (if (= global_wave_num 0)
+        (begin ; if its the first wave, set the initial wave/round/set
+            (set global_wave_num 1)
+            (set global_round_num 1)
+            (set global_set_num 1)
+        )
+        (begin ; if its any wave after, run incrementations
+            ; update wave/round/set
+            (set global_wave_num (+ global_wave_num 1))
+
+            (if (= (modulo global_wave_num 3) 0)
+                (set global_round_num (+ global_round_num 1))
+            )
+            (if (= (modulo global_round_num 5) 0)
+                (set global_set_num (+ global_set_num 1))
+            )
+
+            ; game values
+            (set game_difficulty_level (* game_difficulty_level game_difficulty_scale))
+            (set game_weirdness_level (* game_weirdness_level game_weirdness_scale))
+
+            ; wave values -- scale based on current difficulty level
+            (set wave_enemies_per_wave (* wave_enemies_per_wave (+ game_difficulty_level 1)))
+            (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
+            (if (not (< wave_next_delay 50))
+                (set wave_next_delay (* wave_next_delay 0.99))
+            )
+            (if (not (< wave_enemies_spawn_delay 5))
+                (set wave_enemies_spawn_delay (* wave_enemies_spawn_delay 0.99))
+            )
+        )
+    )
+    
+    ; --- spawn chance vars ---
+    ; get initial spawn weights
+    (set spawner_enc_common_weight (max (- 1 game_weirdness_level) (- 1 spawner_enc_common_chance)))
+    (set spawner_enc_uncommon_weight (min game_weirdness_level (- 1 spawner_enc_uncommon_chance)))
+    (set spawner_enc_rare_weight (max (- game_weirdness_level (- 1 spawner_enc_rare_chance)) 0))
+    ; add total chances for normalization
+    (set spawner_total_chance 0)
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
+    (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
+    ; get normalized spawn weights
+    (set spawner_enc_common_weight (/ spawner_enc_common_weight spawner_total_chance))
+    (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
+    (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
+    (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1)))
+
+    ; --- reset functional vars ---
+    (set wave_enemies_spawned 0)
+
+    ; check if its time for minigame or boss wave
+
+    ; turn the wave spawner on
+    (set wave_spawner_on true)
+)
+
+; dump current wave state variables
+(script static void wave_dump
+    (print "wave in progress:")
+    (inspect wave_in_progress)
+    (print "wave number:")
+    (inspect global_wave_num)
+    (print "round number:")
+    (inspect global_round_num)
+    (print "set number:")
+    (inspect global_set_num)
+    (print "difficulty scale:") ; move this a global dump function
+    (inspect game_difficulty_scale)
+    (print "difficulty level:")
+    (inspect game_difficulty_level)
+    (print "weirdness scale: ") ; move this a global dump function
+    (inspect game_weirdness_scale)
+    (print "weirdness level:")
+    (inspect game_weirdness_level)
+    (print "enemies per wave:")
+    (inspect wave_enemies_per_wave)
+    (print "enemies active max:")
+    (inspect wave_enemies_active_max)
+    (print "currently living enemies:")
+    (inspect wave_enemies_living_count)
+    (print "enemies spawned this wave:")
+    (inspect wave_enemies_spawned)
+    (print "enemy spawn delay:")
+    (inspect wave_enemies_spawn_delay)
+    (print "next wave delay:")
+    (inspect wave_next_delay)
+)
+
 ; wave spawn loop - if the spawner is active, keep rolling for encounters and squads to spawn enemies as long as max allowed enemies aren't spawned or wave limit threshold is reached
 (script continuous wave_spawner
     (if wave_spawner_on
@@ -224,7 +319,6 @@
                     ; 2. is the current danger value high enough to spawn this enemy?
                     ; 3. did we already spawn an enemy?
                 ; if first 2 aren't met, test the next one below. if 3rd is met, we skip the rest since that means we already placed one
-                ;TODO: figure out if i can normalize whatever spawns are currently possible???
                 (set spawner_condition_matched false)
                 (set spawner_dice_roll (real_random_range spawner_dice_lower spawner_dice_upper))
                 ;COVENANT - 9 squads
@@ -280,7 +374,7 @@
                         ; 5. elite needler - .87
                         (if (and 
                             (<= .87 spawner_dice_roll)
-                            (>= game_difficulty_level .2)
+                            (>= game_difficulty_level .25)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -291,7 +385,7 @@
                         ; 6. elite plasma rifle - .79
                         (if (and 
                             (<= .79 spawner_dice_roll)
-                            (>= game_difficulty_level .05)
+                            (>= game_difficulty_level .15)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -361,57 +455,6 @@
     ; debug
     ;(inspect spawner_dice_roll)
     ;(inspect enc)
-)
-
-(script static void wave_start_next
-    (print "starting next wave")
-    (set wave_in_progress true)
-    ; --- update global and wave state variables --- (incrementations and adjusting based on spawn scales)
-    ; get wave/round/set
-    (set global_wave_num (+ global_wave_num 1))
-    (if (= (modulo global_wave_num 3) 0)
-        (set global_round_num (+ global_round_num 1))
-    )
-    (if (= (modulo global_round_num 5) 0)
-        (set global_set_num (+ global_set_num 1))
-    )
-    ; game values
-    (set game_difficulty_level (* game_difficulty_level game_difficulty_scale))
-    (set game_weirdness_level (* game_weirdness_level game_weirdness_scale))
-
-    ; wave values -- scale based on current difficulty level
-    (if (not (< wave_next_delay 50))
-        (set wave_next_delay (* wave_next_delay 0.99))
-    )
-    (if (not (< wave_enemies_spawn_delay 5))
-        (set wave_enemies_spawn_delay (* wave_enemies_spawn_delay 0.99))
-    )
-    (set wave_enemies_per_wave (* wave_enemies_per_wave (+ game_difficulty_level 1)))
-    (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
-    (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1)))
-    
-    ; --- spawn chance vars ---
-    ; get initial spawn weights
-    (set spawner_enc_common_weight (max (- 1 game_weirdness_level) (- 1 spawner_enc_common_chance)))
-    (set spawner_enc_uncommon_weight (min game_weirdness_level (- 1 spawner_enc_uncommon_chance)))
-    (set spawner_enc_rare_weight (max (- game_weirdness_level (- 1 spawner_enc_rare_chance)) 0))
-    ; add total chances for normalization
-    (set spawner_total_chance 0)
-    (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
-    (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
-    (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
-    ; get normalized spawn weights
-    (set spawner_enc_common_weight (/ spawner_enc_common_weight spawner_total_chance))
-    (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
-    (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
-
-    ; --- reset functional vars ---
-    (set wave_enemies_spawned 0)
-
-    ; check if its time for minigame or boss wave
-
-    ; turn the wave spawner on
-    (set wave_spawner_on true)
 )
 
 ; add every single encounter's current living actor count and return it
@@ -666,12 +709,25 @@
     (set game_swapping_loadout false)
 )
 
-;; --- Debug/testing stuff --- ;;
+;; --- testing stuff --- ;;
 (script static void test_game
     (set run_game_scripts true)
     (sleep 5)
     (device_set_position control_start_game 1)
 )
+
+; repurpose this for the "start" button later
+(script continuous test_start_wave
+	; panel turned ON
+	(sleep_until (= 1 (device_get_position control_start_game)) 1)
+    (device_set_power control_start_game 0)
+	
+	; panel turned OFF
+	(sleep_until (= wave_in_progress false) 30)
+    (device_set_position control_start_game 0)
+    (device_set_power control_start_game 1)
+)
+
 (script static void test_randspawn
     (set spawner_dice_roll (real_random_range 0 1))
     (inspect spawner_dice_roll)
@@ -724,18 +780,6 @@
     (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
     (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
     (inspect spawner_total_chance)
-)
-
-; put button here to make the holo panel start the next wave
-(script continuous test_start_wave
-	; panel turned ON
-	(sleep_until (= 1 (device_get_position control_start_game)) 1)
-    (device_set_power control_start_game 0)
-	
-	; panel turned OFF
-	(sleep_until (= wave_in_progress false) 30)
-    (device_set_position control_start_game 0)
-    (device_set_power control_start_game 1)
 )
 
 
