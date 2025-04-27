@@ -319,9 +319,11 @@
                     ; 2. is the current danger value high enough to spawn this enemy?
                     ; 3. did we already spawn an enemy?
                 ; if first 2 aren't met, test the next one below. if 3rd is met, we skip the rest since that means we already placed one
+
                 (set spawner_condition_matched false)
                 (set spawner_dice_roll (real_random_range spawner_dice_lower spawner_dice_upper))
-                ;COVENANT - 9 squads
+
+                ; COMMON - 9 squads
                 (if (and 
                         (= spawner_next_enc "common")
                         (= spawner_picker_override "enc_main")
@@ -425,18 +427,360 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        (if
+                    )
+                )
+                ; UNCOMMON - 11 squads
+                (if (and 
+                        (= spawner_next_enc "uncommon")
+                        (= spawner_picker_override "enc_main")
+                    )
+                    (begin 
+                        ; flood flamethrower
+                        (if (and 
+                            (<= 1 spawner_dice_roll)
+                            (>= game_difficulty_level .8)
                             (= spawner_condition_matched false)
+                        )
                             (begin 
-                                (print "***spawner: fell through all spawn cases***")
-                                (print "spawner dice roll:")
-                                (inspect spawner_dice_roll)
-                                (print "enemies danger scale:")
-                                (inspect game_difficulty_level)
-                                (print "condition matched:")
-                                (inspect spawner_condition_matched)
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_ft")
+                                (set spawner_condition_matched true)
                             )
                         )
+                        ; flood plasmacannon
+                        (if (and 
+                            (<= .98 spawner_dice_roll)
+                            (>= game_difficulty_level .75)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_pc")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood rocket launcher
+                        (if (and 
+                            (<= .96 spawner_dice_roll)
+                            (>= game_difficulty_level .7)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_rl")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood sniper
+                        (if (and 
+                            (<= .94 spawner_dice_roll)
+                            (>= game_difficulty_level .6)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_sr")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood hammer
+                        (if (and 
+                            (<= .92 spawner_dice_roll)
+                            (>= game_difficulty_level .5)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_ham")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; ** flood misc guns **
+                        ; flood shotgun
+                        (if (and 
+                            (<= 0.90 spawner_dice_roll)
+                            (>= game_difficulty_level 0.26)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_sg")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood human pistol
+                        (if (and 
+                            (<= 0.88 spawner_dice_roll)
+                            (>= game_difficulty_level 0.24)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_hp")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood plasma pistol
+                        (if (and 
+                            (<= 0.85 spawner_dice_roll)
+                            (>= game_difficulty_level 0.22)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_pp")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood needler
+                        (if (and 
+                            (<= 0.80 spawner_dice_roll)
+                            (>= game_difficulty_level 0.2)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_ne")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood plasma rifle
+                        (if (and 
+                            (<= 0.73 spawner_dice_roll)
+                            (>= game_difficulty_level 0.18)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_pr")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood assault rifle
+                        (if (and 
+                            (<= 0.63 spawner_dice_roll)
+                            (>= game_difficulty_level 0.16)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_ar")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood carrier
+                        (if (and 
+                            (<= 0.5 spawner_dice_roll)
+                            (>= game_difficulty_level 0.14)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcrr_bob")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; flood unarmed
+                        (if (and 
+                            (>= game_difficulty_level 0)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_unarmed")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                    )
+                )
+                ; RARE - ... squads
+                (if (and 
+                        (= spawner_next_enc "rare")
+                        (= spawner_picker_override "enc_main")
+                    )
+                    (begin 
+                        ; sanic - should be rarest possible spawn
+                        (if (and 
+                            (<= 1 spawner_dice_roll)
+                            (>= game_difficulty_level .99)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_rare/sanic")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; shrek
+                        (if (and 
+                            (<= .98 spawner_dice_roll)
+                            (>= game_difficulty_level .7)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_rare/shrek")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; grabble carrier
+                        (if (and 
+                            (<= .96 spawner_dice_roll)
+                            (>= game_difficulty_level .6)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_rare/grabble_carrier")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; amogus/knuckles plasma cannon
+                        (if (and 
+                            (<= .94 spawner_dice_roll)
+                            (>= game_difficulty_level .55)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (if (< (real_random_range 0.0 1.0) 0.5)
+                                    (wave_spawn_enemy "enc_rare/knuckles_pc")
+                                    (wave_spawn_enemy "enc_rare/amogus_pc")
+                                )
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; amogus/knuckles rocket launcher
+                        (if (and 
+                            (<= .92 spawner_dice_roll)
+                            (>= game_difficulty_level .5)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (if (< (real_random_range 0.0 1.0) 0.5)
+                                    (wave_spawn_enemy "enc_rare/knuckles_rl")
+                                    (wave_spawn_enemy "enc_rare/amogus_rl")
+                                )
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; amogus/knuckles shotgun
+                        (if (and 
+                            (<= .90 spawner_dice_roll)
+                            (>= game_difficulty_level .26)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (if (< (real_random_range 0.0 1.0) 0.5)
+                                    (wave_spawn_enemy "enc_rare/knuckles_sg")
+                                    (wave_spawn_enemy "enc_rare/amogus_sg")
+                                )
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; amogus/knuckles human pistol
+                        (if (and 
+                            (<= .88 spawner_dice_roll)
+                            (>= game_difficulty_level .24)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (if (< (real_random_range 0.0 1.0) 0.5)
+                                    (wave_spawn_enemy "enc_rare/knuckles_hp")
+                                    (wave_spawn_enemy "enc_rare/amogus_hp")
+                                )
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; amogus/knuckles plasma pistol
+                        (if (and 
+                            (<= .86 spawner_dice_roll)
+                            (>= game_difficulty_level .22)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (if (< (real_random_range 0.0 1.0) 0.5)
+                                    (wave_spawn_enemy "enc_rare/knuckles_pp")
+                                    (wave_spawn_enemy "enc_rare/amogus_pp")
+                                )
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; amogus/knuckles needler
+                        (if (and 
+                            (<= .83 spawner_dice_roll)
+                            (>= game_difficulty_level .2)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (if (< (real_random_range 0.0 1.0) 0.5)
+                                    (wave_spawn_enemy "enc_rare/knuckles_ne")
+                                    (wave_spawn_enemy "enc_rare/amogus_ne")
+                                )
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; amogus/knuckles plasma rifle
+                        (if (and 
+                            (<= .78 spawner_dice_roll)
+                            (>= game_difficulty_level .18)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (if (< (real_random_range 0.0 1.0) 0.5)
+                                    (wave_spawn_enemy "enc_rare/knuckles_pr")
+                                    (wave_spawn_enemy "enc_rare/amogus_pr")
+                                )
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; amogus/knuckles assault rifle
+                        (if (and 
+                            (<= .72 spawner_dice_roll)
+                            (>= game_difficulty_level .16)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (if (< (real_random_range 0.0 1.0) 0.5)
+                                    (wave_spawn_enemy "enc_rare/knuckles_ar")
+                                    (wave_spawn_enemy "enc_rare/amogus_ar")
+                                )
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; amogus carrier
+                        (if (and 
+                            (<= .62 spawner_dice_roll)
+                            (>= game_difficulty_level .14)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_rare/amogus_carrier")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; joe carrier
+                        (if (and 
+                            (<= .48 spawner_dice_roll)
+                            (>= game_difficulty_level .14)
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_rare/joe_carrier")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                        ; halo 3 rats (or maybe a rat carrier???)
+                        (if (and
+                            (= spawner_condition_matched false)
+                        )
+                            (begin 
+                                (wave_spawn_enemy "enc_rare/rat")
+                                (set spawner_condition_matched true)
+                            )
+                        )
+                    )
+                )
+                ; OVERRIDE
+                (if (!= spawner_picker_override "enc_main")
+                    (begin 
+                        (wave_spawn_enemy spawner_picker_override)
+                        (set spawner_condition_matched true)
+                    )
+                )
+                (if
+                    (= spawner_condition_matched false)
+                    (begin 
+                        (print "***spawner: fell through all spawn cases***")
+                        (print "spawner dice roll:")
+                        (inspect spawner_dice_roll)
+                        (print "enemies danger scale:")
+                        (inspect game_difficulty_level)
+                        (print "condition matched:")
+                        (inspect spawner_condition_matched)
                     )
                 )
             )
