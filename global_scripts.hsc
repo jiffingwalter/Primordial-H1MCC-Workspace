@@ -133,9 +133,15 @@
 	(sleep 10)
 )
 
-; misc scripts
+; **** misc scripts ****
+; get a modulo value from two numbers
 (global short modulo_value 0)
 (script static short (modulo (short x) (short y))
   (set modulo_value (/ x y))
   (- x (* modulo_value y))
+)
+
+; check if an object currently exists in the game world
+(script static boolean (object_exists (object obj))
+	(!= (objects_distance_to_position obj 0 0 0) -1)
 )
