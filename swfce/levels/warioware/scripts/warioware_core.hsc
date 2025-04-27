@@ -329,7 +329,7 @@
                         (= spawner_picker_override "enc_main")
                     )
                     (begin 
-                        ; 1. hunter - 1
+                        ; hunter - 1
                         (if (and 
                             (<= 1 spawner_dice_roll)
                             (>= game_difficulty_level .6)
@@ -340,7 +340,7 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 2. elite hammer - .98
+                        ; elite hammer - .98
                         (if (and 
                             (<= .98 spawner_dice_roll)
                             (>= game_difficulty_level .5)
@@ -351,7 +351,7 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 3. elite stealth - .96
+                        ; elite stealth - .96
                         (if (and 
                             (<= .96 spawner_dice_roll)
                             (>= game_difficulty_level .4)
@@ -362,7 +362,7 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 4. bobomb carrier - .92
+                        ; bobomb carrier - .92
                         (if (and 
                             (<= .92 spawner_dice_roll)
                             (>= game_difficulty_level .3)
@@ -373,7 +373,7 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 5. elite needler - .87
+                        ; elite needler - .87
                         (if (and 
                             (<= .87 spawner_dice_roll)
                             (>= game_difficulty_level .25)
@@ -384,7 +384,7 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 6. elite plasma rifle - .79
+                        ; elite plasma rifle - .79
                         (if (and 
                             (<= .79 spawner_dice_roll)
                             (>= game_difficulty_level .15)
@@ -395,7 +395,7 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 7. jackal plasma pistol - .68
+                        ; jackal plasma pistol - .68
                         (if (and 
                             (<= .68 spawner_dice_roll)
                             (>= game_difficulty_level 0)
@@ -406,7 +406,7 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 8. grunt needler - .50
+                        ; grunt needler - .50
                         (if (and 
                             (<= .50 spawner_dice_roll)
                             (>= game_difficulty_level 0)
@@ -417,11 +417,8 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; 9. grunt plasma pistol - .50
-                        (if (and 
-                            (>= game_difficulty_level 0)
-                            (= spawner_condition_matched false)
-                        )
+                        ; grunt plasma pistol - .50
+                        (if (= spawner_condition_matched false)
                             (begin 
                                 (wave_spawn_enemy "enc_common/grunt_pp")
                                 (set spawner_condition_matched true)
@@ -569,10 +566,7 @@
                             )
                         )
                         ; flood unarmed
-                        (if (and 
-                            (>= game_difficulty_level 0)
-                            (= spawner_condition_matched false)
-                        )
+                        (if (= spawner_condition_matched false)
                             (begin 
                                 (wave_spawn_enemy "enc_uncommon/floodcmb_unarmed")
                                 (set spawner_condition_matched true)
@@ -754,9 +748,7 @@
                             )
                         )
                         ; halo 3 rats (or maybe a rat carrier???)
-                        (if (and
-                            (= spawner_condition_matched false)
-                        )
+                        (if (= spawner_condition_matched false)
                             (begin 
                                 (wave_spawn_enemy "enc_rare/rat")
                                 (set spawner_condition_matched true)
