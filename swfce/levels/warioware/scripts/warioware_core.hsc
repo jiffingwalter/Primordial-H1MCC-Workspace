@@ -39,7 +39,7 @@
 (global boolean wave_is_boss false) ; is the current wave a boss wave?
 (global boolean wave_in_progress false) ; is a wave currently in progress?
 (global boolean wave_is_last_of_set false) ; is this wave the last of the current set?
-(global short wave_enemies_spawn_delay 15) ; how fast to try to spawn enemies
+(global short wave_enemies_spawn_delay 30) ; how fast to try to spawn enemies
 (global short wave_next_delay (* 30 12)) ; how long to wait until spawning next wave
 (global short wave_enemies_living_count 0) ; current amount of living enemies of all types
 (global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends)
@@ -164,7 +164,7 @@
             ; TODO: modifiy this logic so that when the enemy count of the current wave is < 5 and we're not entering a new set, start a timer to begin the next wave automatically
         (if (and 
                 (< (wave_get_enemies_living_count) 5)
-                (<= wave_enemies_spawned wave_enemies_per_wave)
+                (>= wave_enemies_spawned wave_enemies_per_wave)
                 (= wave_in_progress true)
             )
             (begin 
@@ -258,8 +258,13 @@
     (set spawner_enc_common_weight (/ spawner_enc_common_weight spawner_total_chance))
     (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
     (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
-    (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1)))
-    (set spawner_dice_upper (* spawner_dice_upper (+ game_difficulty_level 1)))
+    
+    (if (not (> spawner_dice_lower .4)) 
+        (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1)))
+    )
+    (if (not (> spawner_dice_lower 1)) 
+        (set spawner_dice_upper (* spawner_dice_upper (+ game_difficulty_level 1)))
+    )
 
     ; --- reset functional vars ---
     (set wave_enemies_spawned 0)
