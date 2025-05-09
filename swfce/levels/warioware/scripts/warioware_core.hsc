@@ -33,7 +33,7 @@
 (global boolean wave_is_boss false) ; is the current wave a boss wave?
 (global boolean wave_in_progress false) ; is a wave currently in progress?
 (global short wave_enemies_spawn_delay 15) ; how fast to try to spawn enemies
-(global short wave_next_delay 180) ; how long to wait until spawning next wave
+(global short wave_next_delay (* 30 12)) ; how long to wait until spawning next wave
 (global short wave_enemies_living_count 0) ; current amount of living enemies of all types
 (global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends)
 (global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, scales based on option_enemy_active_scale
@@ -41,8 +41,8 @@
 
 ; spawner function vars
 (global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
-(global ai spawner_picker_override "enc_main") ; override the next spawn with an ai from this squad (enc_main acts as null)
-(global ai spawner_last_placed "enc_main") ; the last encounter and squad we placed an enemy from. (enc_main acts as null)
+(global ai spawner_picker_override "null") ; override the next spawn with an ai from this squad
+(global ai spawner_last_placed "null") ; the last encounter and squad we placed an enemy from
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
 (global real spawner_dice_lower 0.08) ; lower limit for dice rolls, scales based on option_difficulty_scale
 (global real spawner_dice_upper 1) ; upper limit for dice rolls
@@ -133,7 +133,7 @@
     )
 
     ; wave vars...
-    (set wave_enemies_per_wave (* 10 (* game_difficulty_scale 2)))
+    (set wave_enemies_per_wave (* 8 (* game_difficulty_scale 2)))
     (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
 
     ; teleport players and start game...
@@ -153,22 +153,25 @@
 (script continuous game_main
     (if (= global_game_status 1) ; is the game active?
         ; wait for conditions...
-        (begin 
             ; are all enemies of the current wave dead? (max were spawned and none are alive) - turn off spawner and trigger next wave if so
             ; TODO: modifiy this logic so that when the enemy count of the current wave is < 5 and we're not entering a new set, start a timer to begin the next wave automatically
-            (if (and 
-                    (= wave_enemies_living_count 0) 
-                    (= wave_enemies_spawned wave_enemies_per_wave)
-                    (= wave_in_progress true)
-                )
-                (begin 
-                    (print "ALL ENEMIES VANQUISHED, WAVE OVER")
-                    (set wave_spawner_on false)
-                    (set wave_in_progress false)
-                    (garbage_collect_now)
-                )
+        (if (and 
+                (< wave_enemies_living_count 5)
+                (= wave_enemies_spawned wave_enemies_per_wave)
+                (= wave_in_progress true)
             )
-            ; is a minigame completed or failed?
+            (begin 
+                (print "*** current wave ended ***")
+                (set wave_spawner_on false)
+                (set wave_in_progress false)
+
+                (sleep wave_next_delay)
+                (wave_start_next)
+            )
+            ; else, if its a new set, run unique logic for finished wave
+            ;(if (= (wave_is_last) true)
+            ;    
+            ;)
         )
     )
     (if (= global_game_status 2) ; status was set to lost, run lose game logic
@@ -185,8 +188,9 @@
 )
 
 (script static void wave_start_next
-    (print "starting next wave")
+    (print "*** starting next wave ***")
     (set wave_in_progress true)
+    (garbage_collect_now)
 
     ; --- update global and wave state variables --- (incrementations and adjusting based on spawn scales)
     (if (= global_wave_num 0)
@@ -213,12 +217,13 @@
             ; wave values -- scale based on current difficulty level
             (set wave_enemies_per_wave (* wave_enemies_per_wave (+ game_difficulty_level 1)))
             (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
-            (if (not (< wave_next_delay 50))
+            (if (not (< wave_next_delay (* 30 3)))
                 (set wave_next_delay (* wave_next_delay 0.99))
             )
             (if (not (< wave_enemies_spawn_delay 5))
                 (set wave_enemies_spawn_delay (* wave_enemies_spawn_delay 0.99))
             )
+            
         )
     )
     
@@ -245,6 +250,7 @@
 
     ; turn the wave spawner on
     (set wave_spawner_on true)
+    (wave_dump)
 )
 
 ; dump current wave state variables
@@ -326,7 +332,7 @@
                 ; COMMON - 9 squads
                 (if (and 
                         (= spawner_next_enc "common")
-                        (= spawner_picker_override "enc_main")
+                        (= spawner_picker_override "null")
                     )
                     (begin 
                         ; hunter - 1
@@ -429,7 +435,7 @@
                 ; UNCOMMON - 11 squads
                 (if (and 
                         (= spawner_next_enc "uncommon")
-                        (= spawner_picker_override "enc_main")
+                        (= spawner_picker_override "null")
                     )
                     (begin 
                         ; flood flamethrower
@@ -577,7 +583,7 @@
                 ; RARE - ... squads
                 (if (and 
                         (= spawner_next_enc "rare")
-                        (= spawner_picker_override "enc_main")
+                        (= spawner_picker_override "null")
                     )
                     (begin 
                         ; sanic - should be rarest possible spawn
@@ -757,7 +763,7 @@
                     )
                 )
                 ; OVERRIDE
-                (if (!= spawner_picker_override "enc_main")
+                (if (!= spawner_picker_override "null")
                     (begin 
                         (wave_spawn_enemy spawner_picker_override)
                         (set spawner_condition_matched true)
@@ -766,13 +772,15 @@
                 (if
                     (= spawner_condition_matched false)
                     (begin 
-                        (print "***spawner: fell through all spawn cases***")
-                        (print "spawner dice roll:")
+                        (print "*** problem in wave_spawner: fell through all spawn cases ***")
+                        (print "**spawner dice roll:")
                         (inspect spawner_dice_roll)
-                        (print "enemies danger scale:")
+                        (print "**enemies danger scale:")
                         (inspect game_difficulty_level)
-                        (print "condition matched:")
-                        (inspect spawner_condition_matched)
+                        (print "**next enc chosen:")
+                        (inspect spawner_next_enc)
+                        (print "**overrided encounter (or null):")
+                        (inspect spawner_picker_override)
                     )
                 )
             )
