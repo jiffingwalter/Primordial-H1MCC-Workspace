@@ -27,11 +27,18 @@
 (global real game_weirdness_scale 1.0) ; how fast weirder stuff starts happening in the game, scales based on option_weirdness_scale
 (global real game_weirdness_level 0.1) ; current weirdness level, scales based on game_weirdness_scale
 
+
+; Debug vars
+(global boolean ww_debug_all false)
+(global boolean ww_debug_waves false)
+(global boolean ww_debug_spawning false)
+
 ; Wave management vars
 (global boolean wave_spawner_on false) ; do we currently want to spawn bad guys?
 (global boolean wave_is_minigame false) ; is the current wave a minigame wave?
 (global boolean wave_is_boss false) ; is the current wave a boss wave?
 (global boolean wave_in_progress false) ; is a wave currently in progress?
+(global boolean wave_is_last_of_set false) ; is this wave the last of the current set?
 (global short wave_enemies_spawn_delay 15) ; how fast to try to spawn enemies
 (global short wave_next_delay (* 30 12)) ; how long to wait until spawning next wave
 (global short wave_enemies_living_count 0) ; current amount of living enemies of all types
@@ -39,7 +46,7 @@
 (global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, scales based on option_enemy_active_scale
 (global short wave_enemies_active_max 0) ; the max amount of enemies allowed to be alive at one time, scales based on option_difficulty_scale
 
-; spawner function vars
+; Spawner function vars
 (global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
 (global ai spawner_picker_override "null") ; override the next spawn with an ai from this squad
 (global ai spawner_last_placed "null") ; the last encounter and squad we placed an enemy from
@@ -48,8 +55,8 @@
 (global real spawner_dice_upper 1) ; upper limit for dice rolls
 (global boolean spawner_condition_matched false) ; did the spawner match a condition when choosing a squad? (triggers skipping the rest of the if statements)
 (global real spawner_enc_common_chance 0.9) ; initial chance of spawning an enemy from the common encounter
-(global real spawner_enc_uncommon_chance 0.4) ; initial chance of spawning an enemy from the uncommon encounter
-(global real spawner_enc_rare_chance 0.2) ; initial chance of spawning an enemy from the rare encounter
+(global real spawner_enc_uncommon_chance 0.2) ; initial chance of spawning an enemy from the uncommon encounter
+(global real spawner_enc_rare_chance 0.1) ; initial chance of spawning an enemy from the rare encounter
 (global real spawner_total_chance 0) ; all spawn encounter chances added up
 (global real spawner_enc_common_weight 0) ; normalized chance of common encounter spawn
 (global real spawner_enc_uncommon_weight 0) ; normalized chance of uncommon encounter spawn
@@ -134,7 +141,7 @@
 
     ; wave vars...
     (set wave_enemies_per_wave (* 8 (* game_difficulty_scale 2)))
-    (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
+    (set wave_enemies_active_max (* wave_enemies_per_wave 0.25))
 
     ; teleport players and start game...
     (set global_game_status 1)
@@ -157,7 +164,7 @@
             ; TODO: modifiy this logic so that when the enemy count of the current wave is < 5 and we're not entering a new set, start a timer to begin the next wave automatically
         (if (and 
                 (< wave_enemies_living_count 5)
-                (= wave_enemies_spawned wave_enemies_per_wave)
+                (<= wave_enemies_spawned wave_enemies_per_wave)
                 (= wave_in_progress true)
             )
             (begin 
@@ -168,8 +175,8 @@
                 (sleep wave_next_delay)
                 (wave_start_next)
             )
-            ; else, if its a new set, run unique logic for finished wave
-            ;(if (= (wave_is_last) true)
+            ; else, if its a new set and we're finished, run unique logic for finished wave
+            ;(if (= (wave_is_last_of_set) true)
             ;    
             ;)
         )
@@ -207,7 +214,11 @@
                 (set global_round_num (+ global_round_num 1))
             )
             (if (= (modulo global_round_num 5) 0)
-                (set global_set_num (+ global_set_num 1))
+                (begin 
+                    (set global_set_num (+ global_set_num 1))
+                    (set wave_is_last_of_set true)
+                )
+                (set wave_is_last_of_set false)
             )
 
             ; game values
@@ -263,6 +274,8 @@
     (inspect global_round_num)
     (print "set number:")
     (inspect global_set_num)
+    (print "wave is last of current set:")
+    (inspect wave_is_last_of_set)
     (print "difficulty scale:") ; move this a global dump function
     (inspect game_difficulty_scale)
     (print "difficulty level:")
