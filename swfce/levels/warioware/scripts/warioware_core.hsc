@@ -52,7 +52,7 @@
 (global ai spawner_last_placed "null") ; the last encounter and squad we placed an enemy from
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
 (global real spawner_dice_lower 0.08) ; lower limit for dice rolls, scales based on option_difficulty_scale
-(global real spawner_dice_upper 1) ; upper limit for dice rolls
+(global real spawner_dice_upper 0.65) ; upper limit for dice rolls, scales based on option_difficulty_scale
 (global boolean spawner_condition_matched false) ; did the spawner match a condition when choosing a squad? (triggers skipping the rest of the if statements)
 (global real spawner_enc_common_chance 0.9) ; initial chance of spawning an enemy from the common encounter
 (global real spawner_enc_uncommon_chance 0.2) ; initial chance of spawning an enemy from the uncommon encounter
@@ -163,7 +163,7 @@
             ; are all enemies of the current wave dead? (max were spawned and none are alive) - turn off spawner and trigger next wave if so
             ; TODO: modifiy this logic so that when the enemy count of the current wave is < 5 and we're not entering a new set, start a timer to begin the next wave automatically
         (if (and 
-                (< wave_enemies_living_count 5)
+                (< (wave_get_enemies_living_count) 5)
                 (<= wave_enemies_spawned wave_enemies_per_wave)
                 (= wave_in_progress true)
             )
@@ -175,10 +175,14 @@
                 (sleep wave_next_delay)
                 (wave_start_next)
             )
-            ; else, if its a new set and we're finished, run unique logic for finished wave
-            ;(if (= (wave_is_last_of_set) true)
-            ;    
-            ;)
+            ; ELSE, if its a new set and we're finished, run unique logic for finished wave
+            (if (= wave_is_last_of_set true)
+                (begin 
+                    (print "****** set completed! ******")
+                    (set wave_spawner_on false)
+                    (set wave_in_progress false)
+                )
+            )
         )
     )
     (if (= global_game_status 2) ; status was set to lost, run lose game logic
@@ -201,12 +205,14 @@
 
     ; --- update global and wave state variables --- (incrementations and adjusting based on spawn scales)
     (if (= global_wave_num 0)
-        (begin ; if its the first wave, set the initial wave/round/set
+        ; IF its the first wave, set the initial wave/round/set
+        (begin
             (set global_wave_num 1)
             (set global_round_num 1)
             (set global_set_num 1)
         )
-        (begin ; if its any wave after, run incrementations
+        ; ELSE, its any wave after, run incrementations
+        (begin 
             ; update wave/round/set
             (set global_wave_num (+ global_wave_num 1))
 
@@ -253,6 +259,7 @@
     (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
     (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
     (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1)))
+    (set spawner_dice_upper (* spawner_dice_upper (+ game_difficulty_level 1)))
 
     ; --- reset functional vars ---
     (set wave_enemies_spawned 0)
@@ -266,8 +273,8 @@
 
 ; dump current wave state variables
 (script static void wave_dump
-    (print "wave in progress:")
-    (inspect wave_in_progress)
+    ;(print "wave in progress:")
+    ;(inspect wave_in_progress)
     (print "wave number:")
     (inspect global_wave_num)
     (print "round number:")
@@ -276,11 +283,11 @@
     (inspect global_set_num)
     (print "wave is last of current set:")
     (inspect wave_is_last_of_set)
-    (print "difficulty scale:") ; move this a global dump function
+    (print "difficulty scale:")
     (inspect game_difficulty_scale)
     (print "difficulty level:")
     (inspect game_difficulty_level)
-    (print "weirdness scale: ") ; move this a global dump function
+    (print "weirdness scale: ")
     (inspect game_weirdness_scale)
     (print "weirdness level:")
     (inspect game_weirdness_level)
@@ -289,13 +296,17 @@
     (print "enemies active max:")
     (inspect wave_enemies_active_max)
     (print "currently living enemies:")
-    (inspect wave_enemies_living_count)
+    (inspect (wave_get_enemies_living_count))
     (print "enemies spawned this wave:")
     (inspect wave_enemies_spawned)
     (print "enemy spawn delay:")
     (inspect wave_enemies_spawn_delay)
     (print "next wave delay:")
     (inspect wave_next_delay)
+    (print "spawner dice lower bound:")
+    (inspect spawner_dice_lower)
+    (print "spawner dice upper bound:")
+    (inspect spawner_dice_upper)
 )
 
 ; wave spawn loop - if the spawner is active, keep rolling for encounters and squads to spawn enemies as long as max allowed enemies aren't spawned or wave limit threshold is reached
@@ -303,7 +314,7 @@
     (if wave_spawner_on
         ; check for current actors alive and if we're below the current max allowed actors, then...
         (if (and 
-                (< wave_enemies_living_count wave_enemies_active_max) 
+                (< (wave_get_enemies_living_count) wave_enemies_active_max) 
                 (!= wave_enemies_spawned wave_enemies_per_wave)
             )
             (begin 
@@ -417,7 +428,7 @@
                         ; jackal plasma pistol - .68
                         (if (and 
                             (<= .68 spawner_dice_roll)
-                            (>= game_difficulty_level 0)
+                            (>= game_difficulty_level 0.11)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -815,15 +826,12 @@
 )
 
 ; add every single encounter's current living actor count and return it
-(global short _wavemonitorlivingenemies_value 0)
-(script continuous wave_monitor_living_enemies
-    (set _wavemonitorlivingenemies_value 0)
-    (set _wavemonitorlivingenemies_value (+ _wavemonitorlivingenemies_value (ai_living_count "enc_common")))
-    (set _wavemonitorlivingenemies_value (+ _wavemonitorlivingenemies_value (ai_living_count "enc_uncommon")))
-    (set _wavemonitorlivingenemies_value (+ _wavemonitorlivingenemies_value (ai_living_count "enc_rare")))
-    ;(set _wavemonitorlivingenemies_value (+ _wavemonitorlivingenemies_value (ai_living_count "enc_superrare")))
-    
-    (set wave_enemies_living_count _wavemonitorlivingenemies_value)
+(script static short wave_get_enemies_living_count
+    (set wave_enemies_living_count 0)
+    (set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_common")))
+    (set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_uncommon")))
+    (set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_rare")))
+    ;(set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_superrare")))
 )
 
 ; observers for each player
