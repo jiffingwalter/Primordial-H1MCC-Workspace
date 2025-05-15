@@ -51,12 +51,12 @@
 (global ai spawner_picker_override "null") ; override the next spawn with an ai from this squad
 (global ai spawner_last_placed "null") ; the last encounter and squad we placed an enemy from
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
-(global real spawner_dice_lower 0.08) ; lower limit for dice rolls, scales based on option_difficulty_scale
+(global real spawner_dice_lower 0.01) ; lower limit for dice rolls, scales based on option_difficulty_scale
 (global real spawner_dice_upper 0.65) ; upper limit for dice rolls, scales based on option_difficulty_scale
 (global boolean spawner_condition_matched false) ; did the spawner match a condition when choosing a squad? (triggers skipping the rest of the if statements)
 (global real spawner_enc_common_chance 0.9) ; initial chance of spawning an enemy from the common encounter
-(global real spawner_enc_uncommon_chance 0.2) ; initial chance of spawning an enemy from the uncommon encounter
-(global real spawner_enc_rare_chance 0.1) ; initial chance of spawning an enemy from the rare encounter
+(global real spawner_enc_uncommon_chance 0.1) ; initial chance of spawning an enemy from the uncommon encounter
+(global real spawner_enc_rare_chance 0.05) ; initial chance of spawning an enemy from the rare encounter
 (global real spawner_total_chance 0) ; all spawn encounter chances added up
 (global real spawner_enc_common_weight 0) ; normalized chance of common encounter spawn
 (global real spawner_enc_uncommon_weight 0) ; normalized chance of uncommon encounter spawn
@@ -70,10 +70,10 @@
 (global boolean player3_respawning false)
 (global short players_dead 0)
 (global boolean players_all_dead false)
-(global boolean player0_invulnurable false)
-(global boolean player1_invulnurable false)
-(global boolean player2_invulnurable false)
-(global boolean player3_invulnurable false)
+(global boolean player0_invincible false)
+(global boolean player1_invincible false)
+(global boolean player2_invincible false)
+(global boolean player3_invincible false)
 
 ;; ---- Game control scripts ---- ;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
@@ -105,16 +105,16 @@
 
     ; initial difficulty scale...
     (if (= option_difficulty "normal")
-        (set game_difficulty_scale 1.1)
-    )
-    (if (= option_difficulty "less")
         (set game_difficulty_scale 1.05)
     )
+    (if (= option_difficulty "less")
+        (set game_difficulty_scale 1.01)
+    )
     (if (= option_difficulty "more")
-        (set game_difficulty_scale 1.2)
+        (set game_difficulty_scale 1.1)
     )
     (if (= option_difficulty "insane")
-        (set game_difficulty_scale 1.3)
+        (set game_difficulty_scale 1.2)
     )
     ; initial weirdness scale...
     (if (= option_weirdness "normal")
@@ -176,7 +176,12 @@
                 (wave_start_next)
             )
             ; ELSE, if its a new set and we're finished, run unique logic for finished wave
-            (if (= wave_is_last_of_set true)
+            (if (and
+                    (= wave_is_last_of_set true)
+                    (< (wave_get_enemies_living_count) 5)
+                    (>= wave_enemies_spawned wave_enemies_per_wave)
+                    (= wave_in_progress true)
+                )
                 (begin 
                     (print "****** set completed! ******")
                     (set wave_spawner_on false)
@@ -205,7 +210,7 @@
 
     ; --- update global and wave state variables --- (incrementations and adjusting based on spawn scales)
     (if (= global_wave_num 0)
-        ; IF its the first wave, set the initial wave/round/set
+        ; IF its the first wave, only set the initial wave/round/set
         (begin
             (set global_wave_num 1)
             (set global_round_num 1)
@@ -299,10 +304,10 @@
     (print "enemies per wave:")
     (inspect wave_enemies_per_wave)
     (print "enemies active max:")
-    (inspect wave_enemies_active_max)
-    (print "currently living enemies:")
-    (inspect (wave_get_enemies_living_count))
-    (print "enemies spawned this wave:")
+    ;(inspect wave_enemies_active_max)
+    ;(print "currently living enemies:")
+    ;(inspect (wave_get_enemies_living_count))
+    ;(print "enemies spawned this wave:")
     (inspect wave_enemies_spawned)
     (print "enemy spawn delay:")
     (inspect wave_enemies_spawn_delay)
@@ -452,7 +457,7 @@
                                 (set spawner_condition_matched true)
                             )
                         )
-                        ; grunt plasma pistol - .50
+                        ; grunt plasma pistol - other
                         (if (= spawner_condition_matched false)
                             (begin 
                                 (wave_spawn_enemy "enc_common/grunt_pp")
@@ -856,7 +861,7 @@
         )
     )
     ; maintain invincibility if it's enabled for this player
-    (if (= player0_invulnurable true)
+    (if (= player0_invincible true)
         (unit_set_current_vitality (player0) 80 80)
     )
 )
@@ -966,7 +971,7 @@
 (script static void (player_set_invuln (unit player_in) (boolean bool_in))
     (if (= player_in (player0))
         (begin   
-            (set player0_invulnurable bool_in)
+            (set player0_invincible bool_in)
             (if (= bool_in true)
                 (begin 
                     (object_create "player0_invuln_effect")
@@ -984,7 +989,7 @@
     )
     (if (= player_in (player1))
         (begin   
-            (set player1_invulnurable bool_in)
+            (set player1_invincible bool_in)
             (if (= bool_in true)
                 (begin 
                     (object_create "player1_invuln_effect")
@@ -1002,7 +1007,7 @@
     )
     (if (= player_in (player2))
         (begin   
-            (set player2_invulnurable bool_in)
+            (set player2_invincible bool_in)
             (if (= bool_in true)
                 (begin 
                     (object_create "player2_invuln_effect")
@@ -1020,7 +1025,7 @@
     )
     (if (= player_in (player3))
         (begin   
-            (set player3_invulnurable bool_in)
+            (set player3_invincible bool_in)
             (if (= bool_in true)
                 (begin 
                     (object_create "player3_invuln_effect")
@@ -1098,59 +1103,23 @@
     (device_set_power control_start_game 1)
 )
 
-(script static void test_randspawn
-    (set spawner_dice_roll (real_random_range 0 1))
-    (inspect spawner_dice_roll)
-
-    (if (<= spawner_dice_roll spawner_enc_common_chance)
-        (print "spawning common");(set spawner_next_enc "common")
-    )
-    (if (and 
-            (not (= spawner_enc_uncommon_chance 0))
-            (> spawner_dice_roll spawner_enc_common_chance)
-            (<= spawner_dice_roll (+ spawner_enc_common_chance spawner_enc_uncommon_chance))
-        )
-        (print "spawning uncommon");(set spawner_next_enc "uncommon")
-    )
-    (if (and 
-            (not (= spawner_enc_rare_chance 0))
-            (> spawner_dice_roll (+ spawner_enc_common_chance spawner_enc_uncommon_chance))
-            ;(< spawner_dice_roll 1)
-        )
-        (print "spawning rare");(set spawner_next_enc "rare")
-    )
+(global object_list test_list_common (ai_actors "enc_common"))
+;(global object_list test_list_uncommon (ai_actors "enc_uncommon"))
+;(global object_list test_list_rare (ai_actors "enc_rarecommon"))
+(script static void test_ai_lists
+    (set test_list_common (ai_actors "enc_common"))
+    (inspect (list_count test_list_common))
+    (inspect (list_get test_list_common 0))
+    (ai_erase_all)
+    (inspect (list_get test_list_common 0))
+    (set test_list_common (ai_actors "enc_common"))
+    (inspect (list_count test_list_common))
+    (inspect (list_get test_list_common 0))
 )
-(script static void (test_spawnscales (real scale))
-    (print "chances...")
-    (set spawner_enc_common_weight (max (- 1 scale) (- 1 spawner_enc_common_chance)))
-    (inspect spawner_enc_common_weight)
-    (set spawner_enc_uncommon_weight (min scale (- 1 spawner_enc_uncommon_chance)))
-    (inspect spawner_enc_uncommon_weight)
-    (set spawner_enc_rare_weight (max (- scale (- 1 spawner_enc_rare_chance)) 0))
-    (inspect spawner_enc_rare_weight)
-
-    (print "total chance...")
-    (set spawner_total_chance 0)
-    (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
-    (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
-    (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
-    (inspect spawner_total_chance)
-
-    (print "normalized weights...")
-    (set spawner_enc_common_weight (/ spawner_enc_common_weight spawner_total_chance))
-    (inspect spawner_enc_common_weight)
-    (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
-    (inspect spawner_enc_uncommon_weight)
-    (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
-    (inspect spawner_enc_rare_weight)
-
-    (print "final total weight...")
-    (set spawner_total_chance 0)
-    (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
-    (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
-    (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
-    (inspect spawner_total_chance)
-)
+; make a continuous function thats constantly assigning an ai list to a global variable
+; check the first 5 units of the list for their health being <= 0 (make this bigger if it actually works)
+; if any are <= 0, print something to show we'd be rolling to spawn a powerup on them
+; point is to stress test if doing this in a continuous function will explode the game
 
 
 
