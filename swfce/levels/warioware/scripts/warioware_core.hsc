@@ -969,7 +969,10 @@
 
 ; set a player's invulnerability status and attach invuln object to them
 (script static void (player_set_invuln (unit player_in) (boolean bool_in))
-    (if (= player_in (player0))
+    (if (and 
+        (object_exists (player0))
+        (= player_in (player0))
+    )
         (begin   
             (set player0_invincible bool_in)
             (if (= bool_in true)
@@ -987,7 +990,10 @@
             )
         )
     )
-    (if (= player_in (player1))
+    (if (and 
+        (object_exists (player1))
+        (= player_in (player1))
+    )
         (begin   
             (set player1_invincible bool_in)
             (if (= bool_in true)
@@ -1005,7 +1011,10 @@
             )
         )
     )
-    (if (= player_in (player2))
+    (if (and 
+        (object_exists (player2))
+        (= player_in (player2))
+    )
         (begin   
             (set player2_invincible bool_in)
             (if (= bool_in true)
@@ -1023,7 +1032,10 @@
             )
         )
     )
-    (if (= player_in (player3))
+    (if (and 
+        (object_exists (player3))
+        (= player_in (player3))
+    )
         (begin   
             (set player3_invincible bool_in)
             (if (= bool_in true)
@@ -1104,23 +1116,52 @@
 )
 
 (global object_list test_list_common (ai_actors "enc_common"))
-;(global object_list test_list_uncommon (ai_actors "enc_uncommon"))
-;(global object_list test_list_rare (ai_actors "enc_rarecommon"))
-(script static void test_ai_lists
+(script continuous test_monitor_enemies
+    (if (= (unit_get_health (unit (list_get test_list_common 0))) 0)
+        (test_enemy_drop (list_get test_list_common 0))
+    )
+    (if (= (unit_get_health (unit (list_get test_list_common 1))) 0)
+        (test_enemy_drop (list_get test_list_common 1))
+    )
+    (if (= (unit_get_health (unit (list_get test_list_common 2))) 0)
+        (test_enemy_drop (list_get test_list_common 2))
+    )
+    (if (= (unit_get_health (unit (list_get test_list_common 3))) 0)
+        (test_enemy_drop (list_get test_list_common 3))
+    )
+    (if (= (unit_get_health (unit (list_get test_list_common 4))) 0)
+        (test_enemy_drop (list_get test_list_common 4))
+    )
     (set test_list_common (ai_actors "enc_common"))
-    (inspect (list_count test_list_common))
-    (inspect (list_get test_list_common 0))
-    (ai_erase_all)
-    (inspect (list_get test_list_common 0))
-    (set test_list_common (ai_actors "enc_common"))
-    (inspect (list_count test_list_common))
-    (inspect (list_get test_list_common 0))
+    (sleep 2)
 )
-; make a continuous function thats constantly assigning an ai list to a global variable
-; check the first 5 units of the list for their health being <= 0 (make this bigger if it actually works)
-; if any are <= 0, print something to show we'd be rolling to spawn a powerup on them
-; point is to stress test if doing this in a continuous function will explode the game
 
+(script continuous test_monitor_powerup
+    (if (not (object_exists powerup_invincibility))
+        (begin 
+            (object_create powerup_invincibility) ; recreate in the dev area to avoid infinite loops
+
+            (print "picked up invincibility!")
+            (player_set_invuln (player0) true)
+            (player_set_invuln (player1) true)
+            (player_set_invuln (player2) true)
+            (player_set_invuln (player3) true)
+
+            (sleep (* 30 30))
+
+            (player_set_invuln (player0) false)
+            (player_set_invuln (player1) false)
+            (player_set_invuln (player2) false)
+            (player_set_invuln (player3) false)
+        )
+    )
+)
+
+(script static void (test_enemy_drop (object actor))
+    (print "spawned powerup on actor!")
+    (objects_attach actor "" powerup_invincibility "")
+    (objects_detach actor powerup_invincibility)
+)
 
 
 ;; --- GPS script lifted from c20.net by Conscars --- ;;
