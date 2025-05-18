@@ -46,6 +46,11 @@
 (global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, scales based on option_enemy_active_scale
 (global short wave_enemies_active_max 0) ; the max amount of enemies allowed to be alive at one time, scales based on option_difficulty_scale
 
+; AI lists
+(global object_list ai_list_common (ai_actors "enc_common"))
+(global object_list ai_list_uncommon (ai_actors "enc_uncommon"))
+(global object_list ai_list_rare (ai_actors "enc_rare"))
+
 ; Spawner function vars
 (global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
 (global ai spawner_picker_override "null") ; override the next spawn with an ai from this squad
@@ -74,6 +79,12 @@
 (global boolean player1_invincible false)
 (global boolean player2_invincible false)
 (global boolean player3_invincible false)
+
+; Powerup management vars
+(global real powerup_spawn_chance 0.03) ; initial chance of a powerup spawning on enemy death, SLIGHTLY scaled by game_weirdness_level
+(global real powerup_dice_roll 0) ; dice roll for testing to spawn powerups
+; Individual powerup statuses in the game - 0 is standby, 1 is spawned and waiting, 2 is active
+(global short powerup_status_invincibility 0)
 
 ;; ---- Game control scripts ---- ;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
@@ -844,9 +855,9 @@
     ;(set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_superrare")))
 )
 
-; observers for each player
-; TODO: copy changes from monitor_player0 to other players as well
+; observers for each player, keeps track of them and any state based logic that might need to happen
 (script continuous monitor_player0
+    ; PLAYER 0
     ; watch for player death
     (if (and 
         (= (unit_get_health (player0)) 0)
@@ -866,27 +877,63 @@
     )
 )
 (script continuous monitor_player1
-    (if (= (unit_get_health (player1)) 0)
+    ; PLAYER 1
+    ; watch for player death
+    (if (and 
+        (= (unit_get_health (player1)) 0)
+        (!= game_swapping_loadout true)
+        (!= option_use_checkpoints true)
+    )
         (begin
-            (print "PLAYER 1 DIED!")
+            (print "PLAYER 0 DIED!")
+            ; todo: spawn a body on the player's current position to fake a death
+            (set player1_respawning true)
             (player_respawn_sequence (player1))
         )
     )
+    ; maintain invincibility if it's enabled for this player
+    (if (= player1_invincible true)
+        (unit_set_current_vitality (player1) 80 80)
+    )
 )
 (script continuous monitor_player2
-    (if (= (unit_get_health (player2)) 0)
+    ; PLAYER 2
+    ; watch for player death
+    (if (and 
+        (= (unit_get_health (player2)) 0)
+        (!= game_swapping_loadout true)
+        (!= option_use_checkpoints true)
+    )
         (begin
             (print "PLAYER 2 DIED!")
+            ; todo: spawn a body on the player's current position to fake a death
+            (set player2_respawning true)
             (player_respawn_sequence (player2))
         )
     )
+    ; maintain invincibility if it's enabled for this player
+    (if (= player2_invincible true)
+        (unit_set_current_vitality (player2) 80 80)
+    )
 )
 (script continuous monitor_player3
-    (if (= (unit_get_health (player3)) 0)
+    ; PLAYER 3
+    ; watch for player death
+    (if (and 
+        (= (unit_get_health (player3)) 0)
+        (!= game_swapping_loadout true)
+        (!= option_use_checkpoints true)
+    )
         (begin
             (print "PLAYER 3 DIED!")
+            ; todo: spawn a body on the player's current position to fake a death
+            (set player3_respawning true)
             (player_respawn_sequence (player3))
         )
+    )
+    ; maintain invincibility if it's enabled for this player
+    (if (= player3_invincible true)
+        (unit_set_current_vitality (player3) 80 80)
     )
 )
 
@@ -1096,7 +1143,193 @@
     (set game_swapping_loadout false)
 )
 
-;; --- testing stuff --- ;;
+;; monitor up to 32 enemies from each encounter that currently exist & get new encounter lists
+(script continuous monitor_enemy_lists
+    (print "enc common count...")
+    (inspect (list_count ai_list_common))
+    (monitor_individual_enemy (list_get ai_list_common 0))
+    (monitor_individual_enemy (list_get ai_list_common 1))
+    (monitor_individual_enemy (list_get ai_list_common 2))
+    (monitor_individual_enemy (list_get ai_list_common 3))
+    (monitor_individual_enemy (list_get ai_list_common 4))
+    (monitor_individual_enemy (list_get ai_list_common 5))
+    (monitor_individual_enemy (list_get ai_list_common 6))
+    (monitor_individual_enemy (list_get ai_list_common 7))
+    (monitor_individual_enemy (list_get ai_list_common 8))
+    (monitor_individual_enemy (list_get ai_list_common 9))
+    (monitor_individual_enemy (list_get ai_list_common 10))
+    (monitor_individual_enemy (list_get ai_list_common 11))
+    (monitor_individual_enemy (list_get ai_list_common 12))
+    (monitor_individual_enemy (list_get ai_list_common 13))
+    (monitor_individual_enemy (list_get ai_list_common 14))
+    (monitor_individual_enemy (list_get ai_list_common 15))
+    (monitor_individual_enemy (list_get ai_list_common 16))
+    (monitor_individual_enemy (list_get ai_list_common 17))
+    (monitor_individual_enemy (list_get ai_list_common 18))
+    (monitor_individual_enemy (list_get ai_list_common 19))
+    (monitor_individual_enemy (list_get ai_list_common 20))
+    (monitor_individual_enemy (list_get ai_list_common 21))
+    (monitor_individual_enemy (list_get ai_list_common 22))
+    (monitor_individual_enemy (list_get ai_list_common 23))
+    (monitor_individual_enemy (list_get ai_list_common 24))
+    (monitor_individual_enemy (list_get ai_list_common 25))
+    (monitor_individual_enemy (list_get ai_list_common 26))
+    (monitor_individual_enemy (list_get ai_list_common 27))
+    (monitor_individual_enemy (list_get ai_list_common 28))
+    (monitor_individual_enemy (list_get ai_list_common 29))
+    (monitor_individual_enemy (list_get ai_list_common 30))
+    (monitor_individual_enemy (list_get ai_list_common 31))
+    (set ai_list_common (ai_actors "enc_common"))
+    (sleep 2)
+
+    (print "enc uncommon count...")
+    (inspect (list_count ai_list_uncommon))
+    (monitor_individual_enemy (list_get ai_list_uncommon 0))
+    (monitor_individual_enemy (list_get ai_list_uncommon 1))
+    (monitor_individual_enemy (list_get ai_list_uncommon 2))
+    (monitor_individual_enemy (list_get ai_list_uncommon 3))
+    (monitor_individual_enemy (list_get ai_list_uncommon 4))
+    (monitor_individual_enemy (list_get ai_list_uncommon 5))
+    (monitor_individual_enemy (list_get ai_list_uncommon 6))
+    (monitor_individual_enemy (list_get ai_list_uncommon 7))
+    (monitor_individual_enemy (list_get ai_list_uncommon 8))
+    (monitor_individual_enemy (list_get ai_list_uncommon 9))
+    (monitor_individual_enemy (list_get ai_list_uncommon 10))
+    (monitor_individual_enemy (list_get ai_list_uncommon 11))
+    (monitor_individual_enemy (list_get ai_list_uncommon 12))
+    (monitor_individual_enemy (list_get ai_list_uncommon 13))
+    (monitor_individual_enemy (list_get ai_list_uncommon 14))
+    (monitor_individual_enemy (list_get ai_list_uncommon 15))
+    (monitor_individual_enemy (list_get ai_list_uncommon 16))
+    (monitor_individual_enemy (list_get ai_list_uncommon 17))
+    (monitor_individual_enemy (list_get ai_list_uncommon 18))
+    (monitor_individual_enemy (list_get ai_list_uncommon 19))
+    (monitor_individual_enemy (list_get ai_list_uncommon 20))
+    (monitor_individual_enemy (list_get ai_list_uncommon 21))
+    (monitor_individual_enemy (list_get ai_list_uncommon 22))
+    (monitor_individual_enemy (list_get ai_list_uncommon 23))
+    (monitor_individual_enemy (list_get ai_list_uncommon 24))
+    (monitor_individual_enemy (list_get ai_list_uncommon 25))
+    (monitor_individual_enemy (list_get ai_list_uncommon 26))
+    (monitor_individual_enemy (list_get ai_list_uncommon 27))
+    (monitor_individual_enemy (list_get ai_list_uncommon 28))
+    (monitor_individual_enemy (list_get ai_list_uncommon 29))
+    (monitor_individual_enemy (list_get ai_list_uncommon 30))
+    (monitor_individual_enemy (list_get ai_list_uncommon 31))
+    (set ai_list_uncommon (ai_actors "enc_uncommon"))
+    (sleep 2)
+
+    (print "enc rare count...")
+    (inspect (list_count ai_list_rare))
+    (monitor_individual_enemy (list_get ai_list_rare 0))
+    (monitor_individual_enemy (list_get ai_list_rare 1))
+    (monitor_individual_enemy (list_get ai_list_rare 2))
+    (monitor_individual_enemy (list_get ai_list_rare 3))
+    (monitor_individual_enemy (list_get ai_list_rare 4))
+    (monitor_individual_enemy (list_get ai_list_rare 5))
+    (monitor_individual_enemy (list_get ai_list_rare 6))
+    (monitor_individual_enemy (list_get ai_list_rare 7))
+    (monitor_individual_enemy (list_get ai_list_rare 8))
+    (monitor_individual_enemy (list_get ai_list_rare 9))
+    (monitor_individual_enemy (list_get ai_list_rare 10))
+    (monitor_individual_enemy (list_get ai_list_rare 11))
+    (monitor_individual_enemy (list_get ai_list_rare 12))
+    (monitor_individual_enemy (list_get ai_list_rare 13))
+    (monitor_individual_enemy (list_get ai_list_rare 14))
+    (monitor_individual_enemy (list_get ai_list_rare 15))
+    (monitor_individual_enemy (list_get ai_list_rare 16))
+    (monitor_individual_enemy (list_get ai_list_rare 17))
+    (monitor_individual_enemy (list_get ai_list_rare 18))
+    (monitor_individual_enemy (list_get ai_list_rare 19))
+    (monitor_individual_enemy (list_get ai_list_rare 20))
+    (monitor_individual_enemy (list_get ai_list_rare 21))
+    (monitor_individual_enemy (list_get ai_list_rare 22))
+    (monitor_individual_enemy (list_get ai_list_rare 23))
+    (monitor_individual_enemy (list_get ai_list_rare 24))
+    (monitor_individual_enemy (list_get ai_list_rare 25))
+    (monitor_individual_enemy (list_get ai_list_rare 26))
+    (monitor_individual_enemy (list_get ai_list_rare 27))
+    (monitor_individual_enemy (list_get ai_list_rare 28))
+    (monitor_individual_enemy (list_get ai_list_rare 29))
+    (monitor_individual_enemy (list_get ai_list_rare 30))
+    (monitor_individual_enemy (list_get ai_list_rare 31))
+    (set ai_list_rare (ai_actors "enc_rare"))
+    (sleep 2)
+)
+
+;; individual enemy to run logic on
+(script static void (monitor_individual_enemy (object actor_in))
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit actor_in)) 0)
+        (powerup_roll_for_spawn actor_in)
+    )
+)
+
+;; monitors powerup existence and performs actions for them whenever they don't exist (picked up)
+(script continuous monitor_powerups
+    ;invincibility
+    (if (and 
+            (not (object_exists powerup_invincibility))
+            (!= powerup_status_invincibility 2)
+        )
+        (begin 
+            (set powerup_status_invincibility 2)
+            (fade_in 1 1 1 15)
+
+            (print "picked up invincibility!")
+            (player_set_invuln (player0) true)
+            (player_set_invuln (player1) true)
+            (player_set_invuln (player2) true)
+            (player_set_invuln (player3) true)
+
+            (sleep (* 30 30))
+
+            (player_set_invuln (player0) false)
+            (player_set_invuln (player1) false)
+            (player_set_invuln (player2) false)
+            (player_set_invuln (player3) false)
+            (set powerup_status_invincibility 0)
+        )
+    )
+)
+
+;; roll if we're going to spawn a powerup on an murderized actor, then which choose and spawn the powerup if so 
+(script static void (powerup_roll_for_spawn (object actor))
+    ; roll if we want to spawn a powerup based on current chance and scale of weirdness
+    (if (< (real_random_range 0 1) powerup_spawn_chance)
+        ; choose a powerup to spawn, skipping powerups that are active or already currently spawned
+        (set powerup_dice_roll (random_range 0 1))
+        (if (and 
+            (= powerup_dice_roll 0)
+            (= powerup_status_invincibility 0)
+        )
+            (powerup_spawn_on_object actor powerup_invincibility)
+        )
+    )
+    
+)
+
+;; spawn a powerup into the play area. make it disappear if it expires
+(script static void (powerup_spawn_on_object (object actor) (object_name powerup))
+    (print "spawned powerup on actor!")
+    (powerup_set_status powerup 1)
+    (objects_attach actor "" powerup "")
+    (objects_detach actor powerup)
+
+    ; start timer to reset the powerup
+    (sleep (* 30 30))
+    (object_create_anew powerup)
+    (powerup_set_status powerup 0)
+)
+
+;; go through and set a powerup to the given status based on name
+(script static void (powerup_set_status (object powerup) (short status))
+    (if (= powerup powerup_invincibility)
+        (set powerup_status_invincibility status)
+    )
+)
+
+;; ------------- testing stuff ------------- ;;
 (script static void test_game
     (set run_game_scripts true)
     (sleep 5)
@@ -1114,55 +1347,6 @@
     (device_set_position control_start_game 0)
     (device_set_power control_start_game 1)
 )
-
-(global object_list test_list_common (ai_actors "enc_common"))
-(script continuous test_monitor_enemies
-    (if (= (unit_get_health (unit (list_get test_list_common 0))) 0)
-        (test_enemy_drop (list_get test_list_common 0))
-    )
-    (if (= (unit_get_health (unit (list_get test_list_common 1))) 0)
-        (test_enemy_drop (list_get test_list_common 1))
-    )
-    (if (= (unit_get_health (unit (list_get test_list_common 2))) 0)
-        (test_enemy_drop (list_get test_list_common 2))
-    )
-    (if (= (unit_get_health (unit (list_get test_list_common 3))) 0)
-        (test_enemy_drop (list_get test_list_common 3))
-    )
-    (if (= (unit_get_health (unit (list_get test_list_common 4))) 0)
-        (test_enemy_drop (list_get test_list_common 4))
-    )
-    (set test_list_common (ai_actors "enc_common"))
-    (sleep 2)
-)
-
-(script continuous test_monitor_powerup
-    (if (not (object_exists powerup_invincibility))
-        (begin 
-            (object_create powerup_invincibility) ; recreate in the dev area to avoid infinite loops
-
-            (print "picked up invincibility!")
-            (player_set_invuln (player0) true)
-            (player_set_invuln (player1) true)
-            (player_set_invuln (player2) true)
-            (player_set_invuln (player3) true)
-
-            (sleep (* 30 30))
-
-            (player_set_invuln (player0) false)
-            (player_set_invuln (player1) false)
-            (player_set_invuln (player2) false)
-            (player_set_invuln (player3) false)
-        )
-    )
-)
-
-(script static void (test_enemy_drop (object actor))
-    (print "spawned powerup on actor!")
-    (objects_attach actor "" powerup_invincibility "")
-    (objects_detach actor powerup_invincibility)
-)
-
 
 ;; --- GPS script lifted from c20.net by Conscars --- ;;
 ; temporary variables for the calculation
