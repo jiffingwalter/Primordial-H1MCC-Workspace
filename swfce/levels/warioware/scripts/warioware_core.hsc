@@ -1145,18 +1145,12 @@
 
 ;; refresh ai lists for the individual monitor scripts
 (script continuous monitor_enemy_lists
-    (print "enc common count...")
-    (inspect (list_count ai_list_common))
     (set ai_list_common (ai_actors "enc_common"))
     (sleep 2)
 
-    (print "enc uncommon count...")
-    (inspect (list_count ai_list_uncommon))
     (set ai_list_uncommon (ai_actors "enc_uncommon"))
     (sleep 2)
 
-    (print "enc rare count...")
-    (inspect (list_count ai_list_rare))
     (set ai_list_rare (ai_actors "enc_rare"))
     (sleep 2)
 )
@@ -1409,23 +1403,26 @@
     )
 )
 
-;; roll if we're going to spawn a powerup on an murderized actor, then which choose and spawn the powerup if so 
+;; roll if we're going to spawn a powerup on an murderized actor, then choose which powerup if so 
 (script static void (powerup_roll_for_spawn (object actor))
     ; roll if we want to spawn a powerup based on current chance and scale of weirdness
-    (if (< (real_random_range 0 1) powerup_spawn_chance)
+    (set powerup_dice_roll (real_random_range 0 1))
+    (if (< powerup_dice_roll powerup_spawn_chance)
         ; choose a powerup to spawn, skipping powerups that are active or already currently spawned
-        (set powerup_dice_roll (random_range 0 1))
-        (if (and 
-            (= powerup_dice_roll 0)
-            (= powerup_status_invincibility 0)
-        )
-            (powerup_spawn_on_object actor powerup_invincibility)
+        (begin 
+            (set powerup_dice_roll (random_range 0 1))
+            (if (and 
+                (= powerup_dice_roll 0)
+                (= powerup_status_invincibility 0)
+            )
+                (powerup_spawn_on_object actor powerup_invincibility)
+            )
         )
     )
     
 )
 
-;; spawn a powerup into the play area. make it disappear if it expires
+;; spawn a powerup into the play area and manage expiration timer
 (script static void (powerup_spawn_on_object (object actor) (object_name powerup))
     (print "spawned powerup on actor!")
     (powerup_set_status powerup 1)
