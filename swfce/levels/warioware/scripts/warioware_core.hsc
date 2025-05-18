@@ -1143,125 +1143,241 @@
     (set game_swapping_loadout false)
 )
 
-;; monitor up to 32 enemies from each encounter that currently exist & get new encounter lists
+;; refresh ai lists for the individual monitor scripts
 (script continuous monitor_enemy_lists
     (print "enc common count...")
     (inspect (list_count ai_list_common))
-    (monitor_individual_enemy (list_get ai_list_common 0))
-    (monitor_individual_enemy (list_get ai_list_common 1))
-    (monitor_individual_enemy (list_get ai_list_common 2))
-    (monitor_individual_enemy (list_get ai_list_common 3))
-    (monitor_individual_enemy (list_get ai_list_common 4))
-    (monitor_individual_enemy (list_get ai_list_common 5))
-    (monitor_individual_enemy (list_get ai_list_common 6))
-    (monitor_individual_enemy (list_get ai_list_common 7))
-    (monitor_individual_enemy (list_get ai_list_common 8))
-    (monitor_individual_enemy (list_get ai_list_common 9))
-    (monitor_individual_enemy (list_get ai_list_common 10))
-    (monitor_individual_enemy (list_get ai_list_common 11))
-    (monitor_individual_enemy (list_get ai_list_common 12))
-    (monitor_individual_enemy (list_get ai_list_common 13))
-    (monitor_individual_enemy (list_get ai_list_common 14))
-    (monitor_individual_enemy (list_get ai_list_common 15))
-    (monitor_individual_enemy (list_get ai_list_common 16))
-    (monitor_individual_enemy (list_get ai_list_common 17))
-    (monitor_individual_enemy (list_get ai_list_common 18))
-    (monitor_individual_enemy (list_get ai_list_common 19))
-    (monitor_individual_enemy (list_get ai_list_common 20))
-    (monitor_individual_enemy (list_get ai_list_common 21))
-    (monitor_individual_enemy (list_get ai_list_common 22))
-    (monitor_individual_enemy (list_get ai_list_common 23))
-    (monitor_individual_enemy (list_get ai_list_common 24))
-    (monitor_individual_enemy (list_get ai_list_common 25))
-    (monitor_individual_enemy (list_get ai_list_common 26))
-    (monitor_individual_enemy (list_get ai_list_common 27))
-    (monitor_individual_enemy (list_get ai_list_common 28))
-    (monitor_individual_enemy (list_get ai_list_common 29))
-    (monitor_individual_enemy (list_get ai_list_common 30))
-    (monitor_individual_enemy (list_get ai_list_common 31))
     (set ai_list_common (ai_actors "enc_common"))
     (sleep 2)
 
     (print "enc uncommon count...")
     (inspect (list_count ai_list_uncommon))
-    (monitor_individual_enemy (list_get ai_list_uncommon 0))
-    (monitor_individual_enemy (list_get ai_list_uncommon 1))
-    (monitor_individual_enemy (list_get ai_list_uncommon 2))
-    (monitor_individual_enemy (list_get ai_list_uncommon 3))
-    (monitor_individual_enemy (list_get ai_list_uncommon 4))
-    (monitor_individual_enemy (list_get ai_list_uncommon 5))
-    (monitor_individual_enemy (list_get ai_list_uncommon 6))
-    (monitor_individual_enemy (list_get ai_list_uncommon 7))
-    (monitor_individual_enemy (list_get ai_list_uncommon 8))
-    (monitor_individual_enemy (list_get ai_list_uncommon 9))
-    (monitor_individual_enemy (list_get ai_list_uncommon 10))
-    (monitor_individual_enemy (list_get ai_list_uncommon 11))
-    (monitor_individual_enemy (list_get ai_list_uncommon 12))
-    (monitor_individual_enemy (list_get ai_list_uncommon 13))
-    (monitor_individual_enemy (list_get ai_list_uncommon 14))
-    (monitor_individual_enemy (list_get ai_list_uncommon 15))
-    (monitor_individual_enemy (list_get ai_list_uncommon 16))
-    (monitor_individual_enemy (list_get ai_list_uncommon 17))
-    (monitor_individual_enemy (list_get ai_list_uncommon 18))
-    (monitor_individual_enemy (list_get ai_list_uncommon 19))
-    (monitor_individual_enemy (list_get ai_list_uncommon 20))
-    (monitor_individual_enemy (list_get ai_list_uncommon 21))
-    (monitor_individual_enemy (list_get ai_list_uncommon 22))
-    (monitor_individual_enemy (list_get ai_list_uncommon 23))
-    (monitor_individual_enemy (list_get ai_list_uncommon 24))
-    (monitor_individual_enemy (list_get ai_list_uncommon 25))
-    (monitor_individual_enemy (list_get ai_list_uncommon 26))
-    (monitor_individual_enemy (list_get ai_list_uncommon 27))
-    (monitor_individual_enemy (list_get ai_list_uncommon 28))
-    (monitor_individual_enemy (list_get ai_list_uncommon 29))
-    (monitor_individual_enemy (list_get ai_list_uncommon 30))
-    (monitor_individual_enemy (list_get ai_list_uncommon 31))
     (set ai_list_uncommon (ai_actors "enc_uncommon"))
     (sleep 2)
 
     (print "enc rare count...")
     (inspect (list_count ai_list_rare))
-    (monitor_individual_enemy (list_get ai_list_rare 0))
-    (monitor_individual_enemy (list_get ai_list_rare 1))
-    (monitor_individual_enemy (list_get ai_list_rare 2))
-    (monitor_individual_enemy (list_get ai_list_rare 3))
-    (monitor_individual_enemy (list_get ai_list_rare 4))
-    (monitor_individual_enemy (list_get ai_list_rare 5))
-    (monitor_individual_enemy (list_get ai_list_rare 6))
-    (monitor_individual_enemy (list_get ai_list_rare 7))
-    (monitor_individual_enemy (list_get ai_list_rare 8))
-    (monitor_individual_enemy (list_get ai_list_rare 9))
-    (monitor_individual_enemy (list_get ai_list_rare 10))
-    (monitor_individual_enemy (list_get ai_list_rare 11))
-    (monitor_individual_enemy (list_get ai_list_rare 12))
-    (monitor_individual_enemy (list_get ai_list_rare 13))
-    (monitor_individual_enemy (list_get ai_list_rare 14))
-    (monitor_individual_enemy (list_get ai_list_rare 15))
-    (monitor_individual_enemy (list_get ai_list_rare 16))
-    (monitor_individual_enemy (list_get ai_list_rare 17))
-    (monitor_individual_enemy (list_get ai_list_rare 18))
-    (monitor_individual_enemy (list_get ai_list_rare 19))
-    (monitor_individual_enemy (list_get ai_list_rare 20))
-    (monitor_individual_enemy (list_get ai_list_rare 21))
-    (monitor_individual_enemy (list_get ai_list_rare 22))
-    (monitor_individual_enemy (list_get ai_list_rare 23))
-    (monitor_individual_enemy (list_get ai_list_rare 24))
-    (monitor_individual_enemy (list_get ai_list_rare 25))
-    (monitor_individual_enemy (list_get ai_list_rare 26))
-    (monitor_individual_enemy (list_get ai_list_rare 27))
-    (monitor_individual_enemy (list_get ai_list_rare 28))
-    (monitor_individual_enemy (list_get ai_list_rare 29))
-    (monitor_individual_enemy (list_get ai_list_rare 30))
-    (monitor_individual_enemy (list_get ai_list_rare 31))
     (set ai_list_rare (ai_actors "enc_rare"))
     (sleep 2)
 )
 
-;; individual enemy to run logic on
-(script static void (monitor_individual_enemy (object actor_in))
+;; individual enemies to run logic on
+;COMMON
+(script continuous monitor_ai_list_common_0
     ; test if the actor is dead and roll for a powerup spawn
-    (if (= (unit_get_health (unit actor_in)) 0)
-        (powerup_roll_for_spawn actor_in)
+    (if (= (unit_get_health (unit (list_get ai_list_common 0))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 0))
+    )
+)
+(script continuous monitor_ai_list_common_1
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 1))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 1))
+    )
+)
+(script continuous monitor_ai_list_common_2
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 2))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 2))
+    )
+)
+(script continuous monitor_ai_list_common_3
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 3))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 3))
+    )
+)
+(script continuous monitor_ai_list_common_4
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 4))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 4))
+    )
+)
+(script continuous monitor_ai_list_common_5
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 5))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 5))
+    )
+)
+(script continuous monitor_ai_list_common_6
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 6))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 6))
+    )
+)
+(script continuous monitor_ai_list_common_7
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 7))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 7))
+    )
+)
+(script continuous monitor_ai_list_common_8
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 8))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 8))
+    )
+)
+(script continuous monitor_ai_list_common_9
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 9))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 9))
+    )
+)
+(script continuous monitor_ai_list_common_10
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 10))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 10))
+    )
+)
+(script continuous monitor_ai_list_common_11
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_common 11))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_common 11))
+    )
+)
+;UNCOMMON
+(script continuous monitor_ai_list_uncommon_0
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 0))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 0))
+    )
+)
+(script continuous monitor_ai_list_uncommon_1
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 1))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 1))
+    )
+)
+(script continuous monitor_ai_list_uncommon_2
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 2))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 2))
+    )
+)
+(script continuous monitor_ai_list_uncommon_3
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 3))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 3))
+    )
+)
+(script continuous monitor_ai_list_uncommon_4
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 4))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 4))
+    )
+)
+(script continuous monitor_ai_list_uncommon_5
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 5))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 5))
+    )
+)
+(script continuous monitor_ai_list_uncommon_6
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 6))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 6))
+    )
+)
+(script continuous monitor_ai_list_uncommon_7
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 7))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 7))
+    )
+)
+(script continuous monitor_ai_list_uncommon_8
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 8))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 8))
+    )
+)
+(script continuous monitor_ai_list_uncommon_9
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 9))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 9))
+    )
+)
+(script continuous monitor_ai_list_uncommon_10
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 10))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 10))
+    )
+)
+(script continuous monitor_ai_list_uncommon_11
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_uncommon 11))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_uncommon 11))
+    )
+)
+(script continuous monitor_ai_list_rare_0
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 0))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 0))
+    )
+)
+(script continuous monitor_ai_list_rare_1
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 1))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 1))
+    )
+)
+(script continuous monitor_ai_list_rare_2
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 2))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 2))
+    )
+)
+(script continuous monitor_ai_list_rare_3
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 3))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 3))
+    )
+)
+(script continuous monitor_ai_list_rare_4
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 4))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 4))
+    )
+)
+(script continuous monitor_ai_list_rare_5
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 5))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 5))
+    )
+)
+(script continuous monitor_ai_list_rare_6
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 6))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 6))
+    )
+)
+(script continuous monitor_ai_list_rare_7
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 7))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 7))
+    )
+)
+(script continuous monitor_ai_list_rare_8
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 8))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 8))
+    )
+)
+(script continuous monitor_ai_list_rare_9
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 9))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 9))
+    )
+)
+(script continuous monitor_ai_list_rare_10
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 10))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 10))
+    )
+)
+(script continuous monitor_ai_list_rare_11
+    ; test if the actor is dead and roll for a powerup spawn
+    (if (= (unit_get_health (unit (list_get ai_list_rare 11))) 0)
+        (powerup_roll_for_spawn (list_get ai_list_rare 11))
     )
 )
 
