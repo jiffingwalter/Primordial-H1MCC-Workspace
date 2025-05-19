@@ -5,7 +5,7 @@
 ;; ---- Variables ---- ;;
 ; Game options set by player on start 
 (global string option_ai_infighting "enabled") ; Do different enemy factions fight each other? enabled, disabled, conditional (enemies will fight but focus on the player)
-(global string option_minigames_frequency "normal") ; Minigame wave frequency: none, normal (every round), less (every 2 rounds), many (every single wave)
+(global string option_minigames_frequency "normal") ; Minigame wave frequency: none, normal (every round), less (every set), many (every single wave)
 (global string option_difficulty "normal") ; Multiplier for how many harder enemies appear: normal (1.1), less (1.05), more (1.2), insane (1.3)
 (global string option_weirdness "normal") ; Multiplier for how fast the game gets weirder: normal (1.1), less (1.05), more (1.2), insane (1.3)
 (global boolean option_spawn_friends true) ; Spawn friendly AI on each set?
@@ -60,8 +60,8 @@
 (global real spawner_dice_upper 0.65) ; upper limit for dice rolls, scales based on option_difficulty_scale
 (global boolean spawner_condition_matched false) ; did the spawner match a condition when choosing a squad? (triggers skipping the rest of the if statements)
 (global real spawner_enc_common_chance 0.9) ; initial chance of spawning an enemy from the common encounter
-(global real spawner_enc_uncommon_chance 0.1) ; initial chance of spawning an enemy from the uncommon encounter
-(global real spawner_enc_rare_chance 0.05) ; initial chance of spawning an enemy from the rare encounter
+(global real spawner_enc_uncommon_chance 0.025) ; initial chance of spawning an enemy from the uncommon encounter
+(global real spawner_enc_rare_chance 0.0125) ; initial chance of spawning an enemy from the rare encounter
 (global real spawner_total_chance 0) ; all spawn encounter chances added up
 (global real spawner_enc_common_weight 0) ; normalized chance of common encounter spawn
 (global real spawner_enc_uncommon_weight 0) ; normalized chance of uncommon encounter spawn
@@ -151,7 +151,7 @@
     )
 
     ; wave vars...
-    (set wave_enemies_per_wave (* 8 (* game_difficulty_scale 2)))
+    (set wave_enemies_per_wave (* 4 (* game_difficulty_scale 2)))
     (set wave_enemies_active_max (* wave_enemies_per_wave 0.25))
 
     ; teleport players and start game...
@@ -249,7 +249,10 @@
 
             ; wave values -- scale based on current difficulty level
             (set wave_enemies_per_wave (* wave_enemies_per_wave (+ game_difficulty_level 1)))
-            (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
+            (if (< wave_enemies_active_max 36)
+                (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
+                (set wave_enemies_active_max 36)
+            )
             (if (not (< wave_next_delay (* 30 3)))
                 (set wave_next_delay (* wave_next_delay 0.99))
             )
@@ -304,12 +307,12 @@
     (inspect global_set_num)
     (print "wave is last of current set:")
     (inspect wave_is_last_of_set)
-    (print "difficulty scale:")
-    (inspect game_difficulty_scale)
+    ;(print "difficulty scale:") ; put this is in another dump function
+    ;(inspect game_difficulty_scale)
     (print "difficulty level:")
     (inspect game_difficulty_level)
-    (print "weirdness scale: ")
-    (inspect game_weirdness_scale)
+    ;(print "weirdness scale: ") ; put this is in another dump function
+    ;(inspect game_weirdness_scale)
     (print "weirdness level:")
     (inspect game_weirdness_level)
     (print "enemies per wave:")
@@ -1143,18 +1146,6 @@
     (set game_swapping_loadout false)
 )
 
-;; refresh ai lists for the individual monitor scripts
-(script continuous monitor_enemy_lists
-    (set ai_list_common (ai_actors "enc_common"))
-    (sleep 2)
-
-    (set ai_list_uncommon (ai_actors "enc_uncommon"))
-    (sleep 2)
-
-    (set ai_list_rare (ai_actors "enc_rare"))
-    (sleep 2)
-)
-
 ;; monitors powerup existence and performs actions for them whenever they don't exist (picked up)
 (script continuous monitor_powerups
     ;invincibility
@@ -1222,8 +1213,21 @@
     )
 )
 
-;; individual enemies to run logic on
-;COMMON
+;; ----- ai monitoring ----- ;;
+;; refresh ai lists for the individual monitor scripts
+(script continuous monitor_enemy_lists
+    (set ai_list_common (ai_actors "enc_common"))
+    (sleep 2)
+
+    (set ai_list_uncommon (ai_actors "enc_uncommon"))
+    (sleep 2)
+
+    (set ai_list_rare (ai_actors "enc_rare"))
+    (sleep 2)
+)
+
+;; individual enemies to run logic on -- todo: increase the amount of indexes for each list checked?
+; COMMON
 (script continuous monitor_ai_list_common_0
     (monitor_individual_enemy (list_get ai_list_common 0))
 )
@@ -1260,7 +1264,7 @@
 (script continuous monitor_ai_list_common_11
     (monitor_individual_enemy (list_get ai_list_common 11))
 )
-;UNCOMMON
+; UNCOMMON
 (script continuous monitor_ai_list_uncommon_0
     (monitor_individual_enemy (list_get ai_list_uncommon 0))
 )
@@ -1297,6 +1301,7 @@
 (script continuous monitor_ai_list_uncommon_11
     (monitor_individual_enemy (list_get ai_list_uncommon 11))
 )
+; RARE
 (script continuous monitor_ai_list_rare_0
     (monitor_individual_enemy (list_get ai_list_rare 0))
 )
@@ -1358,6 +1363,24 @@
 	(sleep_until (= wave_in_progress false) 30)
     (device_set_position control_start_game 0)
     (device_set_power control_start_game 1)
+)
+
+; test setting a non-main actor to the main encounter
+(script static void test_actor_spawn
+    (wave_spawn_enemy "enc_common/grunt_pp")
+    (set ai_list_common (ai_actors "enc_common"))
+    (print "before migration: enc common ai count, enc common list count ")
+    (inspect (ai_living_count enc_common))
+    (inspect (list_count  ai_list_common))
+
+    (ai_free_units ai_list_common)
+    (print "after mirgration: enc common ai count, enc common list count ")
+    (inspect (ai_living_count enc_common))
+    (inspect (list_count  ai_list_common))
+
+    (ai_attach (unit (list_get ai_list_common 0)) "enc_main")
+    (print "enc main ai count")
+    (inspect (ai_living_count enc_main))
 )
 
 ;; --- GPS script lifted from c20.net by Conscars --- ;;
