@@ -47,6 +47,9 @@
 (global short wave_enemies_active_max 0) ; the max amount of enemies allowed to be alive at one time, scales based on option_difficulty_scale
 
 ; AI lists
+; functional encounters (contain actual firing positions, squads, logic, etc)
+(global object_list ai_list_main (ai_actors "enc_main"))
+; technical encounters
 (global object_list ai_list_common (ai_actors "enc_common"))
 (global object_list ai_list_uncommon (ai_actors "enc_uncommon"))
 (global object_list ai_list_rare (ai_actors "enc_rare"))
@@ -54,7 +57,7 @@
 ; Spawner function vars
 (global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
 (global ai spawner_picker_override "null") ; override the next spawn with an ai from this squad
-(global ai spawner_last_placed "null") ; the last encounter and squad we placed an enemy from
+(global object_list spawner_last_placed (ai_actors "null")) ; object list for last ai placed
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
 (global real spawner_dice_lower 0.01) ; lower limit for dice rolls, scales based on option_difficulty_scale
 (global real spawner_dice_upper 0.65) ; upper limit for dice rolls, scales based on option_difficulty_scale
@@ -838,12 +841,14 @@
     (sleep wave_enemies_spawn_delay)
 )
 
-; spawn a specified enemy and run shared logic
+; spawn a specified enemy, move them to the main encounter, increment enemy power count
 (script static void (wave_spawn_enemy (ai enc))
     (ai_place enc)
-    (set spawner_last_placed enc)
-    (ai_migrate spawner_last_placed "enc_main")
+    (set spawner_last_placed (ai_actors enc))
+    (ai_free_units spawner_last_placed)
+    (ai_attach (unit (list_get spawner_last_placed 0)) "enc_main")
     (set wave_enemies_spawned (+ wave_enemies_spawned 1))
+
     ; debug
     ;(inspect spawner_dice_roll)
     ;(inspect enc)
@@ -852,9 +857,10 @@
 ; add every single encounter's current living actor count and return it
 (script static short wave_get_enemies_living_count
     (set wave_enemies_living_count 0)
-    (set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_common")))
-    (set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_uncommon")))
-    (set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_rare")))
+    (set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_main")))
+    ;(set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_common")))
+    ;(set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_uncommon")))
+    ;(set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_rare")))
     ;(set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_superrare")))
 )
 
@@ -1216,134 +1222,126 @@
 ;; ----- ai monitoring ----- ;;
 ;; refresh ai lists for the individual monitor scripts
 (script continuous monitor_enemy_lists
-    (set ai_list_common (ai_actors "enc_common"))
-    (sleep 2)
-
-    (set ai_list_uncommon (ai_actors "enc_uncommon"))
-    (sleep 2)
-
-    (set ai_list_rare (ai_actors "enc_rare"))
+    (set ai_list_main (ai_actors "enc_main"))
     (sleep 2)
 )
 
-;; individual enemies to run logic on -- todo: increase the amount of indexes for each list checked?
-; COMMON
-(script continuous monitor_ai_list_common_0
-    (monitor_individual_enemy (list_get ai_list_common 0))
-)
-(script continuous monitor_ai_list_common_1
-    (monitor_individual_enemy (list_get ai_list_common 1))
-)
-(script continuous monitor_ai_list_common_2
-    (monitor_individual_enemy (list_get ai_list_common 2))
-)
-(script continuous monitor_ai_list_common_3
-    (monitor_individual_enemy (list_get ai_list_common 3))
-)
-(script continuous monitor_ai_list_common_4
-    (monitor_individual_enemy (list_get ai_list_common 4))
-)
-(script continuous monitor_ai_list_common_5
-    (monitor_individual_enemy (list_get ai_list_common 5))
-)
-(script continuous monitor_ai_list_common_6
-    (monitor_individual_enemy (list_get ai_list_common 6))
-)
-(script continuous monitor_ai_list_common_7
-    (monitor_individual_enemy (list_get ai_list_common 7))
-)
-(script continuous monitor_ai_list_common_8
-    (monitor_individual_enemy (list_get ai_list_common 8))
-)
-(script continuous monitor_ai_list_common_9
-    (monitor_individual_enemy (list_get ai_list_common 9))
-)
-(script continuous monitor_ai_list_common_10
-    (monitor_individual_enemy (list_get ai_list_common 10))
-)
-(script continuous monitor_ai_list_common_11
-    (monitor_individual_enemy (list_get ai_list_common 11))
-)
-; UNCOMMON
-(script continuous monitor_ai_list_uncommon_0
-    (monitor_individual_enemy (list_get ai_list_uncommon 0))
-)
-(script continuous monitor_ai_list_uncommon_1
-    (monitor_individual_enemy (list_get ai_list_uncommon 1))
-)
-(script continuous monitor_ai_list_uncommon_2
-    (monitor_individual_enemy (list_get ai_list_uncommon 2))
-)
-(script continuous monitor_ai_list_uncommon_3
-    (monitor_individual_enemy (list_get ai_list_uncommon 3))
-)
-(script continuous monitor_ai_list_uncommon_4
-    (monitor_individual_enemy (list_get ai_list_uncommon 4))
-)
-(script continuous monitor_ai_list_uncommon_5
-    (monitor_individual_enemy (list_get ai_list_uncommon 5))
-)
-(script continuous monitor_ai_list_uncommon_6
-    (monitor_individual_enemy (list_get ai_list_uncommon 6))
-)
-(script continuous monitor_ai_list_uncommon_7
-    (monitor_individual_enemy (list_get ai_list_uncommon 7))
-)
-(script continuous monitor_ai_list_uncommon_8
-    (monitor_individual_enemy (list_get ai_list_uncommon 8))
-)
-(script continuous monitor_ai_list_uncommon_9
-    (monitor_individual_enemy (list_get ai_list_uncommon 9))
-)
-(script continuous monitor_ai_list_uncommon_10
-    (monitor_individual_enemy (list_get ai_list_uncommon 10))
-)
-(script continuous monitor_ai_list_uncommon_11
-    (monitor_individual_enemy (list_get ai_list_uncommon 11))
-)
-; RARE
-(script continuous monitor_ai_list_rare_0
-    (monitor_individual_enemy (list_get ai_list_rare 0))
-)
-(script continuous monitor_ai_list_rare_1
-    (monitor_individual_enemy (list_get ai_list_rare 1))
-)
-(script continuous monitor_ai_list_rare_2
-    (monitor_individual_enemy (list_get ai_list_rare 2))
-)
-(script continuous monitor_ai_list_rare_3
-    (monitor_individual_enemy (list_get ai_list_rare 3))
-)
-(script continuous monitor_ai_list_rare_4
-    (monitor_individual_enemy (list_get ai_list_rare 4))
-)
-(script continuous monitor_ai_list_rare_5
-    (monitor_individual_enemy (list_get ai_list_rare 5))
-)
-(script continuous monitor_ai_list_rare_6
-    (monitor_individual_enemy (list_get ai_list_rare 6))
-)
-(script continuous monitor_ai_list_rare_7
-    (monitor_individual_enemy (list_get ai_list_rare 7))
-)
-(script continuous monitor_ai_list_rare_8
-    (monitor_individual_enemy (list_get ai_list_rare 8))
-)
-(script continuous monitor_ai_list_rare_9
-    (monitor_individual_enemy (list_get ai_list_rare 9))
-)
-(script continuous monitor_ai_list_rare_10
-    (monitor_individual_enemy (list_get ai_list_rare 10))
-)
-(script continuous monitor_ai_list_rare_11
-    (monitor_individual_enemy (list_get ai_list_rare 11))
-)
 ;; individual enemy to run logic on
 (script static void (monitor_individual_enemy (object actor_in))
     ; test if the actor is dead and roll for a powerup spawn
     (if (= (unit_get_health (unit actor_in)) 0)
         (powerup_roll_for_spawn actor_in)
     )
+)
+
+;; individual enemies to run logic on -- TODO: increase this to the max the list allows (128 i think)
+(script continuous monitor_ai_list_main_0
+    (monitor_individual_enemy (list_get ai_list_main 0))
+)
+(script continuous monitor_ai_list_main_1
+    (monitor_individual_enemy (list_get ai_list_main 1))
+)
+(script continuous monitor_ai_list_main_2
+    (monitor_individual_enemy (list_get ai_list_main 2))
+)
+(script continuous monitor_ai_list_main_3
+    (monitor_individual_enemy (list_get ai_list_main 3))
+)
+(script continuous monitor_ai_list_main_4
+    (monitor_individual_enemy (list_get ai_list_main 4))
+)
+(script continuous monitor_ai_list_main_5
+    (monitor_individual_enemy (list_get ai_list_main 5))
+)
+(script continuous monitor_ai_list_main_6
+    (monitor_individual_enemy (list_get ai_list_main 6))
+)
+(script continuous monitor_ai_list_main_7
+    (monitor_individual_enemy (list_get ai_list_main 7))
+)
+(script continuous monitor_ai_list_main_8
+    (monitor_individual_enemy (list_get ai_list_main 8))
+)
+(script continuous monitor_ai_list_main_9
+    (monitor_individual_enemy (list_get ai_list_main 9))
+)
+(script continuous monitor_ai_list_main_10
+    (monitor_individual_enemy (list_get ai_list_main 10))
+)
+(script continuous monitor_ai_list_main_11
+    (monitor_individual_enemy (list_get ai_list_main 11))
+)
+(script continuous monitor_ai_list_main_12
+    (monitor_individual_enemy (list_get ai_list_main 12))
+)
+(script continuous monitor_ai_list_main_13
+    (monitor_individual_enemy (list_get ai_list_main 13))
+)
+(script continuous monitor_ai_list_main_14
+    (monitor_individual_enemy (list_get ai_list_main 14))
+)
+(script continuous monitor_ai_list_main_15
+    (monitor_individual_enemy (list_get ai_list_main 15))
+)
+(script continuous monitor_ai_list_main_16
+    (monitor_individual_enemy (list_get ai_list_main 16))
+)
+(script continuous monitor_ai_list_main_17
+    (monitor_individual_enemy (list_get ai_list_main 17))
+)
+(script continuous monitor_ai_list_main_18
+    (monitor_individual_enemy (list_get ai_list_main 18))
+)
+(script continuous monitor_ai_list_main_19
+    (monitor_individual_enemy (list_get ai_list_main 19))
+)
+(script continuous monitor_ai_list_main_20
+    (monitor_individual_enemy (list_get ai_list_main 20))
+)
+(script continuous monitor_ai_list_main_21
+    (monitor_individual_enemy (list_get ai_list_main 21))
+)
+(script continuous monitor_ai_list_main_22
+    (monitor_individual_enemy (list_get ai_list_main 22))
+)
+(script continuous monitor_ai_list_main_23
+    (monitor_individual_enemy (list_get ai_list_main 23))
+)
+(script continuous monitor_ai_list_main_24
+    (monitor_individual_enemy (list_get ai_list_main 24))
+)
+(script continuous monitor_ai_list_main_25
+    (monitor_individual_enemy (list_get ai_list_main 25))
+)
+(script continuous monitor_ai_list_main_26
+    (monitor_individual_enemy (list_get ai_list_main 26))
+)
+(script continuous monitor_ai_list_main_27
+    (monitor_individual_enemy (list_get ai_list_main 27))
+)
+(script continuous monitor_ai_list_main_28
+    (monitor_individual_enemy (list_get ai_list_main 28))
+)
+(script continuous monitor_ai_list_main_29
+    (monitor_individual_enemy (list_get ai_list_main 29))
+)
+(script continuous monitor_ai_list_main_30
+    (monitor_individual_enemy (list_get ai_list_main 30))
+)
+(script continuous monitor_ai_list_main_31
+    (monitor_individual_enemy (list_get ai_list_main 31))
+)
+(script continuous monitor_ai_list_main_32
+    (monitor_individual_enemy (list_get ai_list_main 32))
+)
+(script continuous monitor_ai_list_main_33
+    (monitor_individual_enemy (list_get ai_list_main 33))
+)
+(script continuous monitor_ai_list_main_34
+    (monitor_individual_enemy (list_get ai_list_main 34))
+)
+(script continuous monitor_ai_list_main_35
+    (monitor_individual_enemy (list_get ai_list_main 35))
 )
 
 ;; ------------- testing stuff ------------- ;;
@@ -1369,18 +1367,8 @@
 (script static void test_actor_spawn
     (wave_spawn_enemy "enc_common/grunt_pp")
     (set ai_list_common (ai_actors "enc_common"))
-    (print "before migration: enc common ai count, enc common list count ")
-    (inspect (ai_living_count enc_common))
-    (inspect (list_count  ai_list_common))
-
     (ai_free_units ai_list_common)
-    (print "after mirgration: enc common ai count, enc common list count ")
-    (inspect (ai_living_count enc_common))
-    (inspect (list_count  ai_list_common))
-
     (ai_attach (unit (list_get ai_list_common 0)) "enc_main")
-    (print "enc main ai count")
-    (inspect (ai_living_count enc_main))
 )
 
 ;; --- GPS script lifted from c20.net by Conscars --- ;;
