@@ -32,6 +32,7 @@
 (global boolean ww_debug_all false)
 (global boolean ww_debug_waves false)
 (global boolean ww_debug_spawning false)
+(global boolean ww_debug_powerups false)
 
 ; Wave management vars
 (global boolean wave_spawner_on false) ; do we currently want to spawn bad guys?
@@ -49,7 +50,7 @@
 ; AI lists
 ; functional encounters (contain actual firing positions, squads, logic, etc)
 (global object_list ai_list_main (ai_actors "enc_main"))
-; technical encounters
+; technical encounters (just buckets for squads to choose from for separation)
 (global object_list ai_list_common (ai_actors "enc_common"))
 (global object_list ai_list_uncommon (ai_actors "enc_uncommon"))
 (global object_list ai_list_rare (ai_actors "enc_rare"))
@@ -1184,14 +1185,18 @@
 (script static void (powerup_roll_for_spawn (object actor))
     ; roll if we want to spawn a powerup based on current chance and scale of weirdness
     (set powerup_dice_roll (real_random_range 0 1))
+    (print "rolling for a powerup drop... result:")
+    (inspect powerup_dice_roll)
     (if (< powerup_dice_roll powerup_spawn_chance)
         ; choose a powerup to spawn, skipping powerups that are active or already currently spawned
         (begin 
             (set powerup_dice_roll (random_range 0 1))
+            (print "rolling for which powerup... result:")
             (if (and 
                 (= powerup_dice_roll 0)
                 (= powerup_status_invincibility 0)
             )
+                (print "invincibility")
                 (powerup_spawn_on_object actor powerup_invincibility)
             )
         )
