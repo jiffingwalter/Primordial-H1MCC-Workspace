@@ -1154,8 +1154,7 @@
 )
 
 ;; monitors powerup existence and performs actions for them whenever they don't exist (picked up)
-(script continuous monitor_powerups
-    ;invincibility
+(script continuous monitor_powerup_invincibility
     (if (and 
             (not (object_exists powerup_invincibility))
             (!= powerup_status_invincibility 2)
@@ -1196,12 +1195,13 @@
                 (= powerup_dice_roll 0)
                 (= powerup_status_invincibility 0)
             )
-                (print "invincibility")
-                (powerup_spawn_on_object actor powerup_invincibility)
+                (begin 
+                    (print "invincibility")
+                    (powerup_spawn_on_object actor powerup_invincibility)
+                )
             )
         )
     )
-    
 )
 
 ;; spawn a powerup into the play area and manage expiration timer
@@ -1213,6 +1213,9 @@
 
     ; start timer to reset the powerup
     (sleep (* 30 30))
+
+    (print "resetting powerup:")
+    (inspect powerup)
     (object_create_anew powerup)
     (powerup_set_status powerup 0)
 )
