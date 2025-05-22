@@ -29,7 +29,7 @@
 
 
 ; Debug vars
-(global boolean ww_debug_all false)
+(global boolean ww_debug_all true)
 (global boolean ww_debug_waves false)
 (global boolean ww_debug_spawning false)
 (global boolean ww_debug_powerups false)
@@ -296,11 +296,11 @@
 
     ; turn the wave spawner on
     (set wave_spawner_on true)
-    (wave_dump)
+    (wave_dump_next)
 )
 
 ; dump current wave state variables
-(script static void wave_dump
+(script static void wave_dump_next
     ;(print "wave in progress:")
     ;(inspect wave_in_progress)
     (print "wave number:")
@@ -322,11 +322,11 @@
     (print "enemies per wave:")
     (inspect wave_enemies_per_wave)
     (print "enemies active max:")
-    ;(inspect wave_enemies_active_max)
+    (inspect wave_enemies_active_max)
     ;(print "currently living enemies:")
     ;(inspect (wave_get_enemies_living_count))
     ;(print "enemies spawned this wave:")
-    (inspect wave_enemies_spawned)
+    ;(inspect wave_enemies_spawned)
     (print "enemy spawn delay:")
     (inspect wave_enemies_spawn_delay)
     (print "next wave delay:")
@@ -1163,7 +1163,7 @@
             (set powerup_status_invincibility 2)
             (fade_in 1 1 1 15)
 
-            (print "picked up invincibility!")
+            (if (or ww_debug_all ww_debug_powerups) (print "picked up invincibility!"))
             (player_set_invuln (player0) true)
             (player_set_invuln (player1) true)
             (player_set_invuln (player2) true)
@@ -1184,19 +1184,19 @@
 (script static void (powerup_roll_for_spawn (object actor))
     ; roll if we want to spawn a powerup based on current chance and scale of weirdness
     (set powerup_dice_roll (real_random_range 0 1))
-    (print "rolling for a powerup drop... result:")
+    (if (or ww_debug_all ww_debug_powerups) (print "rolling for a powerup drop... result:"))
     (inspect powerup_dice_roll)
     (if (< powerup_dice_roll powerup_spawn_chance)
         ; choose a powerup to spawn, skipping powerups that are active or already currently spawned
         (begin 
             (set powerup_dice_roll (random_range 0 1))
-            (print "rolling for which powerup... result:")
+            (if (or ww_debug_all ww_debug_powerups) (print "rolling for which powerup... result:"))
             (if (and 
                 (= powerup_dice_roll 0)
                 (= powerup_status_invincibility 0)
             )
                 (begin 
-                    (print "invincibility")
+                    (if (or ww_debug_all ww_debug_powerups) (print "invincibility"))
                     (powerup_spawn_on_object actor powerup_invincibility)
                 )
             )
@@ -1206,16 +1206,24 @@
 
 ;; spawn a powerup into the play area and manage expiration timer
 (script static void (powerup_spawn_on_object (object actor) (object_name powerup))
-    (print "spawned powerup on actor!")
+    (if (or ww_debug_all ww_debug_powerups) (print "spawned powerup on actor!"))
     (powerup_set_status powerup 1)
     (objects_attach actor "" powerup "")
     (objects_detach actor powerup)
+    (effect_new_on_object_marker "swfce\effects\impulse\powerup flash" powerup "")
+    (sound_impulse_start "swfce\sound\sfx\impulse\crash\pickup_life" powerup 1)
 
     ; start timer to reset the powerup
     (sleep (* 30 30))
 
-    (print "resetting powerup:")
+    (if (or ww_debug_all ww_debug_powerups) (print "resetting powerup:"))
     (inspect powerup)
+    (if (!= powerup_status_invincibility 2)
+        (begin 
+            (effect_new_on_object_marker "swfce\effects\impulse\powerup flash" powerup "")
+            (sound_impulse_start "swfce\sound\sfx\impulse\crash\pickup_life" powerup 1)
+        )
+    )
     (object_create_anew powerup)
     (powerup_set_status powerup 0)
 )
@@ -1231,7 +1239,7 @@
 ;; refresh ai lists for the individual monitor scripts
 (script continuous monitor_enemy_lists
     (set ai_list_main (ai_actors "enc_main"))
-    (sleep 2)
+    (sleep 5)
 )
 
 ;; individual enemy to run logic on
@@ -1240,6 +1248,7 @@
     (if (= (unit_get_health (unit actor_in)) 0)
         (powerup_roll_for_spawn actor_in)
     )
+    (sleep 1)
 )
 
 ;; individual enemies to run logic on -- TODO: increase this to the max the list allows (128 i think)
