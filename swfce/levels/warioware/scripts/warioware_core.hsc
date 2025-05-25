@@ -87,6 +87,7 @@
 ; Powerup management vars
 (global real powerup_spawn_chance 0.03) ; initial chance of a powerup spawning on enemy death, SLIGHTLY scaled by game_weirdness_level
 (global real powerup_dice_roll 0) ; dice roll for testing to spawn powerups
+(global boolean powerup_currently_active false) ; are any continuous powerups active?
 ; Individual powerup statuses in the game - 0 is standby, 1 is spawned and waiting, 2 is active
 (global short powerup_status_invincibility 0)
 
@@ -290,12 +291,13 @@
             (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
             (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
             
-            (if (not (> spawner_dice_lower .3)) 
-                (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1)))
-                (set spawner_dice_upper .3)
+            ; set spawner dice roll clamps
+            (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE???
+            (if (> spawner_dice_lower .3) 
+                (set spawner_dice_lower .3)
             )
-            (if (not (> spawner_dice_lower 1)) 
-                (set spawner_dice_upper (* spawner_dice_upper (+ game_difficulty_level 1)))
+            (set spawner_dice_upper (* spawner_dice_upper (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE
+            (if (> spawner_dice_upper 1)
                 (set spawner_dice_upper 1)
             )
         )
@@ -1265,7 +1267,7 @@
     (if (!= powerup_status_invincibility 2)
         (begin 
             (effect_new_on_object_marker "swfce\effects\impulse\powerup flash" powerup "")
-            (sound_impulse_start "swfce\sound\sfx\impulse\crash\pickup_life" powerup 1)
+            (sound_impulse_start "swfce\sound\sfx\impulse\crash\hit_item" powerup 1)
         )
     )
     (object_create_anew powerup)
