@@ -87,6 +87,7 @@
 ; Powerup management vars
 (global real powerup_spawn_chance 0.03) ; initial chance of a powerup spawning on enemy death, SLIGHTLY scaled by game_weirdness_level
 (global real powerup_dice_roll 0) ; dice roll for testing to spawn powerups
+(global real powerup_pickup_distance 0.5) ; how close players have to be for powerups to register as picked up
 (global boolean powerup_currently_active false) ; are any continuous powerups active?
 ; Individual powerup statuses in the game - 0 is standby, 1 is spawned and waiting, 2 is active
 (global short powerup_status_invincibility 0)
@@ -1199,30 +1200,43 @@
     (set game_swapping_loadout false)
 )
 
-;; monitors powerup existence and performs actions for them whenever they don't exist (picked up)
-(script continuous monitor_powerup_invincibility
-    (if (and 
-            (not (object_exists powerup_invincibility))
-            (!= powerup_status_invincibility 2)
-        )
-        (begin 
-            (set powerup_status_invincibility 2)
-            (fade_in 1 1 1 15)
+;;; --------- POWERUPS --------- ;;;
 
-            (if (or ww_debug_all ww_debug_powerups) (print "picked up invincibility!"))
-            (player_set_invuln (player0) true)
-            (player_set_invuln (player1) true)
-            (player_set_invuln (player2) true)
-            (player_set_invuln (player3) true)
+;; generic logic to GET a powerup status based on the given object name
+(script static void (powerup_set_status (object powerup) (short status))
+    (if (= powerup powerup_invincibility)
+        (set powerup_status_invincibility status)
+    )
+)
 
-            (sleep (* 30 30))
+;; generic logic to GET a powerup status based on the given object name
+(script static short (powerup_get_status (object powerup))
+    (if (= powerup powerup_invincibility)
+        (set powerup_status_invincibility powerup_status_invincibility)
+    )
+)
 
-            (player_set_invuln (player0) false)
-            (player_set_invuln (player1) false)
-            (player_set_invuln (player2) false)
-            (player_set_invuln (player3) false)
-            (set powerup_status_invincibility 0)
-        )
+;; generic powerup pickup logic
+(script static void (powerup_pickup (object_name powerup))
+    (effect_new_on_object_marker "swfce\effects\impulse\powerup flash" powerup "")
+    (sound_impulse_start "swfce\sound\sfx\impulse\crash\pickup_life" powerup 1)
+    (powerup_set_status powerup 2)
+    (fade_in 1 1 1 15)
+    (object_create_anew powerup)
+)
+
+;; check if the specific given player is within pickup distance of the given powerup
+(script static boolean (powerup_check_player_pickup (object player_in) (object powerup))
+    (< (objects_distance_to_object player_in powerup) powerup_pickup_distance )
+)
+
+;; check any players are within pickup distance of the given powerup
+(script static boolean (powerup_check_player_pickup_any (object powerup))
+    (and 
+        (< (objects_distance_to_object (player0) powerup) powerup_pickup_distance )
+        (< (objects_distance_to_object (player1) powerup) powerup_pickup_distance )
+        (< (objects_distance_to_object (player2) powerup) powerup_pickup_distance )
+        (< (objects_distance_to_object (player3) powerup) powerup_pickup_distance )
     )
 )
 
@@ -1256,6 +1270,7 @@
     (powerup_set_status powerup 1)
     (objects_attach actor "" powerup "")
     (objects_detach actor powerup)
+    (object_set_facing powerup north)
     (effect_new_on_object_marker "swfce\effects\impulse\powerup flash" powerup "")
     (sound_impulse_start "swfce\sound\sfx\impulse\crash\pickup_life" powerup 1)
 
@@ -1264,7 +1279,7 @@
 
     (if (or ww_debug_all ww_debug_powerups) (print "resetting powerup:"))
     (inspect powerup)
-    (if (!= powerup_status_invincibility 2)
+    (if (!= (powerup_get_status powerup) 2)
         (begin 
             (effect_new_on_object_marker "swfce\effects\impulse\powerup flash" powerup "")
             (sound_impulse_start "swfce\sound\sfx\impulse\crash\hit_item" powerup 1)
@@ -1274,10 +1289,30 @@
     (powerup_set_status powerup 0)
 )
 
-;; go through and set a powerup to the given status based on name
-(script static void (powerup_set_status (object powerup) (short status))
-    (if (= powerup powerup_invincibility)
-        (set powerup_status_invincibility status)
+;;; powerup monitors ;;;
+;; monitors powerup existence and performs actions for them whenever they don't exist (picked up)
+(script continuous monitor_powerup_invincibility
+    (if (and 
+            (powerup_check_player_pickup_any powerup_invincibility)
+            (!= powerup_status_invincibility 2)
+        )
+        (begin 
+            (if (or ww_debug_all ww_debug_powerups) (print "picked up invincibility!"))
+
+            (powerup_pickup powerup_invincibility)
+            (player_set_invuln (player0) true)
+            (player_set_invuln (player1) true)
+            (player_set_invuln (player2) true)
+            (player_set_invuln (player3) true)
+
+            (sleep (* 30 30))
+
+            (player_set_invuln (player0) false)
+            (player_set_invuln (player1) false)
+            (player_set_invuln (player2) false)
+            (player_set_invuln (player3) false)
+            (set powerup_status_invincibility 0)
+        )
     )
 )
 
