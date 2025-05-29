@@ -852,7 +852,14 @@
     )
         (begin
             (print "PLAYER 0 DIED!")
-            ; todo: spawn a body on the player's current position to fake a death
+
+            ; create and place fake dead body
+            (object_create_anew biped_player0_dummy)
+            (unit_set_current_vitality (unit biped_player0_dummy) 0 0)
+            (objects_attach (player0) "" biped_player0_dummy "")
+            (objects_detach (player0) biped_player0_dummy)
+
+            ; kick off respawn sequence
             (set player0_respawning true)
             (player_respawn_sequence (player0))
         )
@@ -871,8 +878,15 @@
         (!= option_use_checkpoints true)
     )
         (begin
-            (print "PLAYER 0 DIED!")
-            ; todo: spawn a body on the player's current position to fake a death
+            (print "PLAYER 1 DIED!")
+
+            ; create and place fake dead body
+            (object_create_anew biped_player1_dummy)
+            (unit_set_current_vitality (unit biped_player1_dummy) 0 0)
+            (objects_attach (player1) "" biped_player1_dummy "")
+            (objects_detach (player1) biped_player1_dummy)
+
+            ; kick off respawn sequence
             (set player1_respawning true)
             (player_respawn_sequence (player1))
         )
@@ -892,7 +906,14 @@
     )
         (begin
             (print "PLAYER 2 DIED!")
-            ; todo: spawn a body on the player's current position to fake a death
+
+            ; create and place fake dead body
+            (object_create_anew biped_player2_dummy)
+            (unit_set_current_vitality (unit biped_player2_dummy) 0 0)
+            (objects_attach (player2) "" biped_player2_dummy "")
+            (objects_detach (player2) biped_player2_dummy)
+
+            ; kick off respawn sequence
             (set player2_respawning true)
             (player_respawn_sequence (player2))
         )
@@ -912,7 +933,14 @@
     )
         (begin
             (print "PLAYER 3 DIED!")
-            ; todo: spawn a body on the player's current position to fake a death
+
+            ; create and place fake dead body
+            (object_create_anew biped_player3_dummy)
+            (unit_set_current_vitality (unit biped_player3_dummy) 0 0)
+            (objects_attach (player3) "" biped_player3_dummy "")
+            (objects_detach (player3) biped_player3_dummy)
+
+            ; kick off respawn sequence
             (set player3_respawning true)
             (player_respawn_sequence (player3))
         )
@@ -1389,71 +1417,71 @@
         ((= context 0);game
         (begin 
             (print "dumping current game state variables ********")
-            (print "game status:")
+            (print "global_game_status:")
             (inspect global_game_status)
-            (print "lives:")
+            (print "global_life_count:")
             (inspect global_life_count)
-            (print "wave number:")
+            (print "global_wave_num:")
             (inspect global_wave_num)
-            (print "round number:")
+            (print "global_round_num:")
             (inspect global_round_num)
-            (print "set number:")
+            (print "global_set_num:")
             (inspect global_set_num)
-            (print "wave is last of current set:")
+            (print "wave_is_last_of_set:")
             (inspect wave_is_last_of_set)
-            (print "difficulty level:")
+            (print "game_difficulty_level:")
             (inspect game_difficulty_level)
-            (print "weirdness level:")
+            (print "game_weirdness_level:")
             (inspect game_weirdness_level)
         ))
         ((= context 1);wave
         (begin 
             (print "dumping wave live status ********")
-            (print "is wave in progress:")
+            (print "wave_in_progress:")
             (inspect wave_in_progress)
-            (print "is wave spawner on:")
+            (print "wave_spawner_on:")
             (inspect wave_spawner_on)
-            (print "currently living enemies:")
+            (print "wave_get_enemies_living_count:")
             (inspect (wave_get_enemies_living_count))
-            (print "enemies spawned this wave:")
+            (print "wave_enemies_spawned:")
             (inspect wave_enemies_spawned)
-            (print "enemies per wave:")
+            (print "wave_enemies_per_wave:")
             (inspect wave_enemies_per_wave)
-            (print "enemies active max:")
+            (print "wave_enemies_active_max:")
             (inspect wave_enemies_active_max)
-            (print "enemy spawn delay:")
+            (print "wave_enemies_spawn_delay:")
             (inspect wave_enemies_spawn_delay)
-            (print "next wave delay:")
+            (print "wave_next_delay:")
             (inspect wave_next_delay)
         ))
         ((= context 2);spawner
         (begin 
             (print "dumping current spawner values ********")
-            (print "current common spawn weight:")
+            (print "spawner_enc_common_weight:")
             (inspect spawner_enc_common_weight)
-            (print "current uncommon spawn weight:")
+            (print "spawner_enc_uncommon_weight:")
             (inspect spawner_enc_uncommon_weight)
-            (print "current rare spawn weight:")
+            (print "spawner_enc_rare_weight:")
             (inspect spawner_enc_rare_weight)
-            (print "enemy spawn delay:")
+            (print "wave_enemies_spawn_delay:")
             (inspect wave_enemies_spawn_delay)
-            (print "spawner dice lower bound:")
+            (print "spawner_dice_lower:")
             (inspect spawner_dice_lower)
-            (print "spawner dice upper bound:")
+            (print "spawner_dice_upper:")
             (inspect spawner_dice_upper)
         ))
         ((= context 3);spawnpicker
         (begin 
-            (print "dumping spawn picker values ********")
-            (print "is wave spawner on:")
+            (print "dumping last spawn picker values ********")
+            (print "wave_spawner_on:")
             (inspect wave_spawner_on)
-            (print "last spawner dice roll:")
+            (print "spawner_dice_roll:")
             (inspect spawner_dice_roll)
-            (print "last encounter chosen:")
+            (print "spawner_next_enc:")
             (inspect spawner_next_enc)
-            (print "last spawn condition matched:")
+            (print "spawner_condition_matched:")
             (inspect spawner_condition_matched)
-            (print "overrided encounter:")
+            (print "spawner_picker_override:")
             (inspect spawner_picker_override)
         ))
         ((= context 4);startup
