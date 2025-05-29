@@ -4,10 +4,10 @@
 
 ;; ---- Variables ---- ;;
 ; Game options set by player on start 
-(global string option_ai_infighting "enabled") ; Do different enemy factions fight each other? enabled, disabled, conditional (enemies will fight but focus on the player)
-(global string option_minigames_frequency "normal") ; Minigame wave frequency: none, normal (every round), less (every set), many (every single wave)
-(global string option_difficulty "normal") ; Multiplier for how many harder enemies appear: normal (1.1), less (1.05), more (1.2), insane (1.3)
-(global string option_weirdness "normal") ; Multiplier for how fast the game gets weirder: normal (1.1), less (1.05), more (1.2), insane (1.3)
+(global short option_ai_infighting 1) ; Do different enemy factions fight each other? 0: disabled, 1: enabled, 2: conditional (enemies will fight but focus on the player)
+(global short option_minigames_frequency 1) ; Minigame wave frequency: 0: none, 1: normal (every round), 2: less (every set), 3: many (every single wave)
+(global short option_difficulty 1) ; Multiplier for how many harder enemies appear: 0: less (1.05), 1: normal (1.1), 2: more (1.2), 3: insane (1.3)
+(global short option_weirdness 1) ; Multiplier for how fast the game gets weirder: 0: less (1.05), 1: normal (1.1), 2: more (1.2), 3: insane (1.3)
 (global boolean option_spawn_friends true) ; Spawn friendly AI on each set?
 (global boolean option_spawn_blocks true) ; Spawn question blocks on each set?
 (global short option_starting_lives 10) ; Sets how many lives player starts with. 1, 5, 10, 15, 20, -1 (endless)
@@ -15,7 +15,7 @@
 
 ; Functional vars
 (global short global_life_count 0) ; number of player lives (disrgarded if 'use checkpoints' or endless mode options are set)
-(global short global_game_status 0) ; 0 - not started, 1 - in progress, 2 - lost
+(global short global_game_status 0) ; 0: not started, 1: in progress, 2: lost
 (global short global_wave_num 0) ; current wave
 (global short global_round_num 0) ; current round
 (global short global_set_num 0) ; current set
@@ -56,7 +56,7 @@
 (global object_list ai_list_rare (ai_actors "enc_rare"))
 
 ; Spawner function vars
-(global string spawner_next_enc "") ; the name of the next encounter we're going to spawn from
+(global ai spawner_next_enc "null") ; the name of the next encounter we're going to spawn from
 (global ai spawner_picker_override "null") ; override the next spawn with an ai from this squad
 (global object_list spawner_last_placed (ai_actors "null")) ; object list for last ai placed
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
@@ -109,42 +109,42 @@
     ; ai alligences...
     (prim_set_passive_alligence)
     (ai_allegiance player human)
-    (if (= option_ai_infighting "disabled")
+    (if (= option_ai_infighting 0)
         (begin 
             (ai_allegiance covenant flood)
             (ai_allegiance covenant sentinel)
             (ai_allegiance sentinel flood)
         )
     )
-    (if (= option_ai_infighting "conditional")
+    (if (= option_ai_infighting 2)
         (ai_try_to_fight_player "enc_main")
     )
 
     ; initial difficulty scale...
-    (if (= option_difficulty "normal")
-        (set game_difficulty_scale 1.05)
-    )
-    (if (= option_difficulty "less")
+    (if (= option_difficulty 0);less
         (set game_difficulty_scale 1.01)
     )
-    (if (= option_difficulty "more")
+    (if (= option_difficulty 1);normal
+        (set game_difficulty_scale 1.05)
+    )
+    (if (= option_difficulty 2);more
         (set game_difficulty_scale 1.1)
     )
-    (if (= option_difficulty "insane")
+    (if (= option_difficulty 3);insane
         (set game_difficulty_scale 1.2)
     )
     ; initial weirdness scale...
-    (if (= option_weirdness "normal")
-        (set game_weirdness_scale 1.1)
+    (if (= option_weirdness 0);less
+        (set game_weirdness_scale 1.01)
     )
-    (if (= option_weirdness "less")
+    (if (= option_weirdness 1);normal
         (set game_weirdness_scale 1.05)
     )
-    (if (= option_weirdness "more")
-        (set game_weirdness_scale 1.2)
+    (if (= option_weirdness 2);more
+        (set game_weirdness_scale 1.1)
     )
-    (if (= option_weirdness "insane")
-        (set game_weirdness_scale 1.3)
+    (if (= option_weirdness 3);insane
+        (set game_weirdness_scale 1.2)
     )
     
     ; misc...
@@ -181,7 +181,7 @@
 
 ; core script - observe game state and take actions as necessary (wave start and stopping, game over)
 (script continuous game_main
-    (if (= global_game_status 1) ; is the game active?
+    (if (= global_game_status 1);active
         ; wait for conditions...
             ; are all enemies of the current wave dead? (max were spawned and none are alive) - turn off spawner and trigger next wave if so
             ; TODO: modifiy this logic so that when the enemy count of the current wave is < 5 and we're not entering a new set, start a timer to begin the next wave automatically
@@ -293,7 +293,7 @@
             (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
             
             ; set spawner dice roll clamps
-            (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE???
+            (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE
             (if (> spawner_dice_lower .3) 
                 (set spawner_dice_lower .3)
             )
@@ -311,51 +311,7 @@
 
     ; turn the wave spawner on
     (set wave_spawner_on true)
-    (if (or ww_debug_all ww_debug_waves) (game_dump_info))
-)
-
-; dump last set wave state variables to the console
-(script static void game_dump_info
-    (print "game current info ********")
-    (print "wave number:")
-    (inspect global_wave_num)
-    (print "round number:")
-    (inspect global_round_num)
-    (print "set number:")
-    (inspect global_set_num)
-    (print "wave is last of current set:")
-    (inspect wave_is_last_of_set)
-    (print "difficulty level:")
-    (inspect game_difficulty_level)
-    (print "weirdness level:")
-    (inspect game_weirdness_level)
-    (print "enemies per wave:")
-    (inspect wave_enemies_per_wave)
-    (print "enemies active max:")
-    (inspect wave_enemies_active_max)
-    (print "enemy spawn delay:")
-    (inspect wave_enemies_spawn_delay)
-    (print "next wave delay:")
-    (inspect wave_next_delay)
-    (print "spawner dice lower bound:")
-    (inspect spawner_dice_lower)
-    (print "spawner dice upper bound:")
-    (inspect spawner_dice_upper)
-    (print "*************")
-)
-
-; dump the live status of the wave to the console
-(script static void wave_dump_status
-    (print "wave status ********")
-    (print "is wave in progress:")
-    (inspect wave_in_progress)
-    (print "is wave spawner on:")
-    (inspect wave_spawner_on)
-    (print "currently living enemies:")
-    (inspect (wave_get_enemies_living_count))
-    (print "enemies spawned this wave:")
-    (inspect wave_enemies_spawned)
-    (print "*************")
+    (if (or ww_debug_all ww_debug_waves) (dump 0))
 )
 
 ; wave spawn loop - if the spawner is active, keep rolling for encounters and squads to spawn enemies as long as max allowed enemies aren't spawned or wave limit threshold is reached
@@ -373,21 +329,21 @@
                 (set spawner_dice_roll (real_random_range 0 1))
 
                 (if (<= spawner_dice_roll spawner_enc_common_weight)
-                    (set spawner_next_enc "common")
+                    (set spawner_next_enc "enc_common")
                 )
                 (if (and 
                         (!= spawner_enc_uncommon_chance 0)
                         (> spawner_dice_roll spawner_enc_common_weight)
                         (<= spawner_dice_roll (+ spawner_enc_common_weight spawner_enc_uncommon_weight))
                     )
-                    (set spawner_next_enc "uncommon")
+                    (set spawner_next_enc "enc_uncommon")
                 )
                 (if (and 
                         (!= spawner_enc_rare_weight 0)
                         (> spawner_dice_roll (+ spawner_enc_common_weight spawner_enc_uncommon_weight))
                         ;(< spawner_dice_roll 1)
                     )
-                    (set spawner_next_enc "rare")
+                    (set spawner_next_enc "enc_rare")
                 )
                 ;(inspect spawner_next_enc)
 
@@ -404,7 +360,7 @@
 
                 ; COMMON - 9 squads
                 (if (and 
-                        (= spawner_next_enc "common")
+                        (= spawner_next_enc "enc_common")
                         (= spawner_picker_override "null")
                     )
                     (begin 
@@ -507,7 +463,7 @@
                 )
                 ; UNCOMMON - 11 squads
                 (if (and 
-                        (= spawner_next_enc "uncommon")
+                        (= spawner_next_enc "enc_uncommon")
                         (= spawner_picker_override "null")
                     )
                     (begin 
@@ -655,7 +611,7 @@
                 )
                 ; RARE - ... squads
                 (if (and 
-                        (= spawner_next_enc "rare")
+                        (= spawner_next_enc "enc_rare")
                         (= spawner_picker_override "null")
                     )
                     (begin 
@@ -846,7 +802,7 @@
                     (= spawner_condition_matched false)
                     (begin 
                         (print "*** problem in wave_spawner: fell through all spawn cases ***")
-                        (spawner_dump_status)
+                        (dump 3)
                     )
                 )
             )
@@ -854,39 +810,6 @@
         )
     )
     (sleep wave_enemies_spawn_delay)
-)
-
-; dump last set spawner state variables to the console
-(script static void spawner_dump_info
-    (print "spawner info ********")
-    (print "current common spawn weight:")
-    (inspect spawner_enc_common_weight)
-    (print "current uncommon spawn weight:")
-    (inspect spawner_enc_uncommon_weight)
-    (print "current rare spawn weight:")
-    (inspect spawner_enc_rare_weight)
-    (print "enemy spawn delay:")
-    (inspect wave_enemies_spawn_delay)
-    (print "spawner dice lower bound:")
-    (inspect spawner_dice_lower)
-    (print "spawner dice upper bound:")
-    (inspect spawner_dice_upper)
-    (print "*************")
-)
-; dump the live status of the wave spawner to the console
-(script static void spawner_dump_status
-    (print "spawner live status ********")
-    (print "is wave spawner on:")
-    (inspect wave_spawner_on)
-    (print "last spawner dice roll:")
-    (inspect spawner_dice_roll)
-    (print "last encounter chosen:")
-    (inspect spawner_next_enc)
-    (print "last spawn condition matched:")
-    (inspect spawner_condition_matched)
-    (print "overrided encounter:")
-    (inspect spawner_picker_override)
-    (print "*************")
 )
 
 ; spawn a specified enemy, move them to the main encounter, increment enemy power count
@@ -1320,7 +1243,7 @@
 ;; refresh ai lists for the individual monitor scripts
 (script continuous monitor_enemy_lists
     (set ai_list_main (ai_actors "enc_main"))
-    (sleep 6)
+    (sleep 2)
 )
 
 ;; individual enemy to run logic on
@@ -1445,9 +1368,102 @@
 )
 
 ;; ------------- testing stuff ------------- ;;
+
+; dump variables for various things and stuff
+(script static void (dump (short context))
+    (inspect context)
+    (cond 
+        ((not (>= context 0));list
+        (begin
+            (print "dump indexes ********")
+            (print "0: game state")
+            (print "1: wave active status")
+            (print "2: spawner")
+            (print "3: spawn picker")
+        ))
+        ((= context 0);game
+        (begin 
+            (print "dumping current game state variables ********")
+            (print "wave number:")
+            (inspect global_wave_num)
+            (print "round number:")
+            (inspect global_round_num)
+            (print "set number:")
+            (inspect global_set_num)
+            (print "wave is last of current set:")
+            (inspect wave_is_last_of_set)
+            (print "difficulty level:")
+            (inspect game_difficulty_level)
+            (print "weirdness level:")
+            (inspect game_weirdness_level)
+            (print "enemies per wave:")
+            (inspect wave_enemies_per_wave)
+            (print "enemies active max:")
+            (inspect wave_enemies_active_max)
+            (print "enemy spawn delay:")
+            (inspect wave_enemies_spawn_delay)
+            (print "next wave delay:")
+            (inspect wave_next_delay)
+            (print "spawner dice lower bound:")
+            (inspect spawner_dice_lower)
+            (print "spawner dice upper bound:")
+            (inspect spawner_dice_upper)
+        ))
+        ((= context 1);wave
+        (begin 
+            (print "dumping wave live status ********")
+            (print "is wave in progress:")
+            (inspect wave_in_progress)
+            (print "is wave spawner on:")
+            (inspect wave_spawner_on)
+            (print "currently living enemies:")
+            (inspect (wave_get_enemies_living_count))
+            (print "enemies spawned this wave:")
+            (inspect wave_enemies_spawned)
+        ))
+        ((= context 2);spawner
+        (begin 
+            (print "dumping current spawner state ********")
+            (print "current common spawn weight:")
+            (inspect spawner_enc_common_weight)
+            (print "current uncommon spawn weight:")
+            (inspect spawner_enc_uncommon_weight)
+            (print "current rare spawn weight:")
+            (inspect spawner_enc_rare_weight)
+            (print "enemy spawn delay:")
+            (inspect wave_enemies_spawn_delay)
+            (print "spawner dice lower bound:")
+            (inspect spawner_dice_lower)
+            (print "spawner dice upper bound:")
+            (inspect spawner_dice_upper)
+        ))
+        ((= context 3);spawnpicker
+        (begin 
+            (print "dumping spawn status ********")
+            (print "is wave spawner on:")
+            (inspect wave_spawner_on)
+            (print "last spawner dice roll:")
+            (inspect spawner_dice_roll)
+            (print "last encounter chosen:")
+            (inspect spawner_next_enc)
+            (print "last spawn condition matched:")
+            (inspect spawner_condition_matched)
+            (print "overrided encounter:")
+            (inspect spawner_picker_override)
+        ))
+        ((= context 100);template
+        (begin 
+            (print "dumping template, dummy ********")
+            (print "variable:")
+            (inspect (= 1 1))
+        ))
+    )
+    (print "*************")
+)
+
 (script static void test_game
     (set run_game_scripts true)
-    (sleep 5)
+    (sleep 1)
     (device_set_position control_start_game 1)
 )
 
@@ -1462,54 +1478,3 @@
     (device_set_position control_start_game 0)
     (device_set_power control_start_game 1)
 )
-
-; test setting a non-main actor to the main encounter
-(script static void test_actor_spawn
-    (wave_spawn_enemy "enc_common/grunt_pp")
-    (set ai_list_common (ai_actors "enc_common"))
-    (ai_free_units ai_list_common)
-    (ai_attach (unit (list_get ai_list_common 0)) "enc_main")
-)
-
-;; --- GPS script lifted from c20.net by Conscars --- ;;
-; temporary variables for the calculation
-(global real gps_tmp1 0)
-(global real gps_tmp2 0)
-(global real gps_tmp3 0)
-(global real gps_tmp4 0)
-; holds the output coordinates
-(global real gps_x 0)
-(global real gps_y 0)
-(global real gps_z 0)
-
-(script static void (get_gps_for_object (object_list input))
-    (set gps_tmp1 (objects_distance_to_flag input gps1))
-    (set gps_tmp2 (objects_distance_to_flag input gps2))
-    (set gps_tmp3 (objects_distance_to_flag input gps3))
-    (set gps_tmp4 (objects_distance_to_flag input gps4))
-    (set gps_tmp1 (* gps_tmp1 gps_tmp1))
-    (set gps_tmp2 (* gps_tmp2 gps_tmp2))
-    (set gps_tmp3 (* gps_tmp3 gps_tmp3))
-    (set gps_tmp4 (* gps_tmp4 gps_tmp4))
-    (set gps_tmp1 (+ gps_tmp1 (* gps_tmp2 -1) 1))
-    (set gps_tmp2 (- gps_tmp2 gps_tmp3))
-    (set gps_tmp3 (- gps_tmp3 gps_tmp4))
-    (set gps_x (/ gps_tmp1 2))
-    (set gps_y (/ (+ gps_tmp1 gps_tmp2) 2))
-    (set gps_z (/ (+ gps_tmp1 gps_tmp2 gps_tmp3) 2))
-
-    (print "requested x/y/z:")
-    (inspect gps_x)
-    (inspect gps_y)
-    (inspect gps_z)
-)
-
-; test script for coords
-;(script continuous gps
-;    (gps_trilateration)
-;    (print "x/y/z:")
-;    (inspect gps_x)
-;    (inspect gps_y)
-;    (inspect gps_z)
-;    (sleep 30)
-;)
