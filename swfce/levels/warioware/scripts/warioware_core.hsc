@@ -30,6 +30,7 @@
 
 ; Debug vars
 (global boolean ww_debug_all true)
+(global boolean ww_debug_startup false)
 (global boolean ww_debug_waves false)
 (global boolean ww_debug_spawning false)
 (global boolean ww_debug_powerups false)
@@ -95,7 +96,7 @@
 ;; ---- Game control scripts ---- ;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
 (script startup game_setup
-    (print "startup")
+    (if (or ww_debug_all ww_debug_startup) (print "startup"))
     (set cheat_deathless_player 1) ; set players to invincible for respawn hack
     (game_set_loadout "preset_initial")
 
@@ -109,42 +110,44 @@
     ; ai alligences...
     (prim_set_passive_alligence)
     (ai_allegiance player human)
-    (if (= option_ai_infighting 0)
+    (if (= option_ai_infighting 0);none
         (begin 
             (ai_allegiance covenant flood)
             (ai_allegiance covenant sentinel)
             (ai_allegiance sentinel flood)
         )
     )
-    (if (= option_ai_infighting 2)
+    (if (= option_ai_infighting 2);conditional
         (ai_try_to_fight_player "enc_main")
     )
 
     ; initial difficulty scale...
-    (if (= option_difficulty 0);less
-        (set game_difficulty_scale 1.01)
-    )
-    (if (= option_difficulty 1);normal
-        (set game_difficulty_scale 1.05)
-    )
-    (if (= option_difficulty 2);more
-        (set game_difficulty_scale 1.1)
-    )
-    (if (= option_difficulty 3);insane
-        (set game_difficulty_scale 1.2)
+    (cond 
+        ((= option_difficulty 0);less
+        (set game_difficulty_scale 1.01))
+
+        ((= option_difficulty 1);normal
+        (set game_difficulty_scale 1.05))
+
+        ((= option_difficulty 2);more
+        (set game_difficulty_scale 1.1))
+
+        ((= option_difficulty 3);insane
+        (set game_difficulty_scale 1.2))
     )
     ; initial weirdness scale...
-    (if (= option_weirdness 0);less
-        (set game_weirdness_scale 1.01)
-    )
-    (if (= option_weirdness 1);normal
-        (set game_weirdness_scale 1.05)
-    )
-    (if (= option_weirdness 2);more
-        (set game_weirdness_scale 1.1)
-    )
-    (if (= option_weirdness 3);insane
-        (set game_weirdness_scale 1.2)
+    (cond 
+        ((= option_weirdness 0);less
+        (set game_weirdness_scale 1.01))
+        
+        ((= option_weirdness 1);normal
+        (set game_weirdness_scale 1.05))
+
+        ((= option_weirdness 2);more
+        (set game_weirdness_scale 1.1))
+
+        ((= option_weirdness 3);insane
+        (set game_weirdness_scale 1.2))
     )
     
     ; misc...
@@ -165,6 +168,9 @@
     (set spawner_enc_common_weight 1)
     (set spawner_enc_uncommon_weight 0)
     (set spawner_enc_rare_weight 0)
+
+    ; debug...
+    (if (or ww_debug_all ww_debug_startup) (dump 4))
 
     ; teleport players and start game...
     (set global_game_status 1)
@@ -1368,10 +1374,8 @@
 )
 
 ;; ------------- testing stuff ------------- ;;
-
 ; dump variables for various things and stuff
 (script static void (dump (short context))
-    (inspect context)
     (cond 
         ((not (>= context 0));list
         (begin
@@ -1380,10 +1384,15 @@
             (print "1: wave active status")
             (print "2: spawner")
             (print "3: spawn picker")
+            (print "4: startup state")
         ))
         ((= context 0);game
         (begin 
             (print "dumping current game state variables ********")
+            (print "game status:")
+            (inspect global_game_status)
+            (print "lives:")
+            (inspect global_life_count)
             (print "wave number:")
             (inspect global_wave_num)
             (print "round number:")
@@ -1396,18 +1405,6 @@
             (inspect game_difficulty_level)
             (print "weirdness level:")
             (inspect game_weirdness_level)
-            (print "enemies per wave:")
-            (inspect wave_enemies_per_wave)
-            (print "enemies active max:")
-            (inspect wave_enemies_active_max)
-            (print "enemy spawn delay:")
-            (inspect wave_enemies_spawn_delay)
-            (print "next wave delay:")
-            (inspect wave_next_delay)
-            (print "spawner dice lower bound:")
-            (inspect spawner_dice_lower)
-            (print "spawner dice upper bound:")
-            (inspect spawner_dice_upper)
         ))
         ((= context 1);wave
         (begin 
@@ -1420,10 +1417,18 @@
             (inspect (wave_get_enemies_living_count))
             (print "enemies spawned this wave:")
             (inspect wave_enemies_spawned)
+            (print "enemies per wave:")
+            (inspect wave_enemies_per_wave)
+            (print "enemies active max:")
+            (inspect wave_enemies_active_max)
+            (print "enemy spawn delay:")
+            (inspect wave_enemies_spawn_delay)
+            (print "next wave delay:")
+            (inspect wave_next_delay)
         ))
         ((= context 2);spawner
         (begin 
-            (print "dumping current spawner state ********")
+            (print "dumping current spawner values ********")
             (print "current common spawn weight:")
             (inspect spawner_enc_common_weight)
             (print "current uncommon spawn weight:")
@@ -1439,7 +1444,7 @@
         ))
         ((= context 3);spawnpicker
         (begin 
-            (print "dumping spawn status ********")
+            (print "dumping spawn picker values ********")
             (print "is wave spawner on:")
             (inspect wave_spawner_on)
             (print "last spawner dice roll:")
@@ -1451,6 +1456,25 @@
             (print "overrided encounter:")
             (inspect spawner_picker_override)
         ))
+        ((= context 4);startup
+        (begin 
+            (print "dumping final startup values ********")
+            (print "option_ai_infighting:")
+            (inspect option_ai_infighting)
+            (print "option_difficulty:")
+            (inspect option_difficulty)
+            (print "game_difficulty_scale:")
+            (inspect game_difficulty_scale)
+            (print "option_weirdness:")
+            (inspect option_weirdness)
+            (print "game_weirdness_scale:")
+            (inspect game_weirdness_scale)
+            (print "option_use_checkpoints:")
+            (inspect option_use_checkpoints)
+            (print "option_starting_lives:")
+            (inspect option_starting_lives)
+        ))
+
         ((= context 100);template
         (begin 
             (print "dumping template, dummy ********")
