@@ -57,8 +57,8 @@
 (global object_list ai_list_rare (ai_actors "enc_rare"))
 
 ; Spawner function vars
-(global ai spawner_next_enc "null") ; the name of the next encounter we're going to spawn from
-(global ai spawner_picker_override "null") ; override the next spawn with an ai from this squad
+(global ai spawner_next_enc "null") ; ai reference of the next encounter we're going to spawn from
+(global ai spawner_picker_override "null") ; ai reference to override the spawner to pick from
 (global object_list spawner_last_placed (ai_actors "null")) ; object list for last ai placed
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
 (global real spawner_dice_lower 0.01) ; lower limit for dice rolls, scales based on option_difficulty_scale
@@ -92,6 +92,7 @@
 (global boolean powerup_currently_active false) ; are any continuous powerups active?
 ; Individual powerup statuses in the game - 0 is standby, 1 is spawned and waiting, 2 is active
 (global short powerup_status_invincibility 0)
+(global short powerup_status_strength 0)
 
 ;; ---- Game control scripts ---- ;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
@@ -1189,7 +1190,7 @@
 
 ;; check any players are within pickup distance of the given powerup
 (script static boolean (powerup_check_player_pickup_any (object powerup))
-    (and 
+    (and ; TODO: FIX THIS, currently checking if ALL players are in the pickup zone, not just one of the 4...
         (< (objects_distance_to_object (player0) powerup) powerup_pickup_distance )
         (< (objects_distance_to_object (player1) powerup) powerup_pickup_distance )
         (< (objects_distance_to_object (player2) powerup) powerup_pickup_distance )
@@ -1208,6 +1209,7 @@
         (begin 
             (set powerup_dice_roll (random_range 0 1))
             (if (or ww_debug_all ww_debug_powerups) (print "rolling for which powerup... result:"))
+            ; invincibility
             (if (and 
                 (= powerup_dice_roll 0)
                 (= powerup_status_invincibility 0)
@@ -1215,6 +1217,16 @@
                 (begin 
                     (if (or ww_debug_all ww_debug_powerups) (print "invincibility"))
                     (powerup_spawn_on_object actor powerup_invincibility)
+                )
+            )
+            ; strength
+            (if (and 
+                (= powerup_dice_roll 1)
+                (= powerup_status_strength 0)
+            )
+                (begin 
+                    (if (or ww_debug_all ww_debug_powerups) (print "strength"))
+                    (powerup_spawn_on_object actor powerup_strength)
                 )
             )
         )
@@ -1247,14 +1259,14 @@
 )
 
 ;;; powerup monitors ;;;
-;; monitors powerup existence and performs actions for them whenever they don't exist (picked up)
+;; monitors powerup existence and performs actions for them whenever they've been picked up
 (script continuous monitor_powerup_invincibility
     (if (and 
             (powerup_check_player_pickup_any powerup_invincibility)
             (!= powerup_status_invincibility 2)
         )
         (begin 
-            (if (or ww_debug_all ww_debug_powerups) (print "picked up invincibility!"))
+            (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup invincibility!"))
 
             (powerup_pickup powerup_invincibility)
             (player_set_invuln (player0) true)
@@ -1272,26 +1284,48 @@
         )
     )
 )
+(script continuous monitor_powerup_strength
+    (if (and 
+            (powerup_check_player_pickup_any powerup_strength)
+            (!= powerup_status_strength 2)
+        )
+        (begin 
+            (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup strength!"))
+
+            (powerup_pickup powerup_strength)
+
+            (sleep (* 30 30))
+
+            (set powerup_status_strength 0)
+            (ai_renew enc_main)
+        )
+    )
+)
 
 ;; ----- ai monitoring ----- ;;
-;; refresh ai lists for the individual monitor scripts
+;; refresh ai lists for the individual monitor scripts, perform any logic on all units
 (script continuous monitor_enemy_lists
     (set ai_list_main (ai_actors "enc_main"))
+    (if (= powerup_status_strength 2)
+        (units_set_current_vitality ai_list_main 1 0)
+    )
     (sleep 2)
 )
 
 ;; individual enemy to run logic on
 (script static void (monitor_individual_enemy (object actor_in))
     ; test if the actor is dead and roll for a powerup spawn
+    ; NOTE: this PAUSES the thread for the calling script, so whatever enemy index monitor that rolled for a...
+    ; ...powerup will be unusable once the next ai list is retrieved, UNTIL the powerup sequence or forced dealy after roll has ended
     (if (= (unit_get_health (unit actor_in)) 0)
         (begin 
             (powerup_roll_for_spawn actor_in)
-            (sleep 200)
+            (sleep 200) ; forced delay after rolling to prevent actors that feign death from constantly rolling to spawn powerups until they revive
         )
     )
 )
 
-;; individual enemies to run logic on -- TODO: increase this to the max the list allows (128 i think)
+;; monitor each living enemy index for gamestate effects -- TODO: increase this to the max the list allows (128 i think)
 (script continuous monitor_ai_list_main_0
     (monitor_individual_enemy (list_get ai_list_main 0))
 )
@@ -1487,6 +1521,8 @@
         ((= context 4);startup
         (begin 
             (print "dumping final startup values ********")
+            (print "player_count:")
+            (inspect (player_count))
             (print "option_ai_infighting:")
             (inspect option_ai_infighting)
             (print "option_difficulty:")
