@@ -87,6 +87,7 @@
 
 ; Powerup management vars
 (global real powerup_spawn_chance 0.03) ; initial chance of a powerup spawning on enemy death, SLIGHTLY scaled by game_weirdness_level
+(global real powerup_reset_time (* 30 30)) ; the time it takes for a powerup to reset
 (global real powerup_dice_roll 0) ; dice roll for testing to spawn powerups
 (global real powerup_pickup_distance 0.5) ; how close players have to be for powerups to register as picked up
 (global boolean powerup_currently_active false) ; are any continuous powerups active?
@@ -1242,10 +1243,10 @@
     (object_set_facing powerup north)
     (effect_new_on_object_marker "swfce\effects\impulse\powerup flash" powerup "")
     (sound_impulse_start "swfce\sound\sfx\impulse\crash\pickup_life" powerup 1)
+)
 
-    ; start timer to reset the powerup
-    (sleep (* 30 30))
-
+;; reset a powerup back to standby status
+(script static void (powerup_reset (object_name powerup))
     (if (or ww_debug_all ww_debug_powerups) (print "resetting powerup:"))
     (inspect powerup)
     (if (!= (powerup_get_status powerup) 2)
@@ -1259,8 +1260,26 @@
 )
 
 ;;; powerup monitors ;;;
-;; monitors powerup existence and performs actions for them whenever they've been picked up
-(script continuous monitor_powerup_invincibility
+;; monitors for powerup statuses, reset timers, and pickups
+(script continuous monitor_powerup_any_active
+    (if (or 
+        (= powerup_status_invincibility 2)
+        (= powerup_status_strength 2)
+    )
+        (set powerup_currently_active true)
+        (set powerup_currently_active false)
+    )
+)
+; watch for if powerup invincibility spawned & run reset timer
+(script continuous monitor_powerup_invincibility_1
+    (if (= powerup_status_invincibility 1)
+        (sleep powerup_reset_time)
+        (powerup_reset powerup_invincibility)
+    )
+)
+; watch for if powerup invincibility was picked up & run powerup logic
+(script continuous monitor_powerup_invincibility_2
+    ; listen for the powerup to be picked up to trigger the active sequence
     (if (and 
             (powerup_check_player_pickup_any powerup_invincibility)
             (!= powerup_status_invincibility 2)
@@ -1284,7 +1303,15 @@
         )
     )
 )
-(script continuous monitor_powerup_strength
+; watch for if powerup strength spawned & run reset timer
+(script continuous monitor_powerup_strength_1
+    (if (= powerup_status_strength 1)
+        (sleep powerup_reset_time)
+        (powerup_reset powerup_strength)
+    )
+)
+; watch for if powerup strength was picked up & run powerup logic
+(script continuous monitor_powerup_strength_2
     (if (and 
             (powerup_check_player_pickup_any powerup_strength)
             (!= powerup_status_strength 2)
