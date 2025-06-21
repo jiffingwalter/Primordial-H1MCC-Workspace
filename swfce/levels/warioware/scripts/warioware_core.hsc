@@ -379,7 +379,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_common/hunter")
+                                (wave_spawn_enemy "enc_common/hunter" "enc_main/hunter" 3)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -390,7 +390,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_common/elite_ham")
+                                (wave_spawn_enemy "enc_common/elite_ham" "enc_main/elite_melee" 2)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -401,7 +401,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_common/elite_stealth")
+                                (wave_spawn_enemy "enc_common/elite_stealth" "enc_main/elite_stealth" 2)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -412,7 +412,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_common/bobomb_carrier")
+                                (wave_spawn_enemy "enc_common/bobomb_carrier" "enc_main/cov_carrier" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -423,7 +423,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_common/elite_ne")
+                                (wave_spawn_enemy "enc_common/elite_ne" "enc_main/elite_normal" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -434,7 +434,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_common/elite_pr")
+                                (wave_spawn_enemy "enc_common/elite_pr" "enc_main/elite_normal" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -445,7 +445,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_common/jackal_pp")
+                                (wave_spawn_enemy "enc_common/jackal_pp" "enc_main/jackal_normal" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -456,14 +456,14 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_common/grunt_ne")
+                                (wave_spawn_enemy "enc_common/grunt_ne" "enc_main/grunt_normal" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
                         ; grunt plasma pistol - other
                         (if (= spawner_condition_matched false)
                             (begin 
-                                (wave_spawn_enemy "enc_common/grunt_pp")
+                                (wave_spawn_enemy "enc_common/grunt_pp" "enc_main/grunt_normal" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -482,7 +482,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_ft")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_ft" "enc_main/flood_ranged" 4)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -493,7 +493,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_pc")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_pc" "enc_main/flood_ranged" 2)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -504,7 +504,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_rl")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_rl" "enc_main/flood_ranged" 2)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -515,7 +515,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_sr")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_sr" "enc_main/flood_ranged" 2)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -526,7 +526,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_ham")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_ham" "enc_main/flood_melee" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -538,7 +538,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_sg")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_sg" "enc_main/flood_ranged" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -549,7 +549,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_hp")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_hp" "enc_main/flood_ranged" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -560,7 +560,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_pp")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_pp" "enc_main/flood_ranged" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -571,7 +571,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_ne")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_ne" "enc_main/flood_ranged" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -582,7 +582,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_pr")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_pr" "enc_main/flood_ranged" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -593,7 +593,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_ar")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_ar" "enc_main/flood_ranged" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -604,14 +604,14 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcrr_bob")
+                                (wave_spawn_enemy "enc_uncommon/floodcrr_bob" "enc_main/flood_carrier" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
                         ; flood unarmed
                         (if (= spawner_condition_matched false)
                             (begin 
-                                (wave_spawn_enemy "enc_uncommon/floodcmb_unarmed")
+                                (wave_spawn_enemy "enc_uncommon/floodcmb_unarmed" "enc_main/flood_melee" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -630,7 +630,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_rare/sanic")
+                                (wave_spawn_enemy "enc_rare/sanic" "enc_main/flood_melee" 10)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -641,7 +641,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_rare/shrek")
+                                (wave_spawn_enemy "enc_rare/shrek" "enc_main/flood_tank" 4)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -652,7 +652,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_rare/grabble_carrier")
+                                (wave_spawn_enemy "enc_rare/grabble_carrier" "enc_main/flood_carrier" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -664,8 +664,8 @@
                         )
                             (begin 
                                 (if (< (real_random_range 0.0 1.0) 0.5)
-                                    (wave_spawn_enemy "enc_rare/knuckles_pc")
-                                    (wave_spawn_enemy "enc_rare/amogus_pc")
+                                    (wave_spawn_enemy "enc_rare/knuckles_pc" "enc_main/flood_ranged" 2)
+                                    (wave_spawn_enemy "enc_rare/amogus_pc" "enc_main/flood_ranged" 2)
                                 )
                                 (set spawner_condition_matched true)
                             )
@@ -678,8 +678,8 @@
                         )
                             (begin 
                                 (if (< (real_random_range 0.0 1.0) 0.5)
-                                    (wave_spawn_enemy "enc_rare/knuckles_rl")
-                                    (wave_spawn_enemy "enc_rare/amogus_rl")
+                                    (wave_spawn_enemy "enc_rare/knuckles_rl" "enc_main/flood_ranged" 2)
+                                    (wave_spawn_enemy "enc_rare/amogus_rl" "enc_main/flood_ranged" 2)
                                 )
                                 (set spawner_condition_matched true)
                             )
@@ -692,8 +692,8 @@
                         )
                             (begin 
                                 (if (< (real_random_range 0.0 1.0) 0.5)
-                                    (wave_spawn_enemy "enc_rare/knuckles_sg")
-                                    (wave_spawn_enemy "enc_rare/amogus_sg")
+                                    (wave_spawn_enemy "enc_rare/knuckles_sg" "enc_main/flood_ranged" 1)
+                                    (wave_spawn_enemy "enc_rare/amogus_sg" "enc_main/flood_ranged" 1)
                                 )
                                 (set spawner_condition_matched true)
                             )
@@ -706,8 +706,8 @@
                         )
                             (begin 
                                 (if (< (real_random_range 0.0 1.0) 0.5)
-                                    (wave_spawn_enemy "enc_rare/knuckles_hp")
-                                    (wave_spawn_enemy "enc_rare/amogus_hp")
+                                    (wave_spawn_enemy "enc_rare/knuckles_hp" "enc_main/flood_ranged" 1)
+                                    (wave_spawn_enemy "enc_rare/amogus_hp" "enc_main/flood_ranged" 1)
                                 )
                                 (set spawner_condition_matched true)
                             )
@@ -720,8 +720,8 @@
                         )
                             (begin 
                                 (if (< (real_random_range 0.0 1.0) 0.5)
-                                    (wave_spawn_enemy "enc_rare/knuckles_pp")
-                                    (wave_spawn_enemy "enc_rare/amogus_pp")
+                                    (wave_spawn_enemy "enc_rare/knuckles_pp" "enc_main/flood_ranged" 1)
+                                    (wave_spawn_enemy "enc_rare/amogus_pp" "enc_main/flood_ranged" 1)
                                 )
                                 (set spawner_condition_matched true)
                             )
@@ -734,8 +734,8 @@
                         )
                             (begin 
                                 (if (< (real_random_range 0.0 1.0) 0.5)
-                                    (wave_spawn_enemy "enc_rare/knuckles_ne")
-                                    (wave_spawn_enemy "enc_rare/amogus_ne")
+                                    (wave_spawn_enemy "enc_rare/knuckles_ne" "enc_main/flood_ranged" 1)
+                                    (wave_spawn_enemy "enc_rare/amogus_ne" "enc_main/flood_ranged" 1)
                                 )
                                 (set spawner_condition_matched true)
                             )
@@ -748,8 +748,8 @@
                         )
                             (begin 
                                 (if (< (real_random_range 0.0 1.0) 0.5)
-                                    (wave_spawn_enemy "enc_rare/knuckles_pr")
-                                    (wave_spawn_enemy "enc_rare/amogus_pr")
+                                    (wave_spawn_enemy "enc_rare/knuckles_pr" "enc_main/flood_ranged" 1)
+                                    (wave_spawn_enemy "enc_rare/amogus_pr" "enc_main/flood_ranged" 1)
                                 )
                                 (set spawner_condition_matched true)
                             )
@@ -762,8 +762,8 @@
                         )
                             (begin 
                                 (if (< (real_random_range 0.0 1.0) 0.5)
-                                    (wave_spawn_enemy "enc_rare/knuckles_ar")
-                                    (wave_spawn_enemy "enc_rare/amogus_ar")
+                                    (wave_spawn_enemy "enc_rare/knuckles_ar" "enc_main/flood_ranged" 1)
+                                    (wave_spawn_enemy "enc_rare/amogus_ar" "enc_main/flood_ranged" 1)
                                 )
                                 (set spawner_condition_matched true)
                             )
@@ -775,7 +775,7 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_rare/amogus_carrier")
+                                (wave_spawn_enemy "enc_rare/amogus_carrier" "enc_main/flood_carrier" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -786,14 +786,14 @@
                             (= spawner_condition_matched false)
                         )
                             (begin 
-                                (wave_spawn_enemy "enc_rare/joe_carrier")
+                                (wave_spawn_enemy "enc_rare/joe_carrier" "enc_main/flood_carrier" 1)
                                 (set spawner_condition_matched true)
                             )
                         )
                         ; halo 3 rats (or maybe a rat carrier???)
                         (if (= spawner_condition_matched false)
                             (begin 
-                                (wave_spawn_enemy "enc_rare/rat")
+                                (wave_spawn_enemy "enc_rare/rat" "enc_main/flood_inf" 0)
                                 (set spawner_condition_matched true)
                             )
                         )
@@ -802,7 +802,7 @@
                 ; OVERRIDE
                 (if (!= spawner_picker_override "null")
                     (begin 
-                        (wave_spawn_enemy spawner_picker_override)
+                        (wave_spawn_enemy spawner_picker_override "null" 1) ; TODO: figure out how this will work once its actually being used... new variables for enc_to and power_num?
                         (set spawner_condition_matched true)
                     )
                 )
@@ -820,17 +820,17 @@
     (sleep wave_enemies_spawn_delay)
 )
 
-; spawn a specified enemy, move them to the main encounter, increment enemy power count
-(script static void (wave_spawn_enemy (ai enc))
-    (ai_place enc)
-    (set spawner_last_placed (ai_actors enc))
-    (ai_free_units spawner_last_placed)
-    (ai_attach (unit (list_get spawner_last_placed 0)) "enc_main")
-    (set wave_enemies_spawned (+ wave_enemies_spawned 1))
-
-    ; debug
-    ;(inspect spawner_dice_roll)
-    ;(inspect enc)
+; spawn a specified enemy, move them to the specified encounter, increment enemy power count
+(script static void (wave_spawn_enemy (ai enc_in) (ai enc_to) (short power_num))
+    (ai_place enc_in)
+    (if (!= enc_in "null")
+        (begin 
+            (set spawner_last_placed (ai_actors enc_in))
+            (ai_free_units spawner_last_placed)
+            (ai_attach (unit (list_get spawner_last_placed 0)) enc_to)
+        )
+    )
+    (set wave_enemies_spawned (+ wave_enemies_spawned power_num))
 )
 
 ; add every single encounter's current living actor count and return it
