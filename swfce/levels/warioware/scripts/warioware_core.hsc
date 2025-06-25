@@ -1361,7 +1361,7 @@
     (if (= (unit_get_health (unit actor_in)) 0)
         (begin 
             (powerup_roll_for_spawn actor_in)
-            (sleep 120) ; forced delay after rolling to prevent actors that feign death from constantly rolling to spawn powerups until they revive
+            (sleep 80) ; force this thread to sleep after rolling in case the actor is playing dead (prevents millions of rerolls while the actor is fake-dead)
         )
     )
 )
