@@ -43,8 +43,8 @@
 (global boolean wave_is_last_of_set false) ; is this wave the last of the current set?
 (global short wave_enemies_spawn_delay 30) ; how fast to try to spawn enemies
 (global short wave_next_delay (* 30 12)) ; how long to wait until spawning next wave
-(global short wave_enemies_living_count 0) ; current amount of living enemies of all types
-(global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends)
+(global short wave_enemies_living_count 0) ; the last amount of living enemies we checked for
+(global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends) - TODO: change this to 'power' and relevant usages
 (global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, scales based on option_enemy_active_scale
 (global short wave_enemies_active_max 0) ; the max amount of enemies allowed to be alive at one time, scales based on option_difficulty_scale
 
@@ -1161,17 +1161,19 @@
 
 ;;; --------- POWERUPS --------- ;;;
 
-;; generic logic to GET a powerup status based on the given object name
+;; generic logic to SET a powerup status based on the given object name
 (script static void (powerup_set_status (object powerup) (short status))
-    (if (= powerup powerup_invincibility)
-        (set powerup_status_invincibility status)
+    (cond 
+        ((= powerup powerup_invincibility) (set powerup_status_invincibility status))
+        ((= powerup powerup_strength) (set powerup_status_strength status))
     )
 )
 
 ;; generic logic to GET a powerup status based on the given object name
 (script static short (powerup_get_status (object powerup))
-    (if (= powerup powerup_invincibility)
-        (set powerup_status_invincibility powerup_status_invincibility)
+    (cond 
+        ((= powerup powerup_invincibility) (set powerup_status_invincibility powerup_status_invincibility))
+        ((= powerup powerup_strength) (set powerup_status_strength powerup_status_strength))
     )
 )
 
@@ -1191,11 +1193,11 @@
 
 ;; check any players are within pickup distance of the given powerup
 (script static boolean (powerup_check_player_pickup_any (object powerup))
-    (and ; TODO: FIX THIS, currently checking if ALL players are in the pickup zone, not just one of the 4...
-        (< (objects_distance_to_object (player0) powerup) powerup_pickup_distance )
-        (< (objects_distance_to_object (player1) powerup) powerup_pickup_distance )
-        (< (objects_distance_to_object (player2) powerup) powerup_pickup_distance )
-        (< (objects_distance_to_object (player3) powerup) powerup_pickup_distance )
+    (or ; TODO: FIX THIS, currently checking if ALL players are in the pickup zone, not just one of the 4...
+        (and (> (objects_distance_to_object (player0) powerup) 0 ) (< (objects_distance_to_object (player0) powerup) powerup_pickup_distance ))
+        (and (> (objects_distance_to_object (player1) powerup) 0 ) (< (objects_distance_to_object (player1) powerup) powerup_pickup_distance ))
+        (and (> (objects_distance_to_object (player2) powerup) 0 ) (< (objects_distance_to_object (player2) powerup) powerup_pickup_distance ))
+        (and (> (objects_distance_to_object (player3) powerup) 0 ) (< (objects_distance_to_object (player3) powerup) powerup_pickup_distance ))
     )
 )
 
@@ -1208,7 +1210,7 @@
     (if (< powerup_dice_roll powerup_spawn_chance)
         ; choose a powerup to spawn, skipping powerups that are active or already currently spawned
         (begin 
-            (set powerup_dice_roll (random_range 0 1))
+            (set powerup_dice_roll (random_range 0 2))
             (if (or ww_debug_all ww_debug_powerups) (print "rolling for which powerup... result:"))
             ; invincibility
             (if (and 
@@ -1273,8 +1275,10 @@
 ; watch for if powerup invincibility spawned & run reset timer
 (script continuous monitor_powerup_invincibility_1
     (if (= powerup_status_invincibility 1)
-        (sleep powerup_reset_time)
-        (powerup_reset powerup_invincibility)
+        (begin 
+            (sleep powerup_reset_time)
+            (powerup_reset powerup_invincibility)
+        )
     )
 )
 ; watch for if powerup invincibility was picked up & run powerup logic
@@ -1300,14 +1304,18 @@
             (player_set_invuln (player2) false)
             (player_set_invuln (player3) false)
             (set powerup_status_invincibility 0)
+
+            (if (or ww_debug_all ww_debug_powerups) (print "powerup invincibility ended"))
         )
     )
 )
 ; watch for if powerup strength spawned & run reset timer
 (script continuous monitor_powerup_strength_1
     (if (= powerup_status_strength 1)
-        (sleep powerup_reset_time)
-        (powerup_reset powerup_strength)
+        (begin 
+            (sleep powerup_reset_time)
+            (powerup_reset powerup_strength)
+        )
     )
 )
 ; watch for if powerup strength was picked up & run powerup logic
@@ -1321,10 +1329,13 @@
 
             (powerup_pickup powerup_strength)
 
+            ; ai strength modification is handled in monitor_enemy_lists function
+
             (sleep (* 30 30))
 
             (set powerup_status_strength 0)
             (ai_renew enc_main)
+            (if (or ww_debug_all ww_debug_powerups) (print "powerup strength ended"))
         )
     )
 )
@@ -1333,9 +1344,12 @@
 ;; refresh ai lists for the individual monitor scripts, perform any logic on all units
 (script continuous monitor_enemy_lists
     (set ai_list_main (ai_actors "enc_main"))
+
+    ; powerup strength modifier
     (if (= powerup_status_strength 2)
         (units_set_current_vitality ai_list_main 1 0)
     )
+
     (sleep 2)
 )
 
@@ -1347,7 +1361,7 @@
     (if (= (unit_get_health (unit actor_in)) 0)
         (begin 
             (powerup_roll_for_spawn actor_in)
-            (sleep 200) ; forced delay after rolling to prevent actors that feign death from constantly rolling to spawn powerups until they revive
+            (sleep 120) ; forced delay after rolling to prevent actors that feign death from constantly rolling to spawn powerups until they revive
         )
     )
 )
