@@ -94,6 +94,11 @@
 ; Individual powerup statuses in the game - 0 is standby, 1 is spawned and waiting, 2 is active
 (global short powerup_status_invincibility 0)
 (global short powerup_status_strength 0)
+(global short powerup_status_bottomless 0)
+(global short powerup_status_extralife 0)
+(global short powerup_status_pow 0)
+(global short powerup_status_refill 0)
+
 
 ;; ---- Game control scripts ---- ;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
@@ -1210,7 +1215,7 @@
     (if (< powerup_dice_roll powerup_spawn_chance)
         ; choose a powerup to spawn, skipping powerups that are active or already currently spawned
         (begin 
-            (set powerup_dice_roll (random_range 0 2))
+            (set powerup_dice_roll (random_range 0 5))
             (if (or ww_debug_all ww_debug_powerups) (print "rolling for which powerup... result:"))
             ; invincibility
             (if (and 
@@ -1230,6 +1235,46 @@
                 (begin 
                     (if (or ww_debug_all ww_debug_powerups) (print "strength"))
                     (powerup_spawn_on_object actor powerup_strength)
+                )
+            )
+            ; bottomless
+            (if (and 
+                (= powerup_dice_roll 2)
+                (= powerup_status_bottomless 0)
+            )
+                (begin 
+                    (if (or ww_debug_all ww_debug_powerups) (print "bottomless"))
+                    (powerup_spawn_on_object actor powerup_bottomless)
+                )
+            )
+            ; extra life
+            (if (and 
+                (= powerup_dice_roll 3)
+                (= powerup_status_extralife 0)
+            )
+                (begin 
+                    (if (or ww_debug_all ww_debug_powerups) (print "extralife"))
+                    (powerup_spawn_on_object actor powerup_extralife)
+                )
+            )
+            ; pow
+            (if (and 
+                (= powerup_dice_roll 4)
+                (= powerup_status_pow 0)
+            )
+                (begin 
+                    (if (or ww_debug_all ww_debug_powerups) (print "pow"))
+                    (powerup_spawn_on_object actor powerup_pow)
+                )
+            )
+            ; refill
+            (if (and 
+                (= powerup_dice_roll 999)
+                (= powerup_status_refill 0)
+            )
+                (begin 
+                    (if (or ww_debug_all ww_debug_powerups) (print "refill"))
+                    (powerup_spawn_on_object actor powerup_refill)
                 )
             )
         )
@@ -1267,6 +1312,7 @@
     (if (or 
         (= powerup_status_invincibility 2)
         (= powerup_status_strength 2)
+        (= powerup_status_bottomless 2)
     )
         (set powerup_currently_active true)
         (set powerup_currently_active false)
@@ -1290,21 +1336,21 @@
         )
         (begin 
             (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup invincibility!"))
-
             (powerup_pickup powerup_invincibility)
+
+            (sound_looping_start "swfce\sound\sfx\cinematic\warioware\powerup_invin_active" none 1)
             (player_set_invuln (player0) true)
             (player_set_invuln (player1) true)
             (player_set_invuln (player2) true)
             (player_set_invuln (player3) true)
-
-            (sleep (* 30 30))
-
+            (sleep (* 20 30))
             (player_set_invuln (player0) false)
             (player_set_invuln (player1) false)
             (player_set_invuln (player2) false)
             (player_set_invuln (player3) false)
-            (set powerup_status_invincibility 0)
+            (sound_looping_stop "swfce\sound\sfx\cinematic\warioware\powerup_invin_active")
 
+            (set powerup_status_invincibility 0)
             (if (or ww_debug_all ww_debug_powerups) (print "powerup invincibility ended"))
         )
     )
@@ -1326,16 +1372,108 @@
         )
         (begin 
             (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup strength!"))
-
             (powerup_pickup powerup_strength)
 
+            (sound_looping_start "swfce\sound\sfx\cinematic\warioware\powerup_strength_active" none 1)
             ; ai strength modification is handled in monitor_enemy_lists function
-
-            (sleep (* 30 30))
+            (sleep (* 20 30))
+            (sound_looping_stop "swfce\sound\sfx\cinematic\warioware\powerup_strength_active")
+            (ai_renew enc_main)
 
             (set powerup_status_strength 0)
-            (ai_renew enc_main)
             (if (or ww_debug_all ww_debug_powerups) (print "powerup strength ended"))
+        )
+    )
+)
+; watch for if powerup bottomless spawned & run reset timer
+(script continuous monitor_powerup_bottomless_1
+    (if (= powerup_status_bottomless 1)
+        (begin 
+            (sleep powerup_reset_time)
+            (powerup_reset powerup_bottomless)
+        )
+    )
+)
+; watch for if powerup bottomless was picked up & run powerup logic
+(script continuous monitor_powerup_bottomless_2
+    (if (and 
+            (powerup_check_player_pickup_any powerup_bottomless)
+            (!= powerup_status_bottomless 2)
+        )
+        (begin 
+            (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup bottomless!"))
+            (powerup_pickup powerup_bottomless)
+
+            (sound_looping_start "swfce\sound\sfx\cinematic\warioware\powerup_bottomless_active" none 1)
+            (set cheat_bottomless_clip 1)
+            (sleep (* 20 30))
+            (set cheat_bottomless_clip 0)
+            (sound_looping_stop "swfce\sound\sfx\cinematic\warioware\powerup_bottomless_active")
+
+            (set powerup_status_bottomless 0)
+            (if (or ww_debug_all ww_debug_powerups) (print "powerup bottomless ended"))
+        )
+    )
+)
+; watch for if powerup pow spawned & run reset timer
+(script continuous monitor_powerup_pow_1
+    (if (= powerup_status_pow 1)
+        (begin 
+            (sleep powerup_reset_time)
+            (powerup_reset powerup_pow)
+        )
+    )
+)
+; watch for if powerup pow was picked up & run powerup logic
+(script continuous monitor_powerup_pow_2
+    (if (and 
+            (powerup_check_player_pickup_any powerup_pow)
+            (!= powerup_status_pow 2)
+        )
+        (begin 
+            (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup pow!"))
+            (powerup_pickup powerup_pow)
+
+            (sleep 30)
+            (ai_kill enc_main)
+            (sleep 30)
+            (ai_kill enc_main)
+            (sleep 30)
+            (ai_kill enc_main)
+            (sleep 30)
+            (ai_kill enc_main)
+            (sleep 30)
+            (ai_kill enc_main)
+
+            (set powerup_status_pow 0)
+            (if (or ww_debug_all ww_debug_powerups) (print "powerup pow ended"))
+        )
+    )
+)
+; watch for if powerup extralife spawned & run reset timer
+(script continuous monitor_powerup_extralife_1
+    (if (= powerup_status_extralife 1)
+        (begin 
+            (sleep powerup_reset_time)
+            (powerup_reset powerup_extralife)
+        )
+    )
+)
+; watch for if powerup extralife was picked up & run powerup logic
+(script continuous monitor_powerup_extralife_2
+    (if (and 
+            (powerup_check_player_pickup_any powerup_extralife)
+            (!= powerup_status_extralife 2)
+        )
+        (begin 
+            (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup extralife!"))
+            (powerup_pickup powerup_extralife)
+
+            (sound_impulse_start "" none 1)
+            (set global_life_count (+ global_life_count 1))
+
+            (set powerup_status_extralife 0)
+            ; (if (or ww_debug_all ww_debug_powerups) (print "powerup extralife ended"))
         )
     )
 )
