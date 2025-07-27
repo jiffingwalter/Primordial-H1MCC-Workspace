@@ -2,7 +2,7 @@
 ; version 0.0.1
 ; created with love and autism by primordial <3
 
-;; ---- Variables ---- ;;
+;;; ------------------------------------ GLOBALS ------------------------------------ ;;;
 ; Game options set by player on start 
 (global short option_ai_infighting 1) ; Do different enemy factions fight each other? 0: disabled, 1: enabled, 2: conditional (enemies will fight but focus on the player)
 (global short option_minigames_frequency 1) ; Minigame wave frequency: 0: none, 1: normal (every round), 2: less (every set), 3: many (every single wave)
@@ -26,7 +26,7 @@
 (global real game_difficulty_level 0.1) ; current difficulty level, scales based on game_difficulty_scale
 (global real game_weirdness_scale 1.0) ; how fast weirder stuff starts happening in the game, scales based on option_weirdness_scale
 (global real game_weirdness_level 0.1) ; current weirdness level, scales based on game_weirdness_scale
-
+(global starting_profile game_current_loadout "preset_default") ; the current loadout players should spawn into the game with
 
 ; Debug vars
 (global boolean ww_debug_all true)
@@ -89,7 +89,7 @@
 (global real powerup_spawn_chance 0.03) ; initial chance of a powerup spawning on enemy death, SLIGHTLY scaled by game_weirdness_level
 (global real powerup_reset_time (* 30 30)) ; the time it takes for a powerup to reset
 (global real powerup_dice_roll 0) ; dice roll for testing to spawn powerups
-(global real powerup_pickup_distance 0.5) ; how close players have to be for powerups to register as picked up
+(global real powerup_pickup_distance 0.5) ; how many world units players have to be to powerup items for powerups to register as picked up
 (global boolean powerup_currently_active false) ; are any continuous powerups active?
 ; Individual powerup statuses in the game - 0 is standby, 1 is spawned and waiting, 2 is active
 (global short powerup_status_invincibility 0)
@@ -100,7 +100,7 @@
 (global short powerup_status_refill 0)
 
 
-;; ---- Game control scripts ---- ;;
+;;; ------------------------------------ CORE GAME ------------------------------------ ;;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
 (script startup game_setup
     (if (or ww_debug_all ww_debug_startup) (print "startup"))
@@ -364,7 +364,7 @@
                 ; actor spawn chances will all be hardcoded and normalized (use generate chance weights.py)
                 ; actor spawn is decided on 3 conditions:
                     ; 1. did we roll high enough to spawn this enemy?
-                    ; 2. is the current danger value high enough to spawn this enemy?
+                    ; 2. is the current difficulty value high enough to spawn this enemy?
                     ; 3. did we already spawn an enemy?
                 ; if first 2 aren't met, test the next one below. if 3rd is met, we skip the rest since that means we already placed one
 
@@ -848,6 +848,8 @@
     ;(set wave_enemies_living_count (+ wave_enemies_living_count (ai_nonswarm_count "enc_superrare")))
 )
 
+;;; ------------------------------------ PLAYERS ------------------------------------ ;;;
+
 ; observers for each player, keeps track of them and any state based logic that might need to happen
 (script continuous monitor_player0
     ; PLAYER 0
@@ -997,7 +999,7 @@
             (damage_object "swfce\effects\damage effects\screen white flash" dead_player)
             (ai_disregard dead_player 0)
             (object_can_take_damage dead_player)
-            (player_set_loadout dead_player "preset_default")
+            (player_set_loadout dead_player game_current_loadout)
 
             ; player-specific stuff
             (if (= dead_player (player0))
@@ -1027,9 +1029,10 @@
             (set players_dead (- players_dead 1))
 
             ; let player have 3 seconds of invulurability after spawning before turning it back off
-            (player_set_invuln dead_player true)
+            ; ...IF the invincibility powerup isn't active (so we don't fuck up the order)
+            (if (!= powerup_status_invincibility 2) (player_set_invuln dead_player true))
             (sleep 90)
-            (player_set_invuln dead_player false)
+            (if (!= powerup_status_invincibility 2) (player_set_invuln dead_player false))
         )
         ; TODO: see if there's any way to make the players "spectate" the field or another player if there's no lives left so they can see what happens
     )
@@ -1156,6 +1159,7 @@
 
 ; set/replace the loadout for all players
 (script static void (game_set_loadout (starting_profile loadout_in))
+    (set game_current_loadout loadout_in)
     (set game_swapping_loadout true)
     (player_add_equipment (player0) loadout_in 1)
     (player_add_equipment (player1) loadout_in 1)
@@ -1164,7 +1168,7 @@
     (set game_swapping_loadout false)
 )
 
-;;; --------- POWERUPS --------- ;;;
+;;; ------------------------------------ POWERUPS ------------------------------------ ;;;
 
 ;; generic logic to SET a powerup status based on the given object name
 (script static void (powerup_set_status (object powerup) (short status))
@@ -1478,7 +1482,7 @@
     )
 )
 
-;; ----- ai monitoring ----- ;;
+;;; ------------------------------------ AI MONITORING ------------------------------------ ;;;
 ;; refresh ai lists for the individual monitor scripts, perform any logic on all units
 (script continuous monitor_enemy_lists
     (set ai_list_main (ai_actors "enc_main"))
@@ -1614,7 +1618,7 @@
     (monitor_individual_enemy (list_get ai_list_main 35))
 )
 
-;; ------------- testing stuff ------------- ;;
+;;; ------------------------------------ testing stuff ------------------------------------ ;;;
 ; dump variables for various things and stuff
 (script static void (dump (short context))
     (cond 
