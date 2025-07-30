@@ -42,7 +42,7 @@
 (global boolean wave_in_progress false) ; is a wave currently in progress?
 (global boolean wave_is_last_of_set false) ; is this wave the last of the current set?
 (global short wave_enemies_spawn_delay 30) ; how fast to try to spawn enemies
-(global short wave_next_delay (* 30 12)) ; how long to wait until spawning next wave
+(global short wave_next_delay (* 30 8)) ; how long to wait until spawning next wave
 (global short wave_enemies_living_count 0) ; the last amount of living enemies we checked for
 (global short wave_enemies_spawned 0) ; how many enemies placed for the wave so far (reset on wave ends) - TODO: change this to 'power' and relevant usages
 (global short wave_enemies_per_wave 0) ; number of enemies to spawn for this wave, scales based on option_enemy_active_scale
@@ -58,7 +58,8 @@
 
 ; Spawner function vars
 (global ai spawner_next_enc "null") ; ai reference of the next encounter we're going to spawn from
-(global ai spawner_picker_override "null") ; ai reference to override the spawner to pick from
+(global ai spawner_picker_override_enc "null") ; ai reference to override the spawner to pick from
+(global ai spawner_picker_override_enc_to "null") ; ai reference the overrided encounter should be sent to
 (global object_list spawner_last_placed (ai_actors "null")) ; object list for last ai placed
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
 (global real spawner_dice_lower 0.01) ; lower limit for dice rolls, scales based on option_difficulty_scale
@@ -194,14 +195,13 @@
 
 ; core script - observe game state and take actions as necessary (wave start and stopping, game over)
 (script continuous game_main
-    (if (= global_game_status 1);active
-        ; wait for conditions...
-            ; are all enemies of the current wave dead? (max were spawned and none are alive) - turn off spawner and trigger next wave if so
-            ; TODO: modifiy this logic so that when the enemy count of the current wave is < 5 and we're not entering a new set, start a timer to begin the next wave automatically
+    (if (= global_game_status 1);ACTIVE...
+        ; IF current wave meets finish requirements, start the timer for the next one
         (if (and 
+                (= wave_in_progress true)
                 (< (wave_get_enemies_living_count) 5)
                 (>= wave_enemies_spawned wave_enemies_per_wave)
-                (= wave_in_progress true)
+                (= wave_is_last_of_set false)
             )
             (begin 
                 (if (or ww_debug_all ww_debug_waves) (print "*** current wave ended ***"))
@@ -211,29 +211,30 @@
                 (sleep wave_next_delay)
                 (wave_start_next)
             )
-            ; ELSE, if its a new set and we're finished, run unique logic for finished wave
+            ; ELSE... check if current set is finished and hol up if so
             (if (and
-                    (= wave_is_last_of_set true)
-                    (< (wave_get_enemies_living_count) 5)
-                    (>= wave_enemies_spawned wave_enemies_per_wave)
                     (= wave_in_progress true)
+                    (= (wave_get_enemies_living_count) 0)
+                    (>= wave_enemies_spawned wave_enemies_per_wave)
+                    (= wave_is_last_of_set true)
                 )
                 (begin 
                     (if (or ww_debug_all ww_debug_waves) (print "****** set completed! ******"))
+                    (set global_set_num (+ global_set_num 1))
                     (set wave_spawner_on false)
                     (set wave_in_progress false)
+
+                    (sleep (* wave_next_delay 2))
+                    (wave_start_next)
                 )
             )
         )
     )
-    (if (= global_game_status 2) ; status was set to lost, run lose game logic
+    (if (= global_game_status 2) ;LOST...
         (begin 
             (print "***** GAME OVER! *****")
-
             (sleep (* 8 30))
-
             (game_lost)
-
             (sleep -1)
         )
     )
@@ -260,59 +261,59 @@
             (if (= (modulo global_wave_num 3) 0)
                 (begin 
                     (set global_round_num (+ global_round_num 1))
-                    (if (or ww_debug_all ww_debug_waves) (print "** next round **"))
+                    (if (or ww_debug_all ww_debug_waves) (print "** next round, incrementing stats... **"))
                     (if (or ww_debug_all ww_debug_waves) (print "round number:"))
                     (if (or ww_debug_all ww_debug_waves) (inspect global_round_num))
+
+                    ; game values
+                    (set game_difficulty_level (* game_difficulty_level game_difficulty_scale))
+                    (set game_weirdness_level (* game_weirdness_level game_weirdness_scale))
+
+                    ; wave values -- scale based on current difficulty level
+                    (set wave_enemies_per_wave (* wave_enemies_per_wave (+ game_difficulty_level 1)))
+                    (if (< wave_enemies_active_max 36)
+                        (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
+                        (set wave_enemies_active_max 36)
+                    )
+                    (if (not (< wave_next_delay (* 30 3)))
+                        (set wave_next_delay (* wave_next_delay 0.99))
+                    )
+                    (if (not (< wave_enemies_spawn_delay 5))
+                        (set wave_enemies_spawn_delay (* wave_enemies_spawn_delay 0.99))
+                    )
+                    
+                    ; --- spawn chance vars ---
+                    ; get spawn weights
+                    (set spawner_enc_common_weight (max (- 1 game_weirdness_level) (- 1 spawner_enc_common_chance)))
+                    (set spawner_enc_uncommon_weight (min game_weirdness_level (- 1 spawner_enc_uncommon_chance)))
+                    (set spawner_enc_rare_weight (max (- game_weirdness_level (- 1 spawner_enc_rare_chance)) 0))
+                    ; add total chances for normalization
+                    (set spawner_total_chance 0)
+                    (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
+                    (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
+                    (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
+                    ; get normalized spawn weights
+                    (set spawner_enc_common_weight (/ spawner_enc_common_weight spawner_total_chance))
+                    (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
+                    (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
+                    
+                    ; set spawner dice roll clamps
+                    (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE
+                    (if (> spawner_dice_lower .3) 
+                        (set spawner_dice_lower .3)
+                    )
+                    (set spawner_dice_upper (* spawner_dice_upper (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE
+                    (if (> spawner_dice_upper 1)
+                        (set spawner_dice_upper 1)
+                    )
                 )
             )
-            (if (= (modulo global_round_num 5) 0)
+            (if (= (modulo global_wave_num 15) 0)
                 (begin 
-                    (set global_set_num (+ global_set_num 1))
+                    (if (or ww_debug_all ww_debug_waves) (print "***** LAST WAVE OF SET!! *****"))
                     (set wave_is_last_of_set true)
                 )
                 (set wave_is_last_of_set false)
-            )
-
-            ; game values
-            (set game_difficulty_level (* game_difficulty_level game_difficulty_scale))
-            (set game_weirdness_level (* game_weirdness_level game_weirdness_scale))
-
-            ; wave values -- scale based on current difficulty level
-            (set wave_enemies_per_wave (* wave_enemies_per_wave (+ game_difficulty_level 1)))
-            (if (< wave_enemies_active_max 36)
-                (set wave_enemies_active_max (* wave_enemies_per_wave 0.4))
-                (set wave_enemies_active_max 36)
-            )
-            (if (not (< wave_next_delay (* 30 3)))
-                (set wave_next_delay (* wave_next_delay 0.99))
-            )
-            (if (not (< wave_enemies_spawn_delay 5))
-                (set wave_enemies_spawn_delay (* wave_enemies_spawn_delay 0.99))
-            )
-            
-            ; --- spawn chance vars ---
-            ; get spawn weights
-            (set spawner_enc_common_weight (max (- 1 game_weirdness_level) (- 1 spawner_enc_common_chance)))
-            (set spawner_enc_uncommon_weight (min game_weirdness_level (- 1 spawner_enc_uncommon_chance)))
-            (set spawner_enc_rare_weight (max (- game_weirdness_level (- 1 spawner_enc_rare_chance)) 0))
-            ; add total chances for normalization
-            (set spawner_total_chance 0)
-            (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
-            (set spawner_total_chance (+ spawner_total_chance spawner_enc_uncommon_weight))
-            (set spawner_total_chance (+ spawner_total_chance spawner_enc_rare_weight))
-            ; get normalized spawn weights
-            (set spawner_enc_common_weight (/ spawner_enc_common_weight spawner_total_chance))
-            (set spawner_enc_uncommon_weight (/ spawner_enc_uncommon_weight spawner_total_chance))
-            (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
-            
-            ; set spawner dice roll clamps
-            (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE
-            (if (> spawner_dice_lower .3) 
-                (set spawner_dice_lower .3)
-            )
-            (set spawner_dice_upper (* spawner_dice_upper (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE
-            (if (> spawner_dice_upper 1)
-                (set spawner_dice_upper 1)
             )
         )
     )
@@ -374,7 +375,7 @@
                 ; COMMON - 9 squads
                 (if (and 
                         (= spawner_next_enc "enc_common")
-                        (= spawner_picker_override "null")
+                        (= spawner_picker_override_enc "null")
                     )
                     (begin 
                         ; hunter - 1
@@ -477,7 +478,7 @@
                 ; UNCOMMON - 11 squads
                 (if (and 
                         (= spawner_next_enc "enc_uncommon")
-                        (= spawner_picker_override "null")
+                        (= spawner_picker_override_enc "null")
                     )
                     (begin 
                         ; flood flamethrower
@@ -625,7 +626,7 @@
                 ; RARE - ... squads
                 (if (and 
                         (= spawner_next_enc "enc_rare")
-                        (= spawner_picker_override "null")
+                        (= spawner_picker_override_enc "null")
                     )
                     (begin 
                         ; sanic - should be rarest possible spawn
@@ -805,9 +806,9 @@
                     )
                 )
                 ; OVERRIDE
-                (if (!= spawner_picker_override "null")
+                (if (!= spawner_picker_override_enc "null")
                     (begin 
-                        (wave_spawn_enemy spawner_picker_override "null" 1) ; TODO: figure out how this will work once its actually being used... new variables for enc_to and power_num?
+                        (wave_spawn_enemy spawner_picker_override_enc spawner_picker_override_enc_to 1) ; TODO: figure out how this will work once its actually being used... new variables for enc_to and power_num?
                         (set spawner_condition_matched true)
                     )
                 )
@@ -1175,6 +1176,9 @@
     (cond 
         ((= powerup powerup_invincibility) (set powerup_status_invincibility status))
         ((= powerup powerup_strength) (set powerup_status_strength status))
+        ((= powerup powerup_bottomless) (set powerup_status_bottomless status))
+        ((= powerup powerup_extralife) (set powerup_status_extralife status))
+        ((= powerup powerup_pow) (set powerup_status_pow status))
     )
 )
 
@@ -1183,6 +1187,9 @@
     (cond 
         ((= powerup powerup_invincibility) (set powerup_status_invincibility powerup_status_invincibility))
         ((= powerup powerup_strength) (set powerup_status_strength powerup_status_strength))
+        ((= powerup powerup_bottomless) (set powerup_status_bottomless powerup_status_bottomless))
+        ((= powerup powerup_extralife) (set powerup_status_extralife powerup_status_extralife))
+        ((= powerup powerup_pow) (set powerup_status_pow powerup_status_pow))
     )
 )
 
@@ -1202,7 +1209,7 @@
 
 ;; check any players are within pickup distance of the given powerup
 (script static boolean (powerup_check_player_pickup_any (object powerup))
-    (or ; TODO: FIX THIS, currently checking if ALL players are in the pickup zone, not just one of the 4...
+    (or
         (and (> (objects_distance_to_object (player0) powerup) 0 ) (< (objects_distance_to_object (player0) powerup) powerup_pickup_distance ))
         (and (> (objects_distance_to_object (player1) powerup) 0 ) (< (objects_distance_to_object (player1) powerup) powerup_pickup_distance ))
         (and (> (objects_distance_to_object (player2) powerup) 0 ) (< (objects_distance_to_object (player2) powerup) powerup_pickup_distance ))
@@ -1698,8 +1705,8 @@
             (inspect spawner_next_enc)
             (print "spawner_condition_matched:")
             (inspect spawner_condition_matched)
-            (print "spawner_picker_override:")
-            (inspect spawner_picker_override)
+            (print "spawner_picker_override_enc:")
+            (inspect spawner_picker_override_enc)
         ))
         ((= context 4);startup
         (begin 
