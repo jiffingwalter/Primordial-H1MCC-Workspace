@@ -347,7 +347,7 @@
                     (set spawner_next_enc "enc_common")
                 )
                 (if (and 
-                        (!= spawner_enc_uncommon_chance 0)
+                        (!= spawner_enc_uncommon_weight 0)
                         (> spawner_dice_roll spawner_enc_common_weight)
                         (<= spawner_dice_roll (+ spawner_enc_common_weight spawner_enc_uncommon_weight))
                     )
