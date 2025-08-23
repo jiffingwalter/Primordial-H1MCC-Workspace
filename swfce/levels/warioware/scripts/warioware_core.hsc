@@ -12,6 +12,7 @@
 (global boolean option_spawn_blocks true) ; Spawn question blocks on each set?
 (global short option_starting_lives 10) ; Sets how many lives player starts with. 1, 5, 10, 15, 20, -1 (endless)
 (global boolean option_use_checkpoints false) ; Use checkpoints instead of lives, auto-turns on endless mode
+(global boolean option_disable_death false) ; Override for cheat_deathless_player life hack
 
 ; Functional vars
 (global short global_life_count 0) ; number of player lives (disrgarded if 'use checkpoints' or endless mode options are set)
@@ -857,8 +858,9 @@
     ; watch for player death
     (if (and 
         (= (unit_get_health (player0)) 0)
-        (!= game_swapping_loadout true)
-        (!= option_use_checkpoints true)
+        (= game_swapping_loadout false)
+        (= option_use_checkpoints false)
+        (= option_disable_death false)
     )
         (begin
             (print "PLAYER 0 DIED!")
@@ -884,8 +886,9 @@
     ; watch for player death
     (if (and 
         (= (unit_get_health (player1)) 0)
-        (!= game_swapping_loadout true)
-        (!= option_use_checkpoints true)
+        (= game_swapping_loadout false)
+        (= option_use_checkpoints false)
+        (= option_disable_death false)
     )
         (begin
             (print "PLAYER 1 DIED!")
@@ -911,8 +914,9 @@
     ; watch for player death
     (if (and 
         (= (unit_get_health (player2)) 0)
-        (!= game_swapping_loadout true)
-        (!= option_use_checkpoints true)
+        (= game_swapping_loadout false)
+        (= option_use_checkpoints false)
+        (= option_disable_death false)
     )
         (begin
             (print "PLAYER 2 DIED!")
@@ -938,8 +942,9 @@
     ; watch for player death
     (if (and 
         (= (unit_get_health (player3)) 0)
-        (!= game_swapping_loadout true)
-        (!= option_use_checkpoints true)
+        (= game_swapping_loadout false)
+        (= option_use_checkpoints false)
+        (= option_disable_death false)
     )
         (begin
             (print "PLAYER 3 DIED!")
