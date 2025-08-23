@@ -63,8 +63,9 @@
 (global ai spawner_picker_override_enc_to "null") ; ai reference the overrided encounter should be sent to
 (global object_list spawner_last_placed (ai_actors "null")) ; object list for last ai placed
 (global real spawner_dice_roll 0) ; stored spawner dice roll result used for choosing spawns
-(global real spawner_dice_lower 0.01) ; lower limit for dice rolls, scales based on option_difficulty_scale
-(global real spawner_dice_upper 0.65) ; upper limit for dice rolls, scales based on option_difficulty_scale
+(global real spawner_dice_scale 0) ; scale that dice roll clamps should be increased by every round, scales based on option_difficulty_level
+(global real spawner_dice_lower 0.01) ; lower limit for dice rolls, scales based on spawner_dice_scale
+(global real spawner_dice_upper 0.65) ; upper limit for dice rolls, scales based on spawner_dice_scale
 (global boolean spawner_condition_matched false) ; did the spawner match a condition when choosing a squad? (triggers skipping the rest of the if statements)
 (global real spawner_enc_common_weight_min 0.3) ; least amount of weight the common encounter can have on the spawner
 (global real spawner_enc_uncommon_weird_min 0.2) ; minimum weirdness level allows uncommon encounter to have weight in the spawner
@@ -299,11 +300,12 @@
                     (set spawner_enc_rare_weight (/ spawner_enc_rare_weight spawner_total_chance))
                     
                     ; set spawner dice roll clamps
-                    (set spawner_dice_lower (* spawner_dice_lower (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE
+                    (set spawner_dice_scale (+ (* game_difficulty_level .25) 1))
+                    (set spawner_dice_lower (* spawner_dice_lower spawner_dice_scale))
                     (if (> spawner_dice_lower .3) 
                         (set spawner_dice_lower .3)
                     )
-                    (set spawner_dice_upper (* spawner_dice_upper (+ game_difficulty_level 1))) ;TODO: LOWER SCALING HERE
+                    (set spawner_dice_upper (* spawner_dice_upper spawner_dice_scale))
                     (if (> spawner_dice_upper 1)
                         (set spawner_dice_upper 1)
                     )
@@ -1698,6 +1700,8 @@
             (inspect spawner_dice_lower)
             (print "spawner_dice_upper:")
             (inspect spawner_dice_upper)
+            ;(print "spawner_dice_scale")
+            ;(inspect spawner_dice_scale)
         ))
         ((= context 3);spawnpicker
         (begin 
