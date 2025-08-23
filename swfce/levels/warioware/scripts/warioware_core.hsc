@@ -66,9 +66,9 @@
 (global real spawner_dice_lower 0.01) ; lower limit for dice rolls, scales based on option_difficulty_scale
 (global real spawner_dice_upper 0.65) ; upper limit for dice rolls, scales based on option_difficulty_scale
 (global boolean spawner_condition_matched false) ; did the spawner match a condition when choosing a squad? (triggers skipping the rest of the if statements)
-(global real spawner_enc_common_chance 0.9) ; initial chance of spawning an enemy from the common encounter
-(global real spawner_enc_uncommon_chance 0.025) ; initial chance of spawning an enemy from the uncommon encounter
-(global real spawner_enc_rare_chance 0.0125) ; initial chance of spawning an enemy from the rare encounter
+(global real spawner_enc_common_weight_min 0.3) ; least amount of weight the common encounter can have on the spawner
+(global real spawner_enc_uncommon_weird_min 0.2) ; minimum weirdness level allows uncommon encounter to have weight in the spawner
+(global real spawner_enc_rare_weird_min 0.4) ; minimum weirdness level that allows rare encounter to have weight in the spawner
 (global real spawner_total_chance 0) ; all spawn encounter chances added up
 (global real spawner_enc_common_weight 0) ; normalized chance of common encounter spawn
 (global real spawner_enc_uncommon_weight 0) ; normalized chance of uncommon encounter spawn
@@ -285,9 +285,9 @@
                     
                     ; --- spawn chance vars ---
                     ; get spawn weights
-                    (set spawner_enc_common_weight (max (- 1 game_weirdness_level) (- 1 spawner_enc_common_chance)))
-                    (set spawner_enc_uncommon_weight (min game_weirdness_level (- 1 spawner_enc_uncommon_chance)))
-                    (set spawner_enc_rare_weight (max (- game_weirdness_level (- 1 spawner_enc_rare_chance)) 0))
+                    (set spawner_enc_common_weight (max (- 1 game_weirdness_level) (- 1 spawner_enc_common_weight_min)))
+                    (set spawner_enc_uncommon_weight (max (- game_weirdness_level (- 1 spawner_enc_uncommon_weird_min)) 0))
+                    (set spawner_enc_rare_weight (max (- game_weirdness_level (- 1 spawner_enc_rare_weird_min)) 0))
                     ; add total chances for normalization
                     (set spawner_total_chance 0)
                     (set spawner_total_chance (+ spawner_total_chance spawner_enc_common_weight))
@@ -1511,7 +1511,7 @@
 (script static void (monitor_individual_enemy (object actor_in))
     ; test if the actor is dead and roll for a powerup spawn
     ; NOTE: this PAUSES the thread for the calling script, so whatever enemy index monitor that rolled for a...
-    ; ...powerup will be unusable once the next ai list is retrieved, UNTIL the powerup sequence or forced dealy after roll has ended
+    ; ...powerup will be unusable once the next ai list is retrieved, UNTIL the powerup sequence or forced delay after roll has ended
     (if (= (unit_get_health (unit actor_in)) 0)
         (begin 
             (powerup_roll_for_spawn actor_in)
