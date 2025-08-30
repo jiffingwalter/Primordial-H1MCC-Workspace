@@ -242,6 +242,22 @@
     )
 )
 
+(script static void (ww_set_objective (hud_message hud_text) (short hide_after))
+	(hud_set_objective_text hud_text)
+	(ww_print_hud_message hud_text hide_after)
+)
+
+(script static void (ww_print_hud_message (hud_message hud_text) (short hide_after))
+    (show_hud_help_text true)
+	(hud_set_help_text hud_text)
+	(if (> hide_after 0)
+        (begin 
+            (sleep hide_after)
+	        (show_hud_help_text false)
+        )
+    )
+)
+
 (script static void wave_start_next
     (if (or ww_debug_all ww_debug_waves) (print "***** starting next wave *****"))
     (set wave_in_progress true)
@@ -450,7 +466,7 @@
                         ; jackal plasma pistol - .68
                         (if (and 
                             (<= .68 spawner_dice_roll)
-                            (>= game_difficulty_level 0.11)
+                            (>= game_difficulty_level 0.1)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -811,7 +827,7 @@
                 ; OVERRIDE
                 (if (!= spawner_picker_override_enc "null")
                     (begin 
-                        (wave_spawn_enemy spawner_picker_override_enc spawner_picker_override_enc_to 1) ; TODO: figure out how this will work once its actually being used... new variables for enc_to and power_num?
+                        (wave_spawn_enemy spawner_picker_override_enc spawner_picker_override_enc_to 1)
                         (set spawner_condition_matched true)
                     )
                 )
