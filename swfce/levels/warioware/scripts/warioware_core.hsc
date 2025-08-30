@@ -22,6 +22,7 @@
 (global short global_set_num 0) ; current set
 (global short global_total_difficulty_scale 0) ; all of the scales added into one number
 (global short global_timer_elapsed 0) ; holds amount of seconds passed in the game
+(global short timer_hud 150) ; default hud message timer (5 seconds)
 (global boolean global_timer_on false) ; if we're running the timer or not
 (global real game_difficulty_scale 1.0) ; how fast more dangerous enemies and vehicles appear, set based on option_difficulty_scale
 (global real game_difficulty_level 0.1) ; current difficulty level, scales based on game_difficulty_scale
@@ -193,6 +194,7 @@
     
     (sleep 90)
     (wave_start_next)
+    (ww_set_objective obj_welcome timer_hud)
 )
 
 ; core script - observe game state and take actions as necessary (wave start and stopping, game over)
@@ -235,7 +237,9 @@
     (if (= global_game_status 2) ;LOST...
         (begin 
             (print "***** GAME OVER! *****")
-            (sleep (* 8 30))
+            ; TODO: put players back in the action unarmed, disable weapon drops, and let them get fukt
+            (ww_set_objective game_over 1000)
+            (sleep (* 10 30))
             (game_lost)
             (sleep -1)
         )
@@ -243,11 +247,13 @@
 )
 
 (script static void (ww_set_objective (hud_message hud_text) (short hide_after))
-	(hud_set_objective_text hud_text)
-	(ww_print_hud_message hud_text hide_after)
+    (hud_set_objective_text hud_text)
+	(sleep -1 ww_print_hud_message)
+    (ww_print_hud_message hud_text hide_after)
 )
 
 (script static void (ww_print_hud_message (hud_message hud_text) (short hide_after))
+    (hud_clear_messages)
     (show_hud_help_text true)
 	(hud_set_help_text hud_text)
 	(if (> hide_after 0)
@@ -282,6 +288,7 @@
                     (if (or ww_debug_all ww_debug_waves) (print "** next round, incrementing stats... **"))
                     (if (or ww_debug_all ww_debug_waves) (print "round number:"))
                     (if (or ww_debug_all ww_debug_waves) (inspect global_round_num))
+                    (ww_set_objective next_round timer_hud)
 
                     ; game values
                     (set game_difficulty_level (* game_difficulty_level game_difficulty_scale))
@@ -986,7 +993,8 @@
 
 ; manage respawning the player
 (script static void (player_respawn_sequence (unit dead_player))
-    (print "starting player respawn sequence")
+    (print "starting player respawn sequence for player...")
+    (inspect dead_player)
     
     ; snag player away from the action
     (damage_object "swfce\effects\damage effects\screen white flash" dead_player)
@@ -999,8 +1007,10 @@
             (> global_life_count 0)
             (!= global_life_count -1)
         )
-        (set global_life_count (- global_life_count 1))
-        ;todo: hud_objective of life count here
+        (begin
+            (set global_life_count (- global_life_count 1))
+            (ww_print_remaining_lives)
+        )
     )
     (set players_dead (+ players_dead 1))
     (sleep 1)
@@ -1178,6 +1188,33 @@
             (!= option_use_checkpoints true)
         )
         (set global_game_status 2)
+    )
+)
+
+(script static void ww_print_remaining_lives
+    (cond 
+        ((= global_life_count 0) (ww_set_objective lives_0 timer_hud))
+        ((= global_life_count 1) (ww_set_objective lives_1 timer_hud))
+        ((= global_life_count 2) (ww_set_objective lives_2 timer_hud))
+        ((= global_life_count 3) (ww_set_objective lives_3 timer_hud))
+        ((= global_life_count 4) (ww_set_objective lives_4 timer_hud))
+        ((= global_life_count 5) (ww_set_objective lives_5 timer_hud))
+        ((= global_life_count 6) (ww_set_objective lives_6 timer_hud))
+        ((= global_life_count 7) (ww_set_objective lives_7 timer_hud))
+        ((= global_life_count 8) (ww_set_objective lives_8 timer_hud))
+        ((= global_life_count 9) (ww_set_objective lives_9 timer_hud))
+        ((= global_life_count 10) (ww_set_objective lives_10 timer_hud))
+        ((= global_life_count 11) (ww_set_objective lives_11 timer_hud))
+        ((= global_life_count 12) (ww_set_objective lives_12 timer_hud))
+        ((= global_life_count 13) (ww_set_objective lives_13 timer_hud))
+        ((= global_life_count 14) (ww_set_objective lives_14 timer_hud))
+        ((= global_life_count 15) (ww_set_objective lives_15 timer_hud))
+        ((= global_life_count 16) (ww_set_objective lives_16 timer_hud))
+        ((= global_life_count 17) (ww_set_objective lives_17 timer_hud))
+        ((= global_life_count 18) (ww_set_objective lives_18 timer_hud))
+        ((= global_life_count 19) (ww_set_objective lives_19 timer_hud))
+        ((= global_life_count 20) (ww_set_objective lives_20 timer_hud))
+        ((> global_life_count 20) (ww_set_objective lives_morethan_20 timer_hud))
     )
 )
 
@@ -1370,6 +1407,7 @@
         )
         (begin 
             (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup invincibility!"))
+            (ww_set_objective powerup_invin timer_hud)
             (powerup_pickup powerup_invincibility)
 
             (sound_looping_start "swfce\sound\sfx\cinematic\warioware\powerup_invin_active" none 1)
@@ -1406,6 +1444,7 @@
         )
         (begin 
             (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup strength!"))
+            (ww_set_objective powerup_strength timer_hud)
             (powerup_pickup powerup_strength)
 
             (sound_looping_start "swfce\sound\sfx\cinematic\warioware\powerup_strength_active" none 1)
@@ -1436,6 +1475,7 @@
         )
         (begin 
             (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup bottomless!"))
+            (ww_set_objective powerup_bottomless timer_hud)
             (powerup_pickup powerup_bottomless)
 
             (sound_looping_start "swfce\sound\sfx\cinematic\warioware\powerup_bottomless_active" none 1)
@@ -1466,6 +1506,7 @@
         )
         (begin 
             (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup pow!"))
+            (ww_set_objective powerup_pow timer_hud)
             (powerup_pickup powerup_pow)
 
             (sleep 30)
@@ -1501,6 +1542,7 @@
         )
         (begin 
             (if (or ww_debug_all ww_debug_powerups) (print "picked up powerup extralife!"))
+            (ww_set_objective powerup_life timer_hud)
             (powerup_pickup powerup_extralife)
 
             (sound_impulse_start "" none 1)
