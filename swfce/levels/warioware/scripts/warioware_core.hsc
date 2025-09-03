@@ -29,6 +29,7 @@
 (global real game_weirdness_scale 1.0) ; how fast weirder stuff starts happening in the game, scales based on option_weirdness_scale
 (global real game_weirdness_level 0.1) ; current weirdness level, scales based on game_weirdness_scale
 (global starting_profile game_current_loadout "preset_default") ; the current loadout players should spawn into the game with
+(global short game_hud_message_timer 0) ; dynamic timer for hud messages on the screen
 
 ; Debug vars
 (global boolean ww_debug_all true)
@@ -246,9 +247,9 @@
     )
 )
 
+; objective and hud message handlers
 (script static void (ww_set_objective (hud_message hud_text) (short hide_after))
     (hud_set_objective_text hud_text)
-	(sleep -1 ww_print_hud_message)
     (ww_print_hud_message hud_text hide_after)
 )
 
@@ -258,9 +259,19 @@
 	(hud_set_help_text hud_text)
 	(if (> hide_after 0)
         (begin 
-            (sleep hide_after)
-	        (show_hud_help_text false)
+            (set game_hud_message_timer hide_after)
+            (wake ww_hide_hud_monitor)
         )
+    )
+)
+
+(script continuous ww_hide_hud_monitor
+    (if (= game_hud_message_timer 0)
+        (begin 
+            (show_hud_help_text false)
+            (sleep -1)
+        )
+        (set game_hud_message_timer (- game_hud_message_timer 1))
     )
 )
 
