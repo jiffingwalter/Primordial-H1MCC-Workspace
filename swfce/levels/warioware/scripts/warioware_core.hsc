@@ -25,9 +25,9 @@
 (global short timer_hud 150) ; default hud message timer (5 seconds)
 (global boolean global_timer_on false) ; if we're running the timer or not
 (global real game_difficulty_scale 1.0) ; how fast more dangerous enemies and vehicles appear, set based on option_difficulty_scale
-(global real game_difficulty_level 0.1) ; current difficulty level, scales based on game_difficulty_scale
+(global real game_difficulty_level 0) ; current difficulty level, scales based on game_difficulty_scale
 (global real game_weirdness_scale 1.0) ; how fast weirder stuff starts happening in the game, scales based on option_weirdness_scale
-(global real game_weirdness_level 0.1) ; current weirdness level, scales based on game_weirdness_scale
+(global real game_weirdness_level 0) ; current weirdness level, scales based on game_weirdness_scale
 (global starting_profile game_current_loadout "preset_default") ; the current loadout players should spawn into the game with
 (global short game_hud_message_timer 0) ; dynamic timer for hud messages on the screen
 
@@ -118,49 +118,59 @@
     ;  *** wait for confirmation of options by player... ***
     (sleep_until (= 1 (device_get_position control_start_game)) 1)
 
+
+
     ; *** set final variables based on options ***
+
     ; ai alligences...
     (prim_set_passive_alligence)
     (ai_allegiance player human)
-    (if (= option_ai_infighting 0);none
+    (cond 
+        ;none
+        ((= option_ai_infighting 0)
         (begin 
             (ai_allegiance covenant flood)
             (ai_allegiance covenant sentinel)
             (ai_allegiance sentinel flood)
-        )
-    )
-    (if (= option_ai_infighting 2);conditional
-        (ai_try_to_fight_player "enc_main")
+        ))
+        ;conditional
+        ((= option_ai_infighting 2)
+        (ai_try_to_fight_player "enc_main"))
     )
 
     ; initial difficulty scale...
     (cond 
-        ((= option_difficulty 0);less
+        ;less
+        ((= option_difficulty 0)
         (set game_difficulty_scale 1.01))
-
-        ((= option_difficulty 1);normal
+        ;normal
+        ((= option_difficulty 1)
         (set game_difficulty_scale 1.05))
-
-        ((= option_difficulty 2);more
+        ;more
+        ((= option_difficulty 2)
         (set game_difficulty_scale 1.1))
-
-        ((= option_difficulty 3);insane
+        ;insane
+        ((= option_difficulty 3)
         (set game_difficulty_scale 1.2))
     )
+    (set game_difficulty_level (- game_difficulty_scale 1))
+
     ; initial weirdness scale...
     (cond 
-        ((= option_weirdness 0);less
+        ;less
+        ((= option_weirdness 0)
         (set game_weirdness_scale 1.01))
-        
-        ((= option_weirdness 1);normal
+        ;normal
+        ((= option_weirdness 1)
         (set game_weirdness_scale 1.05))
-
-        ((= option_weirdness 2);more
+        ;more
+        ((= option_weirdness 2)
         (set game_weirdness_scale 1.1))
-
-        ((= option_weirdness 3);insane
+        ;insane
+        ((= option_weirdness 3)
         (set game_weirdness_scale 1.2))
     )
+    (set game_weirdness_level (- game_weirdness_scale 1))
     
     ; misc...
     (if (= option_use_checkpoints true)
@@ -252,7 +262,6 @@
     (hud_set_objective_text hud_text)
     (ww_print_hud_message hud_text hide_after)
 )
-
 (script static void (ww_print_hud_message (hud_message hud_text) (short hide_after))
     (hud_clear_messages)
     (show_hud_help_text true)
@@ -264,7 +273,6 @@
         )
     )
 )
-
 (script continuous ww_hide_hud_monitor
     (if (= game_hud_message_timer 0)
         (begin 
@@ -349,6 +357,7 @@
                 (begin 
                     (if (or ww_debug_all ww_debug_waves) (print "***** LAST WAVE OF SET!! *****"))
                     (set wave_is_last_of_set true)
+                    
                 )
                 (set wave_is_last_of_set false)
             )
@@ -462,7 +471,7 @@
                         ; elite needler - .87
                         (if (and 
                             (<= .87 spawner_dice_roll)
-                            (>= game_difficulty_level .25)
+                            (>= game_difficulty_level .2)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -473,7 +482,7 @@
                         ; elite plasma rifle - .79
                         (if (and 
                             (<= .79 spawner_dice_roll)
-                            (>= game_difficulty_level .15)
+                            (>= game_difficulty_level .1)
                             (= spawner_condition_matched false)
                         )
                             (begin 
@@ -484,7 +493,7 @@
                         ; jackal plasma pistol - .68
                         (if (and 
                             (<= .68 spawner_dice_roll)
-                            (>= game_difficulty_level 0.1)
+                            (>= game_difficulty_level 0.05)
                             (= spawner_condition_matched false)
                         )
                             (begin 
