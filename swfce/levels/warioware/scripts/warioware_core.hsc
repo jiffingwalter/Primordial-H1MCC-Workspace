@@ -104,6 +104,10 @@
 (global short powerup_status_pow 0)
 (global short powerup_status_refill 0)
 
+; Scenery - question block spawns
+(global short ww_qblocks_to_spawn 0) ; how many qblocks to try to spawn at the start of a new set, set from ww_qblocks_initial + current set count
+(global short ww_qblocks_max 7) ; max amount of question blocks that can spawn on the map, level specific
+(global short ww_qblocks_initial 3) ; initial amount of question blocks to spawn
 
 ;;; ------------------------------------ CORE GAME ------------------------------------ ;;;
 ; STARTUP SCRIPT - set up the game, start logic to collect options from the player, etc. once player confirms, make any changes needed for options and start the core game loop
@@ -204,8 +208,8 @@
     (game_set_loadout "preset_default")
     
     (sleep 90)
-    (wave_start_next)
     (ww_set_objective obj_welcome timer_hud)
+    (ww_set_start_next)
 )
 
 ; core script - observe game state and take actions as necessary (wave start and stopping, game over)
@@ -226,7 +230,7 @@
                 (sleep wave_next_delay)
                 (wave_start_next)
             )
-            ; ELSE... perform next set logic and delay
+            ; ELSE... perform set completion logic and wait for extended delay to start next
             (if (and
                     (= wave_in_progress true)
                     (= (wave_get_enemies_living_count) 0)
@@ -243,7 +247,7 @@
                     (effect_new "swfce\scenery\fireworks\effects\presets\firework_preset_3shot_multicolor" fx_fireworks)
 
                     (sleep (* wave_next_delay 2))
-                    (wave_start_next)
+                    (ww_set_start_next)
                 )
             )
         )
@@ -280,11 +284,22 @@
     (if (= game_hud_message_timer 0)
         (begin 
             (show_hud_help_text false)
-            (enable_hud_help_flash true)
+            (enable_hud_help_flash false)
             (sleep -1)
         )
         (set game_hud_message_timer (- game_hud_message_timer 1))
     )
+)
+
+; all set preparation logic
+(script static void ww_set_start_next
+    ; set qblock count to spawn based on current set number
+    (if (<= (+ ww_qblocks_initial global_set_num) ww_qblocks_max)
+        (set ww_qblocks_to_spawn (+ ww_qblocks_initial global_set_num))
+        (set ww_qblocks_to_spawn ww_qblocks_max)
+    )
+
+    (wave_start_next)
 )
 
 (script static void wave_start_next
@@ -1712,6 +1727,30 @@
 )
 (script continuous monitor_ai_list_main_35
     (monitor_individual_enemy (list_get ai_list_main 35))
+)
+
+;;; ------------------------------------ scenery ------------------------------------ ;;;
+;; step through qblock spawns and randomly spawn
+(script static void ww_replace_qblocks
+    (object_destroy_containing "qblock_")
+    (begin_random 
+        (ww_place_qblock qblock_0)
+        (ww_place_qblock qblock_1)
+        (ww_place_qblock qblock_2)
+        (ww_place_qblock qblock_3)
+        (ww_place_qblock qblock_4)
+        (ww_place_qblock qblock_5)
+        (ww_place_qblock qblock_6)
+    )
+)
+(script static void (ww_place_qblock (object_name qblock_name))
+    (if (> ww_qblocks_to_spawn 0) 
+        (begin 
+            (object_create qblock_name)
+            (set ww_qblocks_to_spawn (- ww_qblocks_to_spawn 1))
+        )
+        (sleep -1 ww_replace_qblocks)
+    )
 )
 
 ;;; ------------------------------------ testing stuff ------------------------------------ ;;;
