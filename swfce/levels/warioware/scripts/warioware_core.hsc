@@ -226,7 +226,7 @@
                 (sleep wave_next_delay)
                 (wave_start_next)
             )
-            ; ELSE... check if current set is finished and hol up if so
+            ; ELSE... perform next set logic and delay
             (if (and
                     (= wave_in_progress true)
                     (= (wave_get_enemies_living_count) 0)
@@ -235,9 +235,12 @@
                 )
                 (begin 
                     (if (or ww_debug_all ww_debug_waves) (print "****** set completed! ******"))
+                    (ww_set_objective set_completed timer_hud)
                     (set global_set_num (+ global_set_num 1))
                     (set wave_spawner_on false)
                     (set wave_in_progress false)
+                    (set global_life_count (+ global_life_count 1))
+                    (effect_new "swfce\scenery\fireworks\effects\presets\firework_preset_3shot_multicolor" fx_fireworks)
 
                     (sleep (* wave_next_delay 2))
                     (wave_start_next)
@@ -260,12 +263,12 @@
 ; objective and hud message handlers
 (script static void (ww_set_objective (hud_message hud_text) (short hide_after))
     (hud_set_objective_text hud_text)
+    (enable_hud_help_flash true)
     (ww_print_hud_message hud_text hide_after)
 )
 (script static void (ww_print_hud_message (hud_message hud_text) (short hide_after))
-    (hud_clear_messages)
-    (show_hud_help_text true)
 	(hud_set_help_text hud_text)
+    (show_hud_help_text true)
 	(if (> hide_after 0)
         (begin 
             (set game_hud_message_timer hide_after)
@@ -277,6 +280,7 @@
     (if (= game_hud_message_timer 0)
         (begin 
             (show_hud_help_text false)
+            (enable_hud_help_flash true)
             (sleep -1)
         )
         (set game_hud_message_timer (- game_hud_message_timer 1))
