@@ -293,12 +293,15 @@
 
 ; all set preparation logic
 (script static void ww_set_start_next
+    (print "starting next set...")
     ; set qblock count to spawn based on current set number
     (if (<= (+ ww_qblocks_initial global_set_num) ww_qblocks_max)
         (set ww_qblocks_to_spawn (+ ww_qblocks_initial global_set_num))
         (set ww_qblocks_to_spawn ww_qblocks_max)
     )
+    (ww_replace_qblocks)
 
+    (ww_set_objective next_set timer_hud)
     (wave_start_next)
 )
 
