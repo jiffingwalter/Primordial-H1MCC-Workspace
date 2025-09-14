@@ -207,7 +207,6 @@
     (object_teleport (player3) "player3_respawn_point")
     (game_set_loadout "preset_default")
     
-    (sleep 90)
     (ww_set_objective obj_welcome timer_hud)
     (ww_set_start_next)
 )
@@ -246,7 +245,9 @@
                     (set global_life_count (+ global_life_count 1))
                     (effect_new "swfce\scenery\fireworks\effects\presets\firework_preset_3shot_multicolor" fx_fireworks)
 
-                    (sleep (* wave_next_delay 2))
+                    ;todo: set up logic to force player respawn here
+
+                    (sleep wave_next_delay)
                     (ww_set_start_next)
                 )
             )
@@ -291,19 +292,27 @@
     )
 )
 
-; all set preparation logic
+; all set preparation logic, wipes game world clean for next set
 (script static void ww_set_start_next
-    (print "starting next set...")
+    (print "preparing for next set...")
+    (ww_map_deep_clean)
+
     ; set qblock count to spawn based on current set number
     (if (<= (+ ww_qblocks_initial global_set_num) ww_qblocks_max)
         (set ww_qblocks_to_spawn (+ ww_qblocks_initial global_set_num))
         (set ww_qblocks_to_spawn ww_qblocks_max)
     )
-    (garbage_collect_now)
     (ww_replace_qblocks)
+    (if (> global_set_num 0) (ww_set_objective next_set timer_hud))
 
-    (ww_set_objective next_set timer_hud)
+    (sleep wave_next_delay)
     (wave_start_next)
+)
+
+; deep clean the game world of all non player bullshit - gets rid of random stuff produced by qblocks, straggler vehicles and player buffoonary
+(script static void ww_map_deep_clean
+    (garbage_collect_now)
+    (object_destroy_all)
 )
 
 (script static void wave_start_next
