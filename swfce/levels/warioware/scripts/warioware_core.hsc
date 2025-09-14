@@ -299,6 +299,7 @@
         (set ww_qblocks_to_spawn (+ ww_qblocks_initial global_set_num))
         (set ww_qblocks_to_spawn ww_qblocks_max)
     )
+    (garbage_collect_now)
     (ww_replace_qblocks)
 
     (ww_set_objective next_set timer_hud)
@@ -1301,7 +1302,7 @@
     (sound_impulse_start "swfce\sound\sfx\impulse\crash\pickup_life" powerup 1)
     (powerup_set_status powerup 2)
     (fade_in 1 1 1 15)
-    (object_create_anew powerup)
+    (object_destroy powerup)
 )
 
 ;; check if the specific given player is within pickup distance of the given powerup
@@ -1397,6 +1398,7 @@
 ;; spawn a powerup into the play area and manage expiration timer
 (script static void (powerup_spawn_on_object (object actor) (object_name powerup))
     (if (or ww_debug_all ww_debug_powerups) (print "spawned powerup on actor!"))
+    (object_create_anew powerup)
     (powerup_set_status powerup 1)
     (objects_attach actor "" powerup "")
     (objects_detach actor powerup)
@@ -1415,7 +1417,7 @@
             (sound_impulse_start "swfce\sound\sfx\impulse\crash\hit_item" powerup 1)
         )
     )
-    (object_create_anew powerup)
+    (object_destroy powerup)
     (powerup_set_status powerup 0)
 )
 
