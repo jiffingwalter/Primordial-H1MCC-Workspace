@@ -26,6 +26,7 @@
 (global boolean global_timer_on false) ; if we're running the timer or not
 (global real game_difficulty_scale 1.0) ; how fast more dangerous enemies and vehicles appear, set based on option_difficulty_scale
 (global real game_difficulty_level 0) ; current difficulty level, scales based on game_difficulty_scale
+(global real game_difficulty_round_nudge 0.01) ; how much to nudge difficulty level based the round of the CURRENT set
 (global real game_weirdness_scale 1.0) ; how fast weirder stuff starts happening in the game, scales based on option_weirdness_scale
 (global real game_weirdness_level 0) ; current weirdness level, scales based on game_weirdness_scale
 (global starting_profile game_current_loadout "preset_default") ; the current loadout players should spawn into the game with
@@ -297,12 +298,21 @@
     (print "preparing for next set...")
     (ww_map_deep_clean)
 
+    ;todo: add function here to recreate map-specific scenery
+
     ; set qblock count to spawn based on current set number
     (if (<= (+ ww_qblocks_initial global_set_num) ww_qblocks_max)
         (set ww_qblocks_to_spawn (+ ww_qblocks_initial global_set_num))
         (set ww_qblocks_to_spawn ww_qblocks_max)
     )
     (ww_replace_qblocks)
+    ; reset round-based difficulty nudge
+    (set game_difficulty_level 
+        (- game_difficulty_level 
+            (* game_difficulty_round_nudge 5)
+        )
+    )
+
     (if (> global_set_num 0) (ww_set_objective next_set timer_hud))
 
     (sleep wave_next_delay)
@@ -330,9 +340,9 @@
         )
         ; ELSE, its any wave after, run incrementations
         (begin 
-            ; update wave/round/set
             (set global_wave_num (+ global_wave_num 1))
 
+            ; if next round...
             (if (= (modulo global_wave_num 3) 0)
                 (begin 
                     (set global_round_num (+ global_round_num 1))
@@ -342,7 +352,11 @@
                     (ww_set_objective next_round timer_hud)
 
                     ; game values
-                    (set game_difficulty_level (* game_difficulty_level game_difficulty_scale))
+                    (set game_difficulty_level (+
+                            (* game_difficulty_level game_difficulty_scale)
+                            (* (modulo global_round_num 6) game_difficulty_round_nudge)
+                        )
+                    )
                     (set game_weirdness_level (* game_weirdness_level game_weirdness_scale))
 
                     ; wave values -- scale based on current difficulty level
@@ -385,6 +399,7 @@
                     )
                 )
             )
+            ; next set...
             (if (= (modulo global_wave_num 15) 0)
                 (begin 
                     (if (or ww_debug_all ww_debug_waves) (print "***** LAST WAVE OF SET!! *****"))
